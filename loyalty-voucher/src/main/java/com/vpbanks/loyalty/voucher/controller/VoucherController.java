@@ -36,5 +36,9 @@ public class VoucherController {
         return responseFactory.success(voucherDetailService.getAllVoucherDetail(voucherCode));
     }
 
+    @PostMapping("/performActiveVoucher/{voucherCode}/")
+    public ResponseEntity<BodyResponse<VoucherResponse>> performActiveVoucher(@PathVariable String voucherCode) {
+        return responseFactory.success(voucherService.activeVoucher(voucherCode));
+    }
 
 }
