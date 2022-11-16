@@ -11,11 +11,11 @@ public enum ResponseStatusCode {
 
     ResponseStatusCode(String code) {
         this.code = code;
-        this.message = null;
+        this.message = getMessage();
     }
 
     public String getMessage() {
-        return message;
+        return this.name();
     }
 
     public String getCode() {

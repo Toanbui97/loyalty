@@ -15,5 +15,5 @@ public class CustomerResponse {
 
     String customerName;
     String customerCode;
-    Long activeVouchers;
+    Long activeVoucher;
 }

@@ -75,7 +75,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         cmsWebClient.performUpdateCustomerInfo(BaseRequest.of(CustomerRequest.builder()
                         .customerCode(customerResponse.getCustomerCode())
-                        .activeVoucher(customerResponse.getActiveVouchers() + 1)
+                        .activeVoucher(customerResponse.getActiveVoucher() + 1)
                         .build()));
 
         return voucherMapper.entityToDTO(voucherEntity);

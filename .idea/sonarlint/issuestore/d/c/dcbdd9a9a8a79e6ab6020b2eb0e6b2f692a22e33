@@ -1,9 +1,0 @@
-
-]
-java:S1612-"GReplace this lambda with method reference 'voucherMapper::entityToDTO'.(ï§Ğ«
-R
-java:S1128"0Remove this unused import 'lombok.SneakyThrows'.(¨³üÖûÿÿÿÿ8»áúÇ0
-|
-java:S1128"_Remove this unused import 'org.springframework.boot.configurationprocessor.json.JSONException'.(„ËïÕ8»áúÇ0
-p
-java:S1128"NRemove this unused import 'vn.com.vpbanks.loyalty.core.entity.CustomerEntity'.(²ÃÅôúÿÿÿÿ8¼áúÇ0

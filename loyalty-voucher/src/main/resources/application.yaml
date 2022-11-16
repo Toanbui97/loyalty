@@ -20,8 +20,6 @@ spring:
       maximum-pool-size: 30
       idle-timeout: 600000
       max-lifetime: 18000000
-  jackson:
-    property-naming-strategy: SNAKE_CASE
   profiles:
     active: ${ACTIVE_PROFILE:dev}
   kafka:

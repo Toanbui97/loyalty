@@ -1,5 +1,6 @@
 package vn.com.vpbanks.loyalty.core.configuration.propertires;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
