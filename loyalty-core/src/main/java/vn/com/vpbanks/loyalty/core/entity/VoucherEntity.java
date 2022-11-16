@@ -19,5 +19,6 @@ public class VoucherEntity extends BaseEntity {
     String voucherName;
     String voucherCode;
     String description;
+    Long inactiveVoucher;
     Long totalVoucher;
 }

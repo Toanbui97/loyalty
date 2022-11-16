@@ -1,4 +1,4 @@
-package com.example.loyalty.voucher;
+package com.vpbanks.loyalty.voucher;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

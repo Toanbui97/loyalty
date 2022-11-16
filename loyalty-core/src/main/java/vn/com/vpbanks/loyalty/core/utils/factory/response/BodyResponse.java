@@ -24,6 +24,8 @@ public class BodyResponse<T> implements Serializable {
 
     private String message;
 
+    private String errorMessage;
+
     private int page;
 
     private int size;
@@ -81,6 +83,17 @@ public class BodyResponse<T> implements Serializable {
         this.status = status;
         this.code = responseStatus.getCode();
         this.message = responseStatus.getMessage();
+        this.responseTime = LocalDateTime.now();
+        this.details = details;
+        this.setCode(code);
+    }
+
+    public BodyResponse(ResponseStatusCode responseStatus, String requestId, int status, String errorMessage) {
+        this.requestId = requestId;
+        this.status = status;
+        this.code = responseStatus.getCode();
+        this.message = responseStatus.getMessage();
+        this.errorMessage = errorMessage;
         this.responseTime = LocalDateTime.now();
         this.details = details;
         this.setCode(code);

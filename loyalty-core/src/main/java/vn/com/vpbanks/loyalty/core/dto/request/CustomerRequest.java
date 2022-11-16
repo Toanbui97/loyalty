@@ -12,4 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class CustomerRequest {
 
     String customerName;
+    String customerCode;
+    Long activeVoucher;
 }

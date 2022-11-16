@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -15,5 +17,13 @@ public class BaseRequest<T> {
     String requestId;
 
     T data;
+
+    public static <T> BaseRequest<T> of(T data){
+
+        BaseRequest baseRequest = new BaseRequest();
+        baseRequest.setRequestId(UUID.randomUUID().toString());
+        baseRequest.setData(data);
+        return baseRequest;
+    }
 
 }

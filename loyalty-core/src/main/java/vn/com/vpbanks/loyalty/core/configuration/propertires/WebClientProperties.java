@@ -15,6 +15,8 @@ public class WebClientProperties {
     public static class CmsUrlInfo {
         String baseUrl;
         String updateRankApi;
+        String receiveCustomerInfo;
+        String performUpdateCustomerInfo;
     }
 
 }

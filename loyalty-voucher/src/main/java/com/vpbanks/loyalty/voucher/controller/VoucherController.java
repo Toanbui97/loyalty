@@ -1,7 +1,7 @@
-package com.example.loyalty.voucher.controller;
+package com.vpbanks.loyalty.voucher.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.com.vpbanks.loyalty.core.dto.request.VoucherRequest;

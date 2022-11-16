@@ -18,6 +18,6 @@ public class CustomerEntity extends BaseEntity {
 
     String customerName;
     String customerCode;
-    String activeVouchers;
+    String activeVoucher;
 
 }

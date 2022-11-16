@@ -21,7 +21,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Loyalty" options="" />
+      <module name="Loyalty" options="-parameters" />
       <module name="loyalty-cms" options="-parameters" />
       <module name="loyalty-core" options="-parameters" />
       <module name="loyalty-migration" options="-parameters" />
