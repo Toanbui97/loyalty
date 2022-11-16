@@ -13,7 +13,7 @@ import vn.com.vpbanks.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.ResponseFactory;
 
 @RestController
-@RequestMapping("/api/v1/voucher")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class VoucherController {
 

@@ -1,5 +1,6 @@
 package vn.com.vpbanks.loyalty.core.dto.response.cms;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerResponse {
 
     String customerName;

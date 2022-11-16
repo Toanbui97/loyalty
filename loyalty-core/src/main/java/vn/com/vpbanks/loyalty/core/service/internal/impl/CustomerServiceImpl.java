@@ -51,7 +51,6 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.entityToDTO(customerEntity);
     }
 
-
     private String generateCustomerCode() {
         return UUID.randomUUID().toString();
     }

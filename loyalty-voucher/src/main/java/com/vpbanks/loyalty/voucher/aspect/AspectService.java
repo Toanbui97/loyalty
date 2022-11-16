@@ -10,13 +10,4 @@ import org.aspectj.lang.annotation.Pointcut;
 @Slf4j
 public class AspectService {
 
-    @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
-    public void apiPointCut(){}
-
-
-    @Before("apiPointCut()")
-    public void logRequestComeIn(JoinPoint joinPoint){
-        log.info(joinPoint.getTarget().getClass().toGenericString());
-    }
-
 }

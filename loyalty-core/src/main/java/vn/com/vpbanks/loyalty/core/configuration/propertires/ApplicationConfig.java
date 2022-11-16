@@ -28,4 +28,5 @@ public class ApplicationConfig {
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
+
 }
