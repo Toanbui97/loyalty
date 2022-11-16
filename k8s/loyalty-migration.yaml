@@ -1,0 +1,99 @@
+# replica when don't have HPA
+replicaCount: 1
+# Type of application Job | Deployment
+type: $DEPLOYMENT_TYPE
+
+# Image to run
+image:
+    repository: $DOCKER_URL/$SERVICE_NAME
+    pullPolicy: Always
+    tag: "$IMAGE_TAG"
+
+# Application name
+applicationName: "$SERVICE_NAME"
+
+# Secret to pull image from private repository
+imagePullSecrets: "regcred"
+
+# Service to connect internal K8S
+service:
+    enabled: false
+    type: ClusterIP
+    port: 80
+    containerPort: 8083
+
+# Ingress to expose service to internet
+managementIngress:
+    enabled: false
+    hosts: $MANAGEMENT_HOST
+    path: $SERVICE_PATH
+    pathType: Prefix
+    annotations: { }
+#    konghq.com/plugins: onboarding-oidc
+#    konghq.com/strip-path: "true"
+
+# Ingress to expose service to internet
+externalIngress:
+    enabled: false
+    hosts: $EXTERNAL_HOST
+    path: $SERVICE_PATH
+    pathType: Prefix
+    annotations: { }
+#    konghq.com/plugins: onboarding-oidc
+#    konghq.com/strip-path: "true"
+
+# Ingress to expose service to internet
+integrationIngress:
+    enabled: false
+    hosts: $INTEGRATION_HOST
+    path: $SERVICE_PATH
+    pathType: Prefix
+    annotations: { }
+#    konghq.com/plugins: onboarding-oidc
+#    konghq.com/strip-path: "true"
+
+# Resource management
+resources:
+    limits:
+        memory: 2048Mi
+    requests:
+        cpu: 100m
+        memory: 512Mi
+
+# Health check
+health:
+    enabled: false
+    livenessProbePath: $SERVICE_PATH/api/v1/management/health/liveness
+    readinessProbePath: $SERVICE_PATH/api/v1/management/health/liveness
+
+# Auto scaling
+autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+# Enable expose metrics
+metrics:
+    enabled: false
+    port: 8083
+    path: $SERVICE_PATH/api/v1/management/prometheus
+
+# Set Application env here
+configMap:
+    ACTIVE_PROFILE: $NAMESPACE
+
+envFrom:
+    - configMapRef:
+          name: cloud-config
+    - configMapRef:
+          name: $SERVICE_NAME
+
+# Set volumeMounts
+volumeMounts: [ ]
+
+# Set volumes
+volumes: [ ]
+
+affinity: {}

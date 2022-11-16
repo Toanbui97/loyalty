@@ -1,0 +1,48 @@
+version: '3.0'
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-loyalty
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: loyalty
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    container_name: redis-loyalty
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis/data
+
+  zookeeper:
+    container_name: zookeeper-inventory
+    image: wurstmeister/zookeeper
+    volumes:
+      - zookeeper-data:/opt
+
+  kafka:
+    container_name: kafka-loyalty
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:29092,OUTSIDE://localhost:9092
+      KAFKA_LISTENERS: INSIDE://:29092,OUTSIDE://:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    volumes:
+      - kafka-data:/kafka
+    depends_on:
+      - zookeeper
+
+volumes:
+  postgres-data:
+  redis-data:
+  zookeeper-data:
+  kafka-data:

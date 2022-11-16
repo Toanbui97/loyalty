@@ -1,0 +1,12 @@
+FROM openjdk:11.0.5-jre-slim
+VOLUME /tmp
+ENV TZ="Asia/Ho_Chi_Minh"
+RUN apt-get update && apt-get install unzip curl -y
+RUN mkdir -p /app/lib && mkdir -p /app/META-INF && mkdir -p /target/dependency
+COPY build/inventory-migration-*.jar /build/loyalty-migration.jar
+RUN (cd /target/dependency; unzip ../../build/loyalty-migration.jar)
+RUN cp -r /target/dependency/BOOT-INF/lib/* /app/lib
+RUN cp -r /target/dependency/META-INF/* /app/META-INF
+RUN cp -r /target/dependency/BOOT-INF/classes/* /app
+RUN rm -rf /target/dependency
+CMD ["/bin/bash", "-c", "update-c a-certificates; java $JAVA_OPTS -cp app:app/lib/* vn.com.vpbanks.loyalty.migration.LoyaltyMigrationApplication"]

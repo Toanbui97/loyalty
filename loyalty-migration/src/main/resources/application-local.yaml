@@ -1,0 +1,7 @@
+DB_HOST: localhost
+DB_PORT: 5432
+DB_NAME: loyalty_db
+DB_SCHEMA: loyalty_schema
+DB_USER: postgres
+DB_PASSWORD: 123456
+

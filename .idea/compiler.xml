@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for loyalty" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.1.Final/mapstruct-processor-1.5.1.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.1.Final/mapstruct-1.5.1.Final.jar" />
+        </processorPath>
+        <module name="loyalty-core" />
+        <module name="loyalty-cms" />
+        <module name="loyalty-migration" />
+        <module name="loyalty-voucher" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Loyalty" options="" />
+      <module name="loyalty-cms" options="-parameters" />
+      <module name="loyalty-core" options="-parameters" />
+      <module name="loyalty-migration" options="-parameters" />
+      <module name="loyalty-voucher" options="-parameters" />
+    </option>
+  </component>
+</project>

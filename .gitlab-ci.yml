@@ -1,0 +1,102 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  VALUES_FOLDER: $CI_PROJECT_DIR/k8s/
+
+cache:
+  key: "$CI_PROJECT_NAMESPACE:$CI_PROJECT_NAME"
+  paths:
+    - .m2/repository
+
+stages:
+  - compile_build
+  - docker_build
+  - deploy
+
+# ---------------------------- Start Build Jar File ----------------------------
+compile build:
+  tags: [ maven-jdk11 ]
+  stage: compile_build
+  script:
+    - 'mvn --batch-mode -U clean package spring-boot:repackage -DskipTests'
+    - 'mkdir build'
+    - 'cp inventory-migration/target/inventory-migration*.jar build/'
+    - 'cp inventory-api/target/inventory-api*.jar build/'
+  only:
+    refs:
+      - master
+      - uat
+      - sit
+  except:
+    - pipelines
+  artifacts:
+    expire_in: 1h
+    paths:
+      - build/loyalty-migration*.jar
+      - build/loyalty-api*.jar
+# ---------------------------- End Build Jar File ----------------------------
+
+# ---------------------------- Start Build Docker Image ----------------------------
+.docker_build:
+  tags: [ docker-registry ]
+  stage: docker_build
+  cache: { }
+  dependencies:
+    - compile build
+  only:
+    refs:
+      - master
+      - uat
+      - sit
+  before_script:
+    - 'docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_HUB'
+  script:
+    - 'docker build -f $DOCKER_FILE -t $DOCKER_URL/$SERVICE_NAME:$IMAGE_TAG .'
+    - 'docker push $DOCKER_URL/$SERVICE_NAME:$IMAGE_TAG'
+
+docker api build:
+  extends: .docker_build
+  variables:
+    DOCKER_FILE: Dockerfile.api
+    SERVICE_NAME: $CI_PROJECT_NAME-api
+
+docker migration build:
+  extends: .docker_build
+  variables:
+    DOCKER_FILE: Dockerfile.migration
+    SERVICE_NAME: $CI_PROJECT_NAME-migration
+# ---------------------------- End Build Docker Image -------------------------------------
+
+# ---------------------------- Start Deploy To UAT ----------------------------
+.deploy_to_uat:
+  when: manual
+  tags: [ non-prod ]
+  stage: deploy
+  cache: { }
+  dependencies: [ ]
+  variables:
+    NAMESPACE: uat
+  only:
+    refs:
+      - uat
+  except:
+    - pipelines
+  script:
+    - cd /helm && sh deploy-cloud.sh
+
+deploy api to uat:
+  extends: .deploy_to_uat
+  variables:
+    DEPLOYMENT_TYPE: Deployment
+    SERVICE_NAME: $CI_PROJECT_NAME-api
+    SERVICE_PATH: /loyalty
+    EXTERNAL_HOST: external-uat.vpbanks.com.vn
+    FILE_PATH: $VALUES_FOLDER/loyalty-api.yaml
+
+deploy migration to uat:
+  extends: .deploy_to_uat
+  variables:
+    DEPLOYMENT_TYPE: Job
+    SERVICE_NAME: $CI_PROJECT_NAME-migration
+    FILE_PATH: $VALUES_FOLDER/loyalty-migration.yaml
+# ---------------------------- End Deploy To UAT ----------------------------
