@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import vn.com.vpbanks.loyalty.core.dto.request.BaseRequest;
+import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.BodyResponse;
 
 import javax.servlet.http.HttpSession;
@@ -30,13 +30,13 @@ public class HttpRequestAspect {
 
     @Before("restApiPointCut()")
     public void beforeCallApi(JoinPoint joinPoint) throws JsonProcessingException {
-        log.info("===================> Request: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
+        if (joinPoint.getArgs()[0] instanceof BodyRequest) {
+            log.info("===================> Request: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
                 , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
-        if (joinPoint.getArgs()[0] instanceof BaseRequest) {
-            if (!StringUtils.hasText(((BaseRequest<?>) joinPoint.getArgs()[0]).getRequestId())) {
+            if (!StringUtils.hasText(((BodyRequest<?>) joinPoint.getArgs()[0]).getRequestId())) {
                 httpSession.setAttribute(REQUEST_ID, UUID.randomUUID().toString());
             } else {
-                httpSession.setAttribute(REQUEST_ID, ((BaseRequest<?>) joinPoint.getArgs()[0]).getRequestId());
+                httpSession.setAttribute(REQUEST_ID, ((BodyRequest<?>) joinPoint.getArgs()[0]).getRequestId());
             }
         }
     }

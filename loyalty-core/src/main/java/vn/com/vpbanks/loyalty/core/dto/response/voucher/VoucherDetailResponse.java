@@ -1,5 +1,6 @@
 package vn.com.vpbanks.loyalty.core.dto.response.voucher;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
@@ -10,6 +11,7 @@ import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
 @RequiredArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VoucherDetailResponse {
 
     String voucherCode;

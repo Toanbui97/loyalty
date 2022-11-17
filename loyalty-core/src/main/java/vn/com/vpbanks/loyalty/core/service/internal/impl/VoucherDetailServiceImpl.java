@@ -3,14 +3,11 @@ package vn.com.vpbanks.loyalty.core.service.internal.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
-import vn.com.vpbanks.loyalty.core.dto.request.VoucherRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.vpbanks.loyalty.core.entity.VoucherDetailEntity;
 import vn.com.vpbanks.loyalty.core.entity.VoucherEntity;
 import vn.com.vpbanks.loyalty.core.mapper.VoucherDetailMapper;
-import vn.com.vpbanks.loyalty.core.mapper.VoucherMapper;
 import vn.com.vpbanks.loyalty.core.repository.VoucherDetailRepository;
-import vn.com.vpbanks.loyalty.core.repository.VoucherRepository;
 import vn.com.vpbanks.loyalty.core.service.internal.VoucherDetailService;
 
 import java.util.ArrayList;
@@ -27,7 +24,7 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
 
     @Override
     public List<VoucherDetailResponse> getAllVoucherDetail(String voucherCode) {
-        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherDetailCode(voucherCode);
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherCode(voucherCode);
         return voucherDetailEntityList.stream().map(v -> voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
     }
 
@@ -45,6 +42,12 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
 
         return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(v ->
                 voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VoucherDetailResponse> getVoucherDetailInActiveList(String voucherCode) {
+        List<VoucherDetailEntity> voucherDetailInActiveEntityList = voucherDetailRepository.findByVoucherCodeAndStatus(voucherCode, StatusCode.INACTIVE);
+        return voucherDetailInActiveEntityList.stream().map(v -> voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
     }
 
     private String generateVoucherDetailCode(String voucherName) {

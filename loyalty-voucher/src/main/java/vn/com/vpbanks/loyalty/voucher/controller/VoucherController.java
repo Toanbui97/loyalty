@@ -1,9 +1,9 @@
-package com.vpbanks.loyalty.voucher.controller;
+package vn.com.vpbanks.loyalty.voucher.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.VoucherRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.vpbanks.loyalty.core.dto.response.voucher.VoucherResponse;
@@ -27,16 +27,21 @@ public class VoucherController {
     }
 
     @PostMapping("/performCreateVoucher")
-    public ResponseEntity<BodyResponse<VoucherResponse>> performCreateVoucher(@RequestBody VoucherRequest request) {
-        return responseFactory.success(voucherService.createVoucher(request));
+    public ResponseEntity<BodyResponse<VoucherResponse>> performCreateVoucher(@RequestBody BodyRequest<VoucherRequest> request) {
+        return responseFactory.success(voucherService.createVoucher(request.getData()));
     }
 
-    @GetMapping("/receiveVoucherDetailList/{voucherCode}")
+    @GetMapping("/{voucherCode}/receiveVoucherDetailList")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getAllVoucherDetail(voucherCode));
     }
 
-    @PostMapping("/performActiveVoucher/{voucherCode}/")
+    @GetMapping("/{voucherCode}/receiveVoucherDetailInactiveList")
+    public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
+        return responseFactory.success(voucherDetailService.getVoucherDetailInActiveList(voucherCode));
+    }
+
+    @PostMapping("/performActiveVoucher/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherResponse>> performActiveVoucher(@PathVariable String voucherCode) {
         return responseFactory.success(voucherService.activeVoucher(voucherCode));
     }

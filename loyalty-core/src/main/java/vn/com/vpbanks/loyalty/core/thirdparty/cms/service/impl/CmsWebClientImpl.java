@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.com.vpbanks.loyalty.core.configuration.propertires.WebClientProperties;
-import vn.com.vpbanks.loyalty.core.dto.request.BaseRequest;
+import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.vpbanks.loyalty.core.entity.CustomerEntity;
@@ -22,7 +22,7 @@ public class CmsWebClientImpl implements CmsWebClient {
     private final WebClientProperties webClientProperties;
 
     @Override
-    public BodyResponse<CustomerResponse> receiveCustomerInfo(BaseRequest<CustomerRequest> req) {
+    public BodyResponse<CustomerResponse> receiveCustomerInfo(BodyRequest<CustomerRequest> req) {
         try {
             return webClientService.getSync(webClientProperties.getCmsService().getBaseUrl(),
                     webClientProperties.getCmsService().getReceiveCustomerInfo(),
@@ -35,7 +35,7 @@ public class CmsWebClientImpl implements CmsWebClient {
     }
 
     @Override
-    public BodyResponse<CustomerResponse> performUpdateCustomerInfo(BaseRequest<CustomerRequest> req) {
+    public BodyResponse<CustomerResponse> performUpdateCustomerInfo(BodyRequest<CustomerRequest> req) {
         try {
             return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
                     webClientProperties.getCmsService().getPerformUpdateCustomerInfo(),

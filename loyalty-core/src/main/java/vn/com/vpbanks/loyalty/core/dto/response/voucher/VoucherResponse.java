@@ -1,9 +1,8 @@
 package vn.com.vpbanks.loyalty.core.dto.response.voucher;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -11,6 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VoucherResponse {
 
     String voucherName;

@@ -2,10 +2,8 @@ package vn.com.vpbanks.loyalty.core.utils;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import vn.com.vpbanks.loyalty.core.constant.Constants;
-import vn.com.vpbanks.loyalty.core.dto.request.BaseRequest;
 
 import java.util.Base64;
 

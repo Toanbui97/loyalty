@@ -1,4 +1,4 @@
-package com.vpbanks.loyalty.voucher;
+package vn.com.vpbanks.loyalty.voucher;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

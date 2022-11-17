@@ -1,18 +1,15 @@
 package vn.com.vpbanks.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.vpbanks.loyalty.core.constant.Constants;
 import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
-import vn.com.vpbanks.loyalty.core.dto.request.BaseRequest;
+import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.VoucherRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.vpbanks.loyalty.core.dto.response.voucher.VoucherResponse;
-import vn.com.vpbanks.loyalty.core.entity.CustomerEntity;
 import vn.com.vpbanks.loyalty.core.entity.VoucherDetailEntity;
 import vn.com.vpbanks.loyalty.core.entity.VoucherEntity;
 import vn.com.vpbanks.loyalty.core.exception.ResourceNotFoundException;
@@ -26,6 +23,7 @@ import vn.com.vpbanks.loyalty.core.utils.RequestUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +47,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Transactional(rollbackFor = Exception.class)
     public VoucherResponse createVoucher(VoucherRequest request) {
         VoucherEntity entity = voucherMapper.DTOToEntity(request);
+        entity.setVoucherCode(UUID.randomUUID().toString());
         entity = voucherRepository.save(entity);
         voucherDetailService.generateVoucherDetail(entity);
         return voucherMapper.entityToDTO(entity);
@@ -59,11 +58,11 @@ public class VoucherServiceImpl implements VoucherService {
     public VoucherResponse activeVoucher(String voucherCode) {
 
         String customerCode = RequestUtil.extractCustomerCodeFromToken(httpRequest.getHeader(Constants.AUTH_HEADER));
-        CustomerResponse customerResponse = cmsWebClient.receiveCustomerInfo(BaseRequest.of(CustomerRequest.builder().customerCode(customerCode).build())).getData();
+        CustomerResponse customerResponse = cmsWebClient.receiveCustomerInfo(BodyRequest.of(CustomerRequest.builder().customerCode(customerCode).build())).getData();
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(voucherCode).orElseThrow(
                 () -> new ResourceNotFoundException(VoucherEntity.class.getName(), voucherCode));
-        VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, StatusCode.INACTIVE.getCode())
+        VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, StatusCode.INACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class.getName(), voucherCode));
 
         voucherDetailEntity.setCustomerCode(customerResponse.getCustomerCode());
@@ -73,7 +72,7 @@ public class VoucherServiceImpl implements VoucherService {
         voucherEntity.setInactiveVoucher(voucherEntity.getInactiveVoucher() - 1);
         voucherRepository.save(voucherEntity);
 
-        cmsWebClient.performUpdateCustomerInfo(BaseRequest.of(CustomerRequest.builder()
+        cmsWebClient.performUpdateCustomerInfo(BodyRequest.of(CustomerRequest.builder()
                         .customerCode(customerResponse.getCustomerCode())
                         .activeVoucher(customerResponse.getActiveVoucher() + 1)
                         .build()));

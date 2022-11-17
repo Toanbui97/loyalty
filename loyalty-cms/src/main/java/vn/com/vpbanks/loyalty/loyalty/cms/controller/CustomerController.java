@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.com.vpbanks.loyalty.core.dto.request.BaseRequest;
+import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.vpbanks.loyalty.core.exception.ResourceNotFoundException;
@@ -22,17 +22,17 @@ public class CustomerController {
     private final ResponseFactory responseFactory;
 
     @PostMapping("/receiveCustomer")
-    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BaseRequest<CustomerRequest> req) throws ResourceNotFoundException {
+    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) throws ResourceNotFoundException {
         return responseFactory.success(customerService.getCustomer(req.getData().getCustomerCode()));
     }
 
     @PostMapping("/performCreateCustomer")
-    public ResponseEntity<BodyResponse<CustomerResponse>> createCustomerInfo(@RequestBody BaseRequest<CustomerRequest> req) {
+    public ResponseEntity<BodyResponse<CustomerResponse>> createCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) {
         return responseFactory.success(customerService.createCustomer(req.getData()));
     }
 
     @PostMapping("/performUpdateCustomer")
-    public ResponseEntity<BodyResponse<CustomerResponse>> updateCustomerInfo(@RequestBody BaseRequest<CustomerRequest> req) throws ResourceNotFoundException {
+    public ResponseEntity<BodyResponse<CustomerResponse>> updateCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) throws ResourceNotFoundException {
         return responseFactory.success(customerService.updateCustomer(req.getData()));
     }
 

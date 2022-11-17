@@ -1,13 +1,9 @@
-package com.vpbanks.loyalty.voucher;
+package vn.com.vpbanks.loyalty.voucher;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class LoyaltyWorkerApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
 
 }
