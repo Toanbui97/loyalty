@@ -38,16 +38,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getCustomer(String customerCode) throws ResourceNotFoundException {
+    public CustomerResponse getCustomer(String customerCode)  {
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
-                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class.getName(), customerCode));
+                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
         return customerMapper.entityToDTO(customerEntity);
     }
 
     @Override
     public CustomerResponse updateCustomer(CustomerRequest customerRequest) {
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerRequest.getCustomerCode())
-                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class.getName(), customerRequest.getCustomerCode()));
+                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerRequest.getCustomerCode()));
+        BeanUtils.copyProperties(customerRequest, customerEntity);
         customerEntity = ObjectUtil.mergeObject(customerRequest, customerEntity);
         customerRepository.save(customerEntity);
         return customerMapper.entityToDTO(customerEntity);

@@ -19,7 +19,7 @@ import vn.com.vpbanks.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.vpbanks.loyalty.core.repository.VoucherRepository;
 import vn.com.vpbanks.loyalty.core.service.internal.VoucherDetailService;
 import vn.com.vpbanks.loyalty.core.service.internal.VoucherService;
-import vn.com.vpbanks.loyalty.core.thirdparty.cms.service.CmsWebClient;
+import vn.com.vpbanks.loyalty.core.thirdparty.service.CmsWebClient;
 import vn.com.vpbanks.loyalty.core.utils.RequestUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,12 +61,14 @@ public class VoucherServiceImpl implements VoucherService {
     public VoucherResponse buyVoucher(String voucherCode) {
 
         String customerCode = RequestUtil.extractCustomerCodeFromToken(httpRequest.getHeader(Constants.AUTH_HEADER));
-        CustomerResponse customerResponse = mapper.convertValue(cmsWebClient.receiveCustomerInfo(customerCode).getData(), CustomerResponse.class);
+        CustomerResponse customerResponse = mapper.convertValue(cmsWebClient.receiveCustomerInfo(
+                BodyRequest.of(CustomerRequest.builder().customerCode(customerCode).build()))
+                .getData(), CustomerResponse.class);
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(voucherCode).orElseThrow(
-                () -> new ResourceNotFoundException(VoucherEntity.class.getName(), voucherCode));
+                () -> new ResourceNotFoundException(VoucherEntity.class, voucherCode));
         VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY)
-                .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class.getName(), voucherCode));
+                .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class, voucherCode));
 
         voucherDetailEntity.setCustomerCode(customerResponse.getCustomerCode());
         voucherDetailEntity.setStatus(VoucherStatusCode.BOUGHT);

@@ -1,4 +1,4 @@
-package vn.com.vpbanks.loyalty.core.thirdparty.cms.dto;
+package vn.com.vpbanks.loyalty.core.thirdparty.dto;
 
 import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import lombok.*;

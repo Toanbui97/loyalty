@@ -9,15 +9,14 @@ import vn.com.vpbanks.loyalty.core.entity.VoucherEntity;
 @Setter
 @AllArgsConstructor
 public class ResourceNotFoundException extends RuntimeException {
-    private String resource;
+    private Class clazz;
     private String resourceCode;
     private String message;
 
-    public ResourceNotFoundException(String resource, String resourceCode) {
+    public ResourceNotFoundException(Class clazz, String resourceCode) {
+        this.clazz = clazz;
+        this.resourceCode = resourceCode;
+        this.message = "Resource: " + clazz.getName() + " - " +resourceCode+ " not existed!";
     }
 
-    public void setMessage(String message) {
-
-        this.message = "Resource: " + resource + " - " + "not existed!";
-    }
 }

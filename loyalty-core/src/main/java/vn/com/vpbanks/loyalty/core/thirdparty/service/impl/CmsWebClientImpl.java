@@ -1,4 +1,4 @@
-package vn.com.vpbanks.loyalty.core.thirdparty.cms.service.impl;
+package vn.com.vpbanks.loyalty.core.thirdparty.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,7 @@ import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.vpbanks.loyalty.core.entity.CustomerEntity;
 import vn.com.vpbanks.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.vpbanks.loyalty.core.service.internal.WebClientCommonService;
-import vn.com.vpbanks.loyalty.core.thirdparty.cms.service.CmsWebClient;
-import vn.com.vpbanks.loyalty.core.utils.RequestUtil;
+import vn.com.vpbanks.loyalty.core.thirdparty.service.CmsWebClient;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.BodyResponse;
 
 @RequiredArgsConstructor
@@ -23,15 +22,15 @@ public class CmsWebClientImpl implements CmsWebClient {
     private final WebClientProperties webClientProperties;
 
     @Override
-    public BodyResponse<CustomerResponse> receiveCustomerInfo(String customerCode) {
+    public BodyResponse<CustomerResponse> receiveCustomerInfo(BodyRequest<CustomerRequest> req) {
         try {
-            return webClientService.getSync(webClientProperties.getCmsService().getBaseUrl(),
-                    RequestUtil.insertValueForPathURI(webClientProperties.getCmsService().getReceiveCustomerInfo(), customerCode),
-                    null,
+            return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
+                    webClientProperties.getCmsService().getReceiveCustomerInfo(),
+                    req,
                     BodyResponse.class);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new ResourceNotFoundException(CustomerEntity.class.getName(), customerCode);
+            throw new ResourceNotFoundException(CustomerEntity.class, req.getData().getCustomerCode());
         }
     }
 
@@ -44,7 +43,7 @@ public class CmsWebClientImpl implements CmsWebClient {
                     BodyResponse.class);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new ResourceNotFoundException(CustomerEntity.class.getName(), req.getData().getCustomerCode());
+            throw new ResourceNotFoundException(CustomerEntity.class, req.getData().getCustomerCode());
         }
     }
 }

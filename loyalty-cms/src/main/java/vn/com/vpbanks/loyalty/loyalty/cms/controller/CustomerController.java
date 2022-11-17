@@ -21,9 +21,9 @@ public class CustomerController {
     private final CustomerService customerService;
     private final ResponseFactory responseFactory;
 
-    @GetMapping("/receiveCustomer/{customerCode}")
-    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@PathVariable String customerCode) {
-        return responseFactory.success(customerService.getCustomer(customerCode));
+    @PostMapping("/receiveCustomer")
+    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) {
+        return responseFactory.success(customerService.getCustomer(req.getData().getCustomerCode()));
     }
 
     @PostMapping("/performCreateCustomer")

@@ -35,7 +35,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(BaseResponseException.class)
     public final ResponseEntity<BodyResponse<Object>> handleBaseResponseException(BaseResponseException ex) {
-        log.error(" ====== > Exception root cause: {}", Arrays.stream(ex.getStackTrace()).toArray());
+        log.error("Error - ex: {}", Arrays.stream(ex.getStackTrace()).toArray());
         return responseFactory.fail(ex.getHttpStatus(), ex.getResponseStatusCode());
     }
 

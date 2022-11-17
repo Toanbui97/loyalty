@@ -80,5 +80,5 @@ webclient:
     maxBackoff: 5
   cms-service:
     base-url: ${CMS_SERVICE_BASE_URL}
-    receive_customer_info: /api/v1/receiveCustomer/{customerCode}
+    receive_customer_info: /api/v1/receiveCustomer
     perform_update_customer: /api/v1/performUpdateCustomer
