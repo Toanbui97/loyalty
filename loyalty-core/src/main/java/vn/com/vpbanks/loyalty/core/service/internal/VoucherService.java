@@ -10,5 +10,5 @@ public interface VoucherService {
 
     VoucherResponse createVoucher(VoucherRequest request);
 
-    VoucherResponse activeVoucher(String voucherCode);
+    VoucherResponse buyVoucher(String voucherCode);
 }

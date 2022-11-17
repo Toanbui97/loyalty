@@ -38,12 +38,12 @@ public class VoucherController {
 
     @GetMapping("/{voucherCode}/receiveVoucherDetailInactiveList")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
-        return responseFactory.success(voucherDetailService.getVoucherDetailInActiveList(voucherCode));
+        return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
     }
 
-    @PostMapping("/performActiveVoucher/{voucherCode}")
-    public ResponseEntity<BodyResponse<VoucherResponse>> performActiveVoucher(@PathVariable String voucherCode) {
-        return responseFactory.success(voucherService.activeVoucher(voucherCode));
+    @PostMapping("/{voucherCode}/performBuyVoucher")
+    public ResponseEntity<BodyResponse<VoucherResponse>> performBuyVoucher(@PathVariable String voucherCode) {
+        return responseFactory.success(voucherService.buyVoucher(voucherCode));
     }
 
 }

@@ -2,7 +2,7 @@ package vn.com.vpbanks.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
+import vn.com.vpbanks.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.vpbanks.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.vpbanks.loyalty.core.entity.VoucherDetailEntity;
 import vn.com.vpbanks.loyalty.core.entity.VoucherEntity;
@@ -36,7 +36,7 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
             voucherDetailEntityList.add(VoucherDetailEntity.builder()
                     .voucherCode(voucher.getVoucherCode())
                     .voucherDetailCode(this.generateVoucherDetailCode(voucher.getVoucherName()))
-                    .status(StatusCode.ACTIVE)
+                    .status(VoucherStatusCode.READY_FOR_BUY)
                     .build());
         }
 
@@ -45,8 +45,8 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     }
 
     @Override
-    public List<VoucherDetailResponse> getVoucherDetailInActiveList(String voucherCode) {
-        List<VoucherDetailEntity> voucherDetailInActiveEntityList = voucherDetailRepository.findByVoucherCodeAndStatus(voucherCode, StatusCode.INACTIVE);
+    public List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode) {
+        List<VoucherDetailEntity> voucherDetailInActiveEntityList = voucherDetailRepository.findByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY);
         return voucherDetailInActiveEntityList.stream().map(v -> voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
     }
 

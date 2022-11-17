@@ -21,9 +21,9 @@ public class CustomerController {
     private final CustomerService customerService;
     private final ResponseFactory responseFactory;
 
-    @PostMapping("/receiveCustomer")
-    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) throws ResourceNotFoundException {
-        return responseFactory.success(customerService.getCustomer(req.getData().getCustomerCode()));
+    @GetMapping("/receiveCustomer/{customerCode}")
+    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@PathVariable String customerCode) {
+        return responseFactory.success(customerService.getCustomer(customerCode));
     }
 
     @PostMapping("/performCreateCustomer")
@@ -32,7 +32,7 @@ public class CustomerController {
     }
 
     @PostMapping("/performUpdateCustomer")
-    public ResponseEntity<BodyResponse<CustomerResponse>> updateCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) throws ResourceNotFoundException {
+    public ResponseEntity<BodyResponse<CustomerResponse>> updateCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req) {
         return responseFactory.success(customerService.updateCustomer(req.getData()));
     }
 

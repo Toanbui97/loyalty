@@ -3,7 +3,7 @@ package vn.com.vpbanks.loyalty.core.dto.response.voucher;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
+import vn.com.vpbanks.loyalty.core.constant.enums.VoucherStatusCode;
 
 @Getter
 @Setter
@@ -17,5 +17,5 @@ public class VoucherDetailResponse {
     String voucherCode;
     String voucherDetailCode;
     String customerCode;
-    StatusCode status;
+    VoucherStatusCode status;
 }

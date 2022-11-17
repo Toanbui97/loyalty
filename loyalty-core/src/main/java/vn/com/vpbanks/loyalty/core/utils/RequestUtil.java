@@ -1,5 +1,8 @@
 package vn.com.vpbanks.loyalty.core.utils;
 
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -17,8 +20,8 @@ public class RequestUtil {
             String[] chunks = token.split("\\.");
             Base64.Decoder decoder = Base64.getUrlDecoder();
             String payload = new String(decoder.decode(chunks[1]));
-            JSONObject jsonObject = new JSONObject(payload);
-            return jsonObject.getString("customerCode");
+            JsonNode node = new ObjectMapper().readTree(payload);
+            return node.path("customerCode").asText();
         } catch (Exception e) {
             log.error("Error - e: {}", e);
             return null;
@@ -28,8 +31,13 @@ public class RequestUtil {
     public String insertValueForPathURI(String uriString, String... values) {
         String uriActual = uriString;
         for (String value : values) {
-            uriActual.replaceFirst(Constants.REGEX_PATH_URI, value);
+            uriActual = uriActual.replaceFirst(Constants.REGEX_PATH_URI, value);
         }
         return uriActual;
+    }
+
+    public static void main(String[] args) {
+        String s = RequestUtil.insertValueForPathURI("/api/v1/receiveCustomerInfo/{customerCode}", "ádfd");
+        System.out.println(s);
     }
 }

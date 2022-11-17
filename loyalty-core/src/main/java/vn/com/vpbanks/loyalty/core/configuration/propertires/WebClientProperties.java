@@ -16,7 +16,7 @@ public class WebClientProperties {
         String baseUrl;
         String updateRankApi;
         String receiveCustomerInfo;
-        String performUpdateCustomerInfo;
+        String performUpdateCustomer;
     }
 
 }

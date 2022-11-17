@@ -1,7 +1,7 @@
 KAFKA_SERVERS: localhost:9092
 SHOW_SQL: true
 SERVER_PORT: 8082
-CMS_SERVICE_BASE_URL: http://localhost:8080/cms/
+CMS_SERVICE_BASE_URL: http://localhost:8080
 DB_HOST: localhost
 DB_PORT: 5433
 DB_NAME: loyalty

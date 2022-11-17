@@ -14,5 +14,5 @@ public interface CustomerService {
 
     CustomerResponse getCustomer(String customerCode) throws ResourceNotFoundException;
 
-    CustomerResponse updateCustomer(CustomerRequest customerRequest) throws ResourceNotFoundException;
+    CustomerResponse updateCustomer(CustomerRequest customerRequest);
 }

@@ -30,4 +30,8 @@ public class ApplicationConfig {
                 .build();
     }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().findAndRegisterModules();
+    }
 }

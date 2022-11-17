@@ -8,5 +8,5 @@ import java.util.List;
 public interface VoucherDetailService {
     List<VoucherDetailResponse> getAllVoucherDetail(String voucherCode);
     List<VoucherDetailResponse> generateVoucherDetail(VoucherEntity voucher);
-    List<VoucherDetailResponse> getVoucherDetailInActiveList(String voucherCode);
+    List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode);
 }

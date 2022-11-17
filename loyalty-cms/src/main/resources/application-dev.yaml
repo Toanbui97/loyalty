@@ -1,5 +1,5 @@
 KAFKA_SERVERS: localhost:9092
-SHOW_SQL: true
+SHOW_SQL: fasle
 SERVER_PORT: 8080
 CMS_SERVICE_BASE_URL: http://localhost:8080/cms/
 DB_HOST: localhost

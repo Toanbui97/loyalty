@@ -35,6 +35,7 @@
         <reactor-netty.version>1.0.11</reactor-netty.version>
         <com.sipios.version>0.2.4</com.sipios.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
+        <fasterxml.jackson.datatype.version>2.13.3</fasterxml.jackson.datatype.version>
     </properties>
 
     <dependencyManagement>
@@ -86,6 +87,11 @@
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit.jupiter.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${fasterxml.jackson.datatype.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

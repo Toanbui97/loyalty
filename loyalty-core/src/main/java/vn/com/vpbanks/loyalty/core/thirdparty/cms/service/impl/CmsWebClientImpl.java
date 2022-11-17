@@ -11,6 +11,7 @@ import vn.com.vpbanks.loyalty.core.entity.CustomerEntity;
 import vn.com.vpbanks.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.vpbanks.loyalty.core.service.internal.WebClientCommonService;
 import vn.com.vpbanks.loyalty.core.thirdparty.cms.service.CmsWebClient;
+import vn.com.vpbanks.loyalty.core.utils.RequestUtil;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.BodyResponse;
 
 @RequiredArgsConstructor
@@ -22,15 +23,15 @@ public class CmsWebClientImpl implements CmsWebClient {
     private final WebClientProperties webClientProperties;
 
     @Override
-    public BodyResponse<CustomerResponse> receiveCustomerInfo(BodyRequest<CustomerRequest> req) {
+    public BodyResponse<CustomerResponse> receiveCustomerInfo(String customerCode) {
         try {
             return webClientService.getSync(webClientProperties.getCmsService().getBaseUrl(),
-                    webClientProperties.getCmsService().getReceiveCustomerInfo(),
+                    RequestUtil.insertValueForPathURI(webClientProperties.getCmsService().getReceiveCustomerInfo(), customerCode),
                     null,
                     BodyResponse.class);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new ResourceNotFoundException(CustomerEntity.class.getName(), req.getData().getCustomerCode());
+            throw new ResourceNotFoundException(CustomerEntity.class.getName(), customerCode);
         }
     }
 
@@ -38,7 +39,7 @@ public class CmsWebClientImpl implements CmsWebClient {
     public BodyResponse<CustomerResponse> performUpdateCustomerInfo(BodyRequest<CustomerRequest> req) {
         try {
             return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
-                    webClientProperties.getCmsService().getPerformUpdateCustomerInfo(),
+                    webClientProperties.getCmsService().getPerformUpdateCustomer(),
                     req,
                     BodyResponse.class);
         } catch (Exception e) {

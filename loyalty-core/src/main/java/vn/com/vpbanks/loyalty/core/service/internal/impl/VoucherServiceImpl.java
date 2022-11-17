@@ -1,10 +1,11 @@
 package vn.com.vpbanks.loyalty.core.service.internal.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.vpbanks.loyalty.core.constant.Constants;
-import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
+import vn.com.vpbanks.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.VoucherRequest;
@@ -36,6 +37,7 @@ public class VoucherServiceImpl implements VoucherService {
     private final HttpServletRequest httpRequest;
     private final VoucherDetailRepository voucherDetailRepository;
     private final CmsWebClient cmsWebClient;
+    private final ObjectMapper mapper;
 
     @Override
     public List<VoucherResponse> getAllVoucher() {
@@ -48,6 +50,7 @@ public class VoucherServiceImpl implements VoucherService {
     public VoucherResponse createVoucher(VoucherRequest request) {
         VoucherEntity entity = voucherMapper.DTOToEntity(request);
         entity.setVoucherCode(UUID.randomUUID().toString());
+        entity.setInactiveVoucher(entity.getTotalVoucher());
         entity = voucherRepository.save(entity);
         voucherDetailService.generateVoucherDetail(entity);
         return voucherMapper.entityToDTO(entity);
@@ -55,18 +58,18 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public VoucherResponse activeVoucher(String voucherCode) {
+    public VoucherResponse buyVoucher(String voucherCode) {
 
         String customerCode = RequestUtil.extractCustomerCodeFromToken(httpRequest.getHeader(Constants.AUTH_HEADER));
-        CustomerResponse customerResponse = cmsWebClient.receiveCustomerInfo(BodyRequest.of(CustomerRequest.builder().customerCode(customerCode).build())).getData();
+        CustomerResponse customerResponse = mapper.convertValue(cmsWebClient.receiveCustomerInfo(customerCode).getData(), CustomerResponse.class);
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(voucherCode).orElseThrow(
                 () -> new ResourceNotFoundException(VoucherEntity.class.getName(), voucherCode));
-        VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, StatusCode.INACTIVE)
+        VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY)
                 .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class.getName(), voucherCode));
 
         voucherDetailEntity.setCustomerCode(customerResponse.getCustomerCode());
-        voucherDetailEntity.setStatus(StatusCode.ACTIVE);
+        voucherDetailEntity.setStatus(VoucherStatusCode.BOUGHT);
 
         voucherDetailRepository.save(voucherDetailEntity);
         voucherEntity.setInactiveVoucher(voucherEntity.getInactiveVoucher() - 1);

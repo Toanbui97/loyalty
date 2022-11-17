@@ -2,7 +2,7 @@ package vn.com.vpbanks.loyalty.core.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vn.com.vpbanks.loyalty.core.constant.enums.StatusCode;
+import vn.com.vpbanks.loyalty.core.constant.enums.VoucherStatusCode;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,7 +22,7 @@ public class VoucherDetailEntity extends BaseEntity {
     String voucherCode;
     String voucherDetailCode;
     String customerCode;
+    boolean inactive;
     @Enumerated(EnumType.STRING)
-    StatusCode status;
-
+    VoucherStatusCode status;
 }
