@@ -22,29 +22,34 @@ import java.util.UUID;
 public class HttpRequestAspect {
 
     private final HttpSession httpSession;
+    private static final String REQUEST_ID = "requestId";
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
-    public void restApiPointCut(){};
+    public void restApiPointCut() {
+    }
 
     @Before("restApiPointCut()")
-    public void settingPropertiesRequest(JoinPoint joinPoint) throws JsonProcessingException {
-        log.info("===================> Resquest to {}", joinPoint.getSignature());
-        log.info("===================> Request: \n {}", this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
+    public void beforeCallApi(JoinPoint joinPoint) throws JsonProcessingException {
+        log.info("===================> Request: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
+                , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
         if (joinPoint.getArgs()[0] instanceof BaseRequest) {
             if (!StringUtils.hasText(((BaseRequest<?>) joinPoint.getArgs()[0]).getRequestId())) {
-                httpSession.setAttribute("requestId", UUID.randomUUID().toString());
+                httpSession.setAttribute(REQUEST_ID, UUID.randomUUID().toString());
             } else {
-                httpSession.setAttribute("requestId", ((BaseRequest<?>) joinPoint.getArgs()[0]).getRequestId());
+                httpSession.setAttribute(REQUEST_ID, ((BaseRequest<?>) joinPoint.getArgs()[0]).getRequestId());
             }
         }
     }
 
     @AfterReturning(value = "restApiPointCut()", returning = "response")
-    public void settingPropertiesResponse(Object response) throws JsonProcessingException {
-        log.info("===================> Response: \n {}", this.prettyPrintJsonObject(response));
-        if (response instanceof ResponseEntity) {
-            BodyResponse bodyResponse = (BodyResponse) ((ResponseEntity<?>) response).getBody();
-            bodyResponse.setRequestId((String) httpSession.getAttribute("requestId"));
+    public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) throws JsonProcessingException {
+        if (response != null) {
+            log.info("===================> Response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
+                    , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response.getBody()));
+            BodyResponse<?> bodyResponse = (BodyResponse<?>) response.getBody();
+            if (bodyResponse != null) {
+                bodyResponse.setRequestId((String) httpSession.getAttribute(REQUEST_ID));
+            }
         }
     }
 
