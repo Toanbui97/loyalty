@@ -42,7 +42,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public List<VoucherResponse> getAllVoucher() {
         List<VoucherEntity> voucherEntityList = voucherRepository.findAll();
-        return voucherEntityList.stream().map(voucher -> voucherMapper.entityToDTO(voucher)).collect(Collectors.toList());
+        return voucherEntityList.stream().map(voucherMapper::entityToDTO).collect(Collectors.toList());
     }
 
     @Override

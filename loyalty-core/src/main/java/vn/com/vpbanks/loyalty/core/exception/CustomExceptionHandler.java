@@ -53,7 +53,6 @@ public class CustomExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<BodyResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         log.error("Error - ex: {}", ex);
-        List<String> details = new ArrayList<>();
         BodyResponse<Object> response = new BodyResponse<>(INVALID_INPUT_DATA, null, Constants.RESPONSE_STATUS_FAIL, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

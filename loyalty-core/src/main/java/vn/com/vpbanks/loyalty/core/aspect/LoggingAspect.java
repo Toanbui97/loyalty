@@ -1,4 +1,4 @@
-package vn.com.vpbanks.loyalty.core.Aspect;
+package vn.com.vpbanks.loyalty.core.aspect;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

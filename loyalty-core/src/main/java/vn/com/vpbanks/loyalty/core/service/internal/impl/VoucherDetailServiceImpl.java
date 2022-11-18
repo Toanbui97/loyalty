@@ -25,7 +25,7 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     @Override
     public List<VoucherDetailResponse> getAllVoucherDetail(String voucherCode) {
         List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherCode(voucherCode);
-        return voucherDetailEntityList.stream().map(v -> voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
+        return voucherDetailEntityList.stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -40,14 +40,13 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
                     .build());
         }
 
-        return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(v ->
-                voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
+        return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode) {
         List<VoucherDetailEntity> voucherDetailInActiveEntityList = voucherDetailRepository.findByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY);
-        return voucherDetailInActiveEntityList.stream().map(v -> voucherDetailMapper.entityToDTO(v)).collect(Collectors.toList());
+        return voucherDetailInActiveEntityList.stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
     }
 
     private String generateVoucherDetailCode(String voucherName) {

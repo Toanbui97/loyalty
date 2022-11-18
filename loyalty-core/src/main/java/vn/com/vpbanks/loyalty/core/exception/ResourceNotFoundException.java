@@ -3,7 +3,6 @@ package vn.com.vpbanks.loyalty.core.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.vpbanks.loyalty.core.entity.VoucherEntity;
 
 @Getter
 @Setter

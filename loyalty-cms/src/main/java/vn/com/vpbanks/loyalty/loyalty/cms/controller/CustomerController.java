@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import vn.com.vpbanks.loyalty.core.dto.request.BodyRequest;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
-import vn.com.vpbanks.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.vpbanks.loyalty.core.service.internal.CustomerService;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.vpbanks.loyalty.core.utils.factory.response.ResponseFactory;

@@ -1,7 +1,6 @@
 package vn.com.vpbanks.loyalty.core.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.vpbanks.loyalty.core.entity.CustomerEntity;
