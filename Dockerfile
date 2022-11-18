@@ -20,15 +20,15 @@ COPY ./loyalty-core/pom.xml /tmp/loyalty-core/
 COPY ./loyalty-migration/pom.xml /tmp/loyalty-migration/
 COPY ./loyalty-voucher/pom.xml /tmp/loyalty-voucher/
 
-COPY ./loyalty-cms/src ./tmp/loyalty-cms/src/
-COPY ./loyalty-core/src ./tmp/loyalty-core/src/
-COPY ./loyalty-migration/src ./tmp/loyalty-migration/src/
-COPY ./loyalty-voucher/src ./tmp/loyalty-voucher/src/
+COPY ./loyalty-cms/src /tmp/loyalty-cms/src/
+COPY ./loyalty-core/src /tmp/loyalty-core/src/
+COPY ./loyalty-migration/src /tmp/loyalty-migration/src/
+COPY ./loyalty-voucher/src /tmp/loyalty-voucher/src/
 
 WORKDIR /tmp/
 
 # build project
-RUN mvn clean install
+RUN mvn clean install -DskipTests
 
 WORKDIR /tmp/loyalty-cms/
 #extract JAR layers
