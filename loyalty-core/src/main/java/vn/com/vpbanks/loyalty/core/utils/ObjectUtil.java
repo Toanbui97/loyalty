@@ -21,8 +21,14 @@ public class ObjectUtil {
                 field.setAccessible(true);
                 if (field.get(source) != null
                         && targetFields.contains(field.getName())) {
-                    field.set(target, field.get(source));
+
+                    Object sourceValue = field.get(source);
+                    Field targetField = target.getClass().getDeclaredField(field.getName());
+                    targetField.setAccessible(true);
+                    targetField.set(target, sourceValue);
+                    targetField.setAccessible(false);
                 }
+                field.setAccessible(false);
             }
             return target;
         } catch (Exception e) {
@@ -30,13 +36,5 @@ public class ObjectUtil {
         }
 
         return null;
-    }
-
-    public static void main(String[] args) {
-        File file = new File("./application-dev.yaml");
-        System.out.println(file.getName());
-        System.out.println(Optional.ofNullable(file.getName())
-                .filter(f -> f.contains("."))
-                .map(f -> f.substring(file.getName().lastIndexOf(".") + 1)));
     }
 }

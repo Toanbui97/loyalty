@@ -1,7 +1,6 @@
 package vn.com.vpbanks.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import vn.com.vpbanks.loyalty.core.dto.request.CustomerRequest;
 import vn.com.vpbanks.loyalty.core.dto.response.cms.CustomerResponse;
@@ -48,7 +47,6 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse updateCustomer(CustomerRequest customerRequest) {
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerRequest.getCustomerCode())
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerRequest.getCustomerCode()));
-        BeanUtils.copyProperties(customerRequest, customerEntity);
         customerEntity = ObjectUtil.mergeObject(customerRequest, customerEntity);
         customerRepository.save(customerEntity);
         return customerMapper.entityToDTO(customerEntity);
