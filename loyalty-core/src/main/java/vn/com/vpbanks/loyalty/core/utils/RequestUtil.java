@@ -35,8 +35,4 @@ public class RequestUtil {
         }
         return uriActual;
     }
-
-    public static void main(String[] args) {
-        String s = RequestUtil.insertValueForPathURI("/api/v1/receiveCustomerInfo/{customerCode}", "ádfd");
-    }
 }
