@@ -21,7 +21,7 @@ spring:
       idle-timeout: 600000
       max-lifetime: 18000000
   profiles:
-    active: ${ACTIVE_PROFILE:dev}
+    active: ${ACTIVE_PROFILE:local}
   kafka:
     producer:
      bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}

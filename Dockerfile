@@ -33,19 +33,18 @@ RUN mvn clean install -DskipTests
 WORKDIR /tmp/loyalty-cms/
 #extract JAR layers
 RUN java -Djarmode=layertools -jar ./target/loyalty-cms-0.0.1-SNAPSHOT.jar extract
-RUN echo $(ls -1 /tmp/loyalty-cms/)
 # runtime image
 #FROM openjdk:11 as runtime
 FROM gcr.io/distroless/java:${JDK_VERSION} as runtime
 
 WORKDIR /app
 
+# copy layes from build image to runtime image as nonroot user
 COPY --from=build /tmp/loyalty-cms/dependencies/ .
 COPY --from=build /tmp/loyalty-cms/snapshot-dependencies/ .
 COPY --from=build /tmp/loyalty-cms/spring-boot-loader/ .
 COPY --from=build /tmp/loyalty-cms/application/ .
 
-# copy layes from build image to runtime image as nonroot user
 EXPOSE 8080
 
 # set entry point to layered spring boot application
