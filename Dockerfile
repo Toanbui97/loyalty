@@ -32,7 +32,7 @@ RUN mvn clean install -DskipTests
 
 WORKDIR /tmp/loyalty-voucher/
 #extract JAR layers
-RUN java -Djarmode=layertools -jar ./target/*.jar extract
+RUN java -Djarmode=layertools -jar ./target/loyalty-voucher-0.0.1-SNAPSHOT.jar extract
 # runtime image
 #FROM openjdk:11 as runtime
 FROM gcr.io/distroless/java:${JDK_VERSION} as runtime
