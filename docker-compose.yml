@@ -52,6 +52,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  loyalty-voucher:
+    container_name: voucher
+    image: loyalty-voucher:1.1
+    environment:
+      - "ACTIVE_PROFILE=local"
+      - "HOST=host.docker.internal"
+      - "CMS_HOST=host.docker.internal"
+    ports:
+      - "8082:8082"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   postgres-data:
   redis-data:

@@ -57,13 +57,13 @@ compile build:
 docker api build:
   extends: .docker_build
   variables:
-    DOCKER_FILE: Dockerfile.api
+    DOCKER_FILE: Dockerfile.cms.api
     SERVICE_NAME: $CI_PROJECT_NAME-api
 
 docker migration build:
   extends: .docker_build
   variables:
-    DOCKER_FILE: Dockerfile.migration
+    DOCKER_FILE: Dockerfile.cms.migration
     SERVICE_NAME: $CI_PROJECT_NAME-migration
 # ---------------------------- End Build Docker Image -------------------------------------
 

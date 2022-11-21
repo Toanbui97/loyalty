@@ -34,9 +34,10 @@ public class LoggingAspect {
 
     @Before("restApiPointCut()")
     public void beforeCallApi(JoinPoint joinPoint) throws JsonProcessingException {
-        log.info("\n===================> Request: {}", httpRequest.getRequestURI());
+
         if (joinPoint.getArgs()[0] instanceof BodyRequest) {
-            log.info("{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
+            log.info("", httpRequest.getRequestURI());
+            log.info("===================> Request: {}\n{}.{} \n{}", httpRequest.getRequestURI(), joinPoint.getSignature().getDeclaringType().getName()
                 , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
             if (!StringUtils.hasText(((BodyRequest<?>) joinPoint.getArgs()[0]).getRequestId())) {
                 httpSession.setAttribute(REQUEST_ID, UUID.randomUUID().toString());
@@ -49,20 +50,19 @@ public class LoggingAspect {
     @AfterReturning(value = "restApiPointCut()", returning = "response")
     public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) throws JsonProcessingException {
         if (response != null) {
+            ((BodyResponse) response.getBody()).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
             log.info("\n===================> Response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
                     , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response.getBody()));
-            ((BodyResponse) response.getBody()).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
         }
     }
 
     @Before("webClientPointCut()")
     public void beforeWebClientCall(JoinPoint joinPoint) throws JsonProcessingException {
-        log.info("\n===================> Web client call: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
-                , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
-
         if (joinPoint.getArgs()[0] instanceof BodyRequest) {
             if (StringUtils.hasText((String) httpSession.getAttribute(REQUEST_ID))) {
                 ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
+                log.info("\n===================> Web client call: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
+                        , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
             } else {
                 ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId(UUID.randomUUID().toString());
             }
