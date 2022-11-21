@@ -90,7 +90,7 @@ deploy api to uat:
     DEPLOYMENT_TYPE: Deployment
     SERVICE_NAME: $CI_PROJECT_NAME-api
     SERVICE_PATH: /loyalty
-    EXTERNAL_HOST: external-uat.vpbanks.com.vn
+    EXTERNAL_HOST: external-uat.com.vn
     FILE_PATH: $VALUES_FOLDER/loyalty-api.yaml
 
 deploy migration to uat:

@@ -1,3 +1,4 @@
+HOST: ${HOST:loclahost}
 KAFKA_SERVERS: localhost:9092
 SHOW_SQL: false
 SERVER_PORT: 8080

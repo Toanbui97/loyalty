@@ -9,4 +9,4 @@ RUN cp -r /target/dependency/BOOT-INF/lib/* /app/lib
 RUN cp -r /target/dependency/META-INF/* /app/META-INF
 RUN cp -r /target/dependency/BOOT-INF/classes/* /app
 RUN rm -rf /target/dependency
-CMD ["/bin/bash", "-c", "update-c a-certificates; java $JAVA_OPTS -cp app:app/lib/* vn.com.vpbanks.loyalty.migration.LoyaltyMigrationApplication"]
+CMD ["/bin/bash", "-c", "update-c a-certificates; java $JAVA_OPTS -cp app:app/lib/* vn.com.loyalty.migration.LoyaltyMigrationApplication"]
