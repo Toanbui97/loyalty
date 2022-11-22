@@ -27,7 +27,7 @@ COPY ./loyalty-voucher/src /tmp/loyalty-voucher/src/
 
 WORKDIR /tmp/
 
-# build project
+# build.sh project
 RUN mvn clean install -DskipTests
 
 WORKDIR /tmp/loyalty-voucher/
@@ -39,7 +39,7 @@ FROM gcr.io/distroless/java:${JDK_VERSION} as runtime
 
 WORKDIR /app
 
-# copy layes from build image to runtime image as nonroot user
+# copy layes from build.sh image to runtime image as nonroot user
 COPY --from=build /tmp/loyalty-voucher/dependencies/ .
 COPY --from=build /tmp/loyalty-voucher/snapshot-dependencies/ .
 COPY --from=build /tmp/loyalty-voucher/spring-boot-loader/ .

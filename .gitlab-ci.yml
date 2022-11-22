@@ -19,9 +19,9 @@ compile build:
   stage: compile_build
   script:
     - 'mvn --batch-mode -U clean package spring-boot:repackage -DskipTests'
-    - 'mkdir build'
-    - 'cp inventory-migration/target/inventory-migration*.jar build/'
-    - 'cp inventory-api/target/inventory-api*.jar build/'
+    - 'mkdir build.sh'
+    - 'cp inventory-migration/target/inventory-migration*.jar build.sh/'
+    - 'cp inventory-api/target/inventory-api*.jar build.sh/'
   only:
     refs:
       - master
@@ -32,8 +32,8 @@ compile build:
   artifacts:
     expire_in: 1h
     paths:
-      - build/loyalty-migration*.jar
-      - build/loyalty-api*.jar
+      - build.sh/loyalty-migration*.jar
+      - build.sh/loyalty-api*.jar
 # ---------------------------- End Build Jar File ----------------------------
 
 # ---------------------------- Start Build Docker Image ----------------------------
@@ -42,7 +42,7 @@ compile build:
   stage: docker_build
   cache: { }
   dependencies:
-    - compile build
+    - compile build.sh
   only:
     refs:
       - master
@@ -51,19 +51,19 @@ compile build:
   before_script:
     - 'docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_HUB'
   script:
-    - 'docker build -f $DOCKER_FILE -t $DOCKER_URL/$SERVICE_NAME:$IMAGE_TAG .'
+    - 'docker build.sh -f $DOCKER_FILE -t $DOCKER_URL/$SERVICE_NAME:$IMAGE_TAG .'
     - 'docker push $DOCKER_URL/$SERVICE_NAME:$IMAGE_TAG'
 
 docker api build:
   extends: .docker_build
   variables:
-    DOCKER_FILE: Dockerfile.cms.api
+    DOCKER_FILE: Dockerfile.voucher.cms.api
     SERVICE_NAME: $CI_PROJECT_NAME-api
 
 docker migration build:
   extends: .docker_build
   variables:
-    DOCKER_FILE: Dockerfile.cms.migration
+    DOCKER_FILE: Dockerfile.voucher.cms.migration
     SERVICE_NAME: $CI_PROJECT_NAME-migration
 # ---------------------------- End Build Docker Image -------------------------------------
 

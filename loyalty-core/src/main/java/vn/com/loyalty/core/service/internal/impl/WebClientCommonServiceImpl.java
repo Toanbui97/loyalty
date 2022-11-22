@@ -39,7 +39,6 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
 
     private Integer attempt;
     private Integer firstBackoff;
-
     private WebClient webClient;
 
     @Autowired
@@ -100,7 +99,6 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
     }
 
     private <R> WebClient.RequestHeadersSpec<?> setUpUriAndBodyAndHeaders(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, HttpMethod method) {
-
         webClient = webClient.mutate().baseUrl(baseUrl).build();
         WebClient.RequestBodyUriSpec requestBodyUriSpec = webClient.method(method);
         requestBodyUriSpec.uri(uriBuilder -> (Objects.nonNull(params) ? buildQueryParams(uriBuilder, uri, params) : uriBuilder.path(uri).build()))

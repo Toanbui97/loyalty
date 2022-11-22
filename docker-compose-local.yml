@@ -42,8 +42,8 @@ services:
       - zookeeper
 
   loyalty-cms:
-    container_name: cms
     image: loyalty-cms:1.1
+    container_name: cms
     environment:
       - "ACTIVE_PROFILE=local"
       - "HOST=host.docker.internal"
