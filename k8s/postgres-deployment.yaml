@@ -24,12 +24,22 @@ spec:
             - name: DATABASE
               valueFrom:
                 configMapKeyRef:
-                  key: postgre_db
+                  key: postgres_db
+                  name: postgres
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: postgres_user
                   name: postgres
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: postgres_password
+                  name: postgres
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: postgres_db
                   name: postgres
       serviceAccountName: default
 ---

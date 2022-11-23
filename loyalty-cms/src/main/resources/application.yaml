@@ -22,18 +22,18 @@ spring:
       max-lifetime: 18000000
   profiles:
     active: ${ACTIVE_PROFILE:dev}
-  kafka:
-    producer:
-     bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
-     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
-    retries: 5
-    deliveryTimeout: 20000
-    requestTimeout: 20000
-    poll:
-      maxPollRecords: 500
-      maxPollInterval: 300000
+#  kafka:
+#    producer:
+#     bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
+#     key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#     value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#    bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
+#    retries: 5
+#    deliveryTimeout: 20000
+#    requestTimeout: 20000
+#    poll:
+#      maxPollRecords: 500
+#      maxPollInterval: 300000
 
 #        redis:
 #          host: ${REDIS_HOST:localhost}

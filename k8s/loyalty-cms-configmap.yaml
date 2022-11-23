@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loyalty-cms
+data:
+  ACTIVE_PROFILE: dev
+  DB_HOST: postgresdb.default.svc.cluster.local
+  DB_SCHEMA: cms

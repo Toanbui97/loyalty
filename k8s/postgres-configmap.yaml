@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: postgres
 data:
-  postgre_db: loyalty
+  postgres_db: loyalty
+  postgres_user: postgres

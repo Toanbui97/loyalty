@@ -6,7 +6,7 @@ CMS_SERVICE_BASE_URL: http://localhost:8080/cms/
 DB_HOST: localhost
 DB_PORT: 5433
 DB_NAME: loyalty
-DB_SCHEMA: voucher
+DB_SCHEMA: cms
 DB_USER: postgres
 DB_PASSWORD: postgres
 
