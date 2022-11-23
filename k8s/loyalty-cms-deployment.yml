@@ -1,3 +1,25 @@
+# secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: loyalty-cms
+type: Opaque
+data:
+  DB_PASWORD: cG9zdGdyZXM=
+
+---
+# configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loyalty-cms
+data:
+  ACTIVE_PROFILE: dev
+  DB_HOST: postgresdb.default.svc.cluster.local
+  DB_SCHEMA: cms
+  SHOW_SQL: false
+
+---
 # deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -30,6 +52,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: loyalty-cms
+            - secretRef:
+                name: loyalty-cms
+
 
 ---
 # service

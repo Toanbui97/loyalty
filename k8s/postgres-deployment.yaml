@@ -1,3 +1,24 @@
+# secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresdb
+type: Opaque
+data:
+  POSTGRES_PASSWORD: cG9zdGdyZXM=
+---
+
+# configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresdb
+data:
+  DATABASE: loyalty
+  POSTGRES_USER: postgres
+  POSTGRES_DB: loyalty
+---
+
 # deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -20,28 +41,11 @@ spec:
           image: postgres
           ports:
             - containerPort: 5432
-          env:
-            - name: DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  key: postgres_db
-                  name: postgres
-            - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  key: postgres_user
-                  name: postgres
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: postgres_password
-                  name: postgres
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: postgres_db
-                  name: postgres
-      serviceAccountName: default
+          envFrom:
+            - configMapRef:
+                name: postgresdb
+            - secretRef:
+                name: postgresdb
 ---
 
 # service
