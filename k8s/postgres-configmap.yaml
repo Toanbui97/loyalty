@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres
-data:
-  postgres_db: loyalty
-  postgres_user: postgres
