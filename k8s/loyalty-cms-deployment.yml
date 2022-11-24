@@ -15,10 +15,16 @@ metadata:
   name: loyalty-cms
 data:
   ACTIVE_PROFILE: dev
-  DB_HOST: postgresdb.default.svc.cluster.local
+  KAFKA_SERVERS: "3.112.249.48"
+  REDIS_HOST: "3.112.249.48"
+  REDIS_PORT: "6379"
+  SHOW_SQL: "false"
+  SERVER_PORT: "8080"
+  DB_HOST: "3.112.249.48"
+  DB_PORT: "5433"
+  DB_NAME: loyalty
   DB_SCHEMA: cms
-  SHOW_SQL: false
-
+  DB_USER: postgres
 ---
 # deployment
 apiVersion: apps/v1

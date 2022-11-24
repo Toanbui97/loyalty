@@ -1,0 +1,79 @@
+# secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: loyalty-voucher-secret
+type: Opaque
+data:
+  DB_PASWORD: cG9zdGdyZXM=
+
+---
+# configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loyalty-voucher-configmap
+data:
+  ACTIVE_PROFILE: dev
+  KAFKA_SERVERS: "3.112.249.48"
+  REDIS_HOST: "3.112.249.48"
+  REDIS_PORT: "6379"
+  SHOW_SQL: "false"
+  SERVER_PORT: "8082"
+  DB_HOST: "3.112.249.48"
+  DB_PORT: "5433"
+  DB_NAME: loyalty
+  DB_SCHEMA: voucher
+  DB_USER: postgres
+  CMS_HOST: loyalty-cms.default.svc.cluster.local:8080
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loyalty-voucher-deployment
+  labels:
+    app: loyalty-voucher-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: loyalty-voucher
+  template:
+    metadata:
+      labels:
+        app: loyalty-voucher
+    spec:
+      containers:
+        - name: voucher
+          image: toanbv1997/loyalty-voucher:1.1
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "0.2"
+              memory: 300Mi
+            limits:
+              cpu: "1.0"
+              memory: 300Mi
+          envFrom:
+            - configMapRef:
+                name: loyalty-voucher-configmap
+            - secretRef:
+                name: loyalty-voucher-secret
+
+---
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  name: loyalty-voucher-service
+  labels:
+    app: loyalty-voucher-service
+spec:
+  ports:
+    - port: 8082
+      protocol: TCP
+      targetPort: 8082
+  selector:
+    app: loyalty-voucher

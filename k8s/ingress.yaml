@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: loyalty-cluster.info
+      http:
+        paths:
+          - path: /cms
+            backend:
+              service:
+                name: loyalty-cms
+                port:
+                  number: 8080
+            pathType: Prefix
+          - path: /voucher
+            backend:
+              service:
+                name: loyalty-voucher-service
+                port:
+                  number: 8080
+            pathType: Prefix
