@@ -1,5 +1,7 @@
 package vn.com.loyalty.core.service.internal.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +110,7 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                     header.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
                     header.setAcceptCharset(List.of(StandardCharsets.UTF_8));
                 });
+        log.info("\n===================> Web client {}: {}{} \n{}", method, baseUrl, uri, prettyPrintJsonObject(requestBody));
         return (Objects.nonNull(requestBody) ? requestBodyUriSpec.body(BodyInserters.fromValue(requestBody)) : requestBodyUriSpec);
     }
 
@@ -146,5 +149,15 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
             uriBuilder.queryParam(entry.getKey(), entry.getValue().get(0));
         }
         return uriBuilder.build();
+    }
+
+    private String prettyPrintJsonObject(Object object) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

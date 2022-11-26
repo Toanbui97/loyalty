@@ -79,3 +79,9 @@ webclient:
   cms-service:
     base-url: ${CMS_SERVICE_BASE_URL}
     update_disbursements_amount: /api/v1/update_rank
+logging:
+  level:
+    reactor:
+      netty:
+        http:
+          client: info

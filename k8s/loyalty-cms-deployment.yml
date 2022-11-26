@@ -34,7 +34,7 @@ metadata:
   labels:
     app: loyalty-cms
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: loyalty-cms
@@ -52,15 +52,27 @@ spec:
             requests:
               cpu: "0.2"
               memory: 300Mi
-            limits:
-              cpu: "1.0"
-              memory: 300Mi
           envFrom:
             - configMapRef:
                 name: loyalty-cms
             - secretRef:
                 name: loyalty-cms
-
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 20
+            failureThreshold: 5
+          livenessProbe:
+              httpGet:
+                port: 8080
+                path: /actuator/info
+              initialDelaySeconds: 120
+              timeoutSeconds: 2
+              periodSeconds: 20
+              failureThreshold: 5
 
 ---
 # service

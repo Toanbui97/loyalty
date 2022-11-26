@@ -29,9 +29,6 @@ public class LoggingAspect {
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void restApiPointCut() {}
 
-    @Pointcut("within(vn.com.loyalty.core.thirdparty.service.WebClientService+)")
-    public void webClientPointCut() {}
-
     @Before("restApiPointCut()")
     public void beforeCallApi(JoinPoint joinPoint) throws JsonProcessingException {
 
@@ -56,27 +53,37 @@ public class LoggingAspect {
         }
     }
 
-    @Before("webClientPointCut()")
-    public void beforeWebClientCall(JoinPoint joinPoint) throws JsonProcessingException {
-        if (joinPoint.getArgs()[0] instanceof BodyRequest) {
-            if (StringUtils.hasText((String) httpSession.getAttribute(REQUEST_ID))) {
-                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
-                log.info("\n===================> Web client call: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
-                        , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
-            } else {
-                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId(UUID.randomUUID().toString());
-            }
-        }
+//    @Before("execution( * vn.com.loyalty.core.service.internal.impl.WebClientCommonServiceImpl.setUpUriAndBodyAndHeaders(String, String , MultiValueMap<String, String> , R , HttpMethod ))")
+//    public void webClientPointCut(JoinPoint joinPoint){
+//
+//        System.out.println("asdhjgasjkd");
+//        System.out.println(joinPoint);
+//    }
 
-    }
+//    @Pointcut("within(vn.com.loyalty.core.thirdparty.service.WebClientService+)")
+//    public void webClientPointCut() {}
 
-    @AfterReturning(value = "webClientPointCut()", returning = "response")
-    public void afterWebClientCall(JoinPoint joinPoint, Object response) throws JsonProcessingException {
-        if (response != null) {
-            log.info("\n===================> Web client response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
-                    , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response));
-        }
-    }
+//    @Before("webClientPointCut()")
+//    public void beforeWebClientCall(JoinPoint joinPoint) throws JsonProcessingException {
+//        if (joinPoint.getArgs()[0] instanceof BodyRequest) {
+//            if (StringUtils.hasText((String) httpSession.getAttribute(REQUEST_ID))) {
+//                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
+//                log.info("\n===================> Web client call: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
+//                        , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
+//            } else {
+//                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId(UUID.randomUUID().toString());
+//            }
+//        }
+//
+//    }
+//
+//    @AfterReturning(value = "webClientPointCut()", returning = "response")
+//    public void afterWebClientCall(JoinPoint joinPoint, Object response) throws JsonProcessingException {
+//        if (response != null) {
+//            log.info("\n===================> Web client response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
+//                    , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response));
+//        }
+//    }
 
 
     private String prettyPrintJsonObject(Object object) throws JsonProcessingException {
