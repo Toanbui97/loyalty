@@ -3,7 +3,8 @@ kind: Ingress
 metadata:
   name: gateway-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
     - host: loyalty-cluster.info
@@ -14,12 +15,12 @@ spec:
               service:
                 name: loyalty-cms
                 port:
-                  number: 8080
+                  number: 80
             pathType: Prefix
           - path: /voucher
             backend:
               service:
                 name: loyalty-voucher-service
                 port:
-                  number: 8080
+                  number: 80
             pathType: Prefix
