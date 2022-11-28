@@ -22,6 +22,7 @@ import vn.com.loyalty.core.constant.WebClientConstant;
 import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
 import vn.com.loyalty.core.exception.BaseResponseException;
 import vn.com.loyalty.core.service.internal.WebClientCommonService;
+import vn.com.loyalty.core.utils.ObjectUtil;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -110,12 +111,12 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                     header.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
                     header.setAcceptCharset(List.of(StandardCharsets.UTF_8));
                 });
-        log.info("\n===================> Web client {}: {}{} \n{}", method, baseUrl, uri, prettyPrintJsonObject(requestBody));
+        log.info("\n===================> Web client \n{}: {}{} \n{}", method, baseUrl, uri, ObjectUtil.prettyPrintJsonObject(requestBody));
         return (Objects.nonNull(requestBody) ? requestBodyUriSpec.body(BodyInserters.fromValue(requestBody)) : requestBodyUriSpec);
     }
 
     private <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-        return requestHeadersSpec.retrieve()
+        T response = requestHeadersSpec.retrieve()
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
                     log.error("Error from Client side system");
                     return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, null));
@@ -126,10 +127,12 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                         .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new BaseResponseException(ResponseStatusCode.MAX_RETRY_ATTEMPTS_REACHED, ""))
                 )
                 .block();
+        log.info("\n===================> Web client response: \n{}", ObjectUtil.prettyPrintJsonObject(response));
+        return response;
     }
 
     private <T> List<T> processFluxResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-        return requestHeadersSpec.retrieve()
+        List<T> responseList = requestHeadersSpec.retrieve()
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
                     log.error("Error from Client side system");
                     return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, ""));
@@ -141,6 +144,8 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                 )
                 .collectList()
                 .block();
+        log.info("\n===================> Web client response: \n{}", ObjectUtil.prettyPrintJsonObject(responseList));
+        return responseList;
     }
 
     private URI buildQueryParams(UriBuilder uriBuilder, String uri, MultiValueMap<String, String> params) {
@@ -151,13 +156,4 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
         return uriBuilder.build();
     }
 
-    private String prettyPrintJsonObject(Object object) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -1,26 +1,30 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: kong-ingress
 spec:
+  ingressClassName: kong
   rules:
-    - host: loyalty-cluster.info
-      http:
+    - http:
         paths:
-          - path: /cms
+          - path: /cms/
             backend:
               service:
                 name: loyalty-cms
                 port:
-                  number: 80
+                  number: 8080
             pathType: Prefix
-          - path: /voucher
+          - path: /voucher/
             backend:
               service:
                 name: loyalty-voucher-service
                 port:
-                  number: 80
+                  number: 8082
             pathType: Prefix
+          - path: /foo
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 8080

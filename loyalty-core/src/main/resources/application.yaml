@@ -84,4 +84,4 @@ logging:
     reactor:
       netty:
         http:
-          client: info
+          client: debug

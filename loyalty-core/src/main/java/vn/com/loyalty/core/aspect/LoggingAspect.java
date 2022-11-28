@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.dto.request.BodyRequest;
+import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,12 +31,11 @@ public class LoggingAspect {
     public void restApiPointCut() {}
 
     @Before("restApiPointCut()")
-    public void beforeCallApi(JoinPoint joinPoint) throws JsonProcessingException {
+    public void beforeCallApi(JoinPoint joinPoint) {
 
         if (joinPoint.getArgs()[0] instanceof BodyRequest) {
-            log.info("", httpRequest.getRequestURI());
-            log.info("===================> Request: {}\n{}.{} \n{}", httpRequest.getRequestURI(), joinPoint.getSignature().getDeclaringType().getName()
-                , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
+            log.info("===================> Request: \n{}.{}\n{}: {}\n{}",joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName()
+                    ,httpRequest.getMethod(), httpRequest.getRequestURL(), ObjectUtil.prettyPrintJsonObject(joinPoint.getArgs()[0]));
             if (!StringUtils.hasText(((BodyRequest<?>) joinPoint.getArgs()[0]).getRequestId())) {
                 httpSession.setAttribute(REQUEST_ID, UUID.randomUUID().toString());
             } else {
@@ -45,51 +45,15 @@ public class LoggingAspect {
     }
 
     @AfterReturning(value = "restApiPointCut()", returning = "response")
-    public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) throws JsonProcessingException {
+    public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) {
         if (response != null) {
             ((BodyResponse) response.getBody()).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
             log.info("\n===================> Response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
-                    , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response.getBody()));
+                    , joinPoint.getSignature().getName(), ObjectUtil.prettyPrintJsonObject(response.getBody()));
         }
     }
 
-//    @Before("execution( * vn.com.loyalty.core.service.internal.impl.WebClientCommonServiceImpl.setUpUriAndBodyAndHeaders(String, String , MultiValueMap<String, String> , R , HttpMethod ))")
-//    public void webClientPointCut(JoinPoint joinPoint){
-//
-//        System.out.println("asdhjgasjkd");
-//        System.out.println(joinPoint);
-//    }
 
-//    @Pointcut("within(vn.com.loyalty.core.thirdparty.service.WebClientService+)")
-//    public void webClientPointCut() {}
-
-//    @Before("webClientPointCut()")
-//    public void beforeWebClientCall(JoinPoint joinPoint) throws JsonProcessingException {
-//        if (joinPoint.getArgs()[0] instanceof BodyRequest) {
-//            if (StringUtils.hasText((String) httpSession.getAttribute(REQUEST_ID))) {
-//                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId((String) httpSession.getAttribute(REQUEST_ID));
-//                log.info("\n===================> Web client call: \n{}.{} \n{}", joinPoint.getSignature().getDeclaringType().getName()
-//                        , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(joinPoint.getArgs()[0]));
-//            } else {
-//                ((BodyRequest<?>) joinPoint.getArgs()[0]).setRequestId(UUID.randomUUID().toString());
-//            }
-//        }
-//
-//    }
-//
-//    @AfterReturning(value = "webClientPointCut()", returning = "response")
-//    public void afterWebClientCall(JoinPoint joinPoint, Object response) throws JsonProcessingException {
-//        if (response != null) {
-//            log.info("\n===================> Web client response: \n{}.{} \n {}", joinPoint.getSignature().getDeclaringType().getName()
-//                    , joinPoint.getSignature().getName(), this.prettyPrintJsonObject(response));
-//        }
-//    }
-
-
-    private String prettyPrintJsonObject(Object object) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    }
 
 
 }

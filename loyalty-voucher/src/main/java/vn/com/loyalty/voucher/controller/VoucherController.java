@@ -31,17 +31,17 @@ public class VoucherController {
         return responseFactory.success(voucherService.createVoucher(request.getData()));
     }
 
-    @GetMapping("/{voucherCode}/receiveVoucherDetailList")
+    @GetMapping("/receiveVoucherDetailList/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getAllVoucherDetail(voucherCode));
     }
 
-    @GetMapping("/{voucherCode}/receiveVoucherDetailInactiveList")
+    @GetMapping("/receiveVoucherDetailInactiveList/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
     }
 
-    @PostMapping("/{voucherCode}/performBuyVoucher")
+    @PostMapping("/performBuyVoucher/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherResponse>> performBuyVoucher(@RequestBody BodyRequest<VoucherRequest> req,
                                                                            @PathVariable String voucherCode) {
         return responseFactory.success(voucherService.buyVoucher(voucherCode));

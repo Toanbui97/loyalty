@@ -1,5 +1,7 @@
 package vn.com.loyalty.core.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,5 +38,16 @@ public class ObjectUtil {
         }
 
         return null;
+    }
+
+    public String prettyPrintJsonObject(Object object){
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return null;
+        }
     }
 }
