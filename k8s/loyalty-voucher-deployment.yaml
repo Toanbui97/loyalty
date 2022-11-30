@@ -15,12 +15,12 @@ metadata:
   name: loyalty-voucher-configmap
 data:
   ACTIVE_PROFILE: dev
-  KAFKA_SERVERS: "3.112.249.48"
-  REDIS_HOST: "3.112.249.48"
+  KAFKA_SERVERS: "52.196.64.186"
+  REDIS_HOST: "52.196.64.186"
   REDIS_PORT: "6379"
   SHOW_SQL: "false"
   SERVER_PORT: "8082"
-  DB_HOST: "3.112.249.48"
+  DB_HOST: "52.196.64.186"
   DB_PORT: "5433"
   DB_NAME: loyalty
   DB_SCHEMA: voucher
