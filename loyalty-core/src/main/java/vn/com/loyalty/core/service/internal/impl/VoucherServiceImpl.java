@@ -2,6 +2,8 @@ package vn.com.loyalty.core.service.internal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
@@ -43,6 +45,12 @@ public class VoucherServiceImpl implements VoucherService {
     public List<VoucherResponse> getAllVoucher() {
         List<VoucherEntity> voucherEntityList = voucherRepository.findAll();
         return voucherEntityList.stream().map(voucherMapper::entityToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<VoucherResponse> getVoucherList(Pageable page) {
+        Page<VoucherEntity> voucherEntityPage = voucherRepository.findAll(page);
+        return voucherEntityPage.map(voucherMapper::entityToDTO);
     }
 
     @Override

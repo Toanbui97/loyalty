@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class VoucherResponse {
 
     String voucherName;
+    String voucherCode;
     String description;
     Long totalVoucher;
     Long active;

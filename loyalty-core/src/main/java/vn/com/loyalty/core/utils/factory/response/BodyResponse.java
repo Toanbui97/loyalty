@@ -1,6 +1,7 @@
 package vn.com.loyalty.core.utils.factory.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
@@ -63,9 +64,18 @@ public class BodyResponse<T> implements Serializable {
         this.setDataList(dataList);
     }
 
-    public BodyResponse(int status, ResponseStatusCode responseStatusCode, PageImpl page){
+    public BodyResponse(int status, ResponseStatusCode responseStatusCode, Page page){
         this(status, responseStatusCode);
         this.setDataList(page.getContent());
+        this.setPage(page.getNumber());
+        this.setSize(page.getSize());
+        this.setTotalRecord(page.getTotalElements());
+        this.setTotalPage(page.getTotalPages());
+    }
+
+    public BodyResponse(int status, ResponseStatusCode responseStatusCode, List<T> dataList,Page page){
+        this(status, responseStatusCode);
+        this.setDataList(dataList);
         this.setPage(page.getNumber());
         this.setSize(page.getSize());
         this.setTotalRecord(page.getTotalElements());

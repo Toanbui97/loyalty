@@ -1,5 +1,7 @@
 package vn.com.loyalty.core.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
@@ -10,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface VoucherDetailRepository extends JpaRepository<VoucherDetailEntity, Long> {
-    List<VoucherDetailEntity> findByVoucherCode(String voucherCode);
+    Page<VoucherDetailEntity> findByVoucherCode(String voucherCode, Pageable pageable);
     Optional<VoucherDetailEntity> findFirstByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
     List<VoucherDetailEntity> findByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
 }

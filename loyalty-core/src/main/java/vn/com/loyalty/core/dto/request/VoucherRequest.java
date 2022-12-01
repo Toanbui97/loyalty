@@ -14,5 +14,6 @@ import java.io.Serializable;
 public class VoucherRequest implements Serializable {
     String voucherName;
     String description;
+    String voucherCode;
     Long totalVoucher;
 }

@@ -1,6 +1,8 @@
 package vn.com.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
@@ -23,9 +25,9 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     private final VoucherDetailMapper voucherDetailMapper;
 
     @Override
-    public List<VoucherDetailResponse> getAllVoucherDetail(String voucherCode) {
-        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherCode(voucherCode);
-        return voucherDetailEntityList.stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
+    public Page<VoucherDetailResponse> getVoucherDetailList(String voucherCode, Pageable pageable) {
+        Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByVoucherCode(voucherCode, pageable);
+        return voucherDetailEntityPage.map(voucherDetailMapper::entityToDTO);
     }
 
     @Override

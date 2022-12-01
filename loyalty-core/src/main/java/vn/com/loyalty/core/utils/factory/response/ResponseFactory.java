@@ -2,7 +2,9 @@ package vn.com.loyalty.core.utils.factory.response;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -27,19 +29,15 @@ public class ResponseFactory {
 
         return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, dataList));
     }
+
     public <T> ResponseEntity<BodyResponse<T>> success(String uuid, List<T> dataList) {
 
         return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, uuid, dataList));
     }
 
-    public <T> ResponseEntity<BodyResponse<T>> success(PageImpl<T> page) {
+    public <T> ResponseEntity<BodyResponse<T>> success(Page<T> page) {
 
         return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, page));
-    }
-
-    public <T> ResponseEntity<BodyResponse<T>> success(String uuid, PageImpl<T> page) {
-
-        return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, uuid, page));
     }
 
     public ResponseEntity<BodyResponse<Object>> fail(HttpStatus status, ResponseStatusCode statusCode) {

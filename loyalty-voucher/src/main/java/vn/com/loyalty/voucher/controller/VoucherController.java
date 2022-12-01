@@ -1,6 +1,8 @@
 package vn.com.loyalty.voucher.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.com.loyalty.core.dto.request.BodyRequest;
@@ -21,9 +23,10 @@ public class VoucherController {
     private final ResponseFactory responseFactory;
     private final VoucherDetailService voucherDetailService;
 
-    @GetMapping("/receiveVoucherList")
-    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList() {
-        return responseFactory.success(voucherService.getAllVoucher());
+    @PostMapping("/receiveVoucherList")
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest request
+            , @PageableDefault Pageable page) {
+        return responseFactory.success(voucherService.getVoucherList(page));
     }
 
     @PostMapping("/performCreateVoucher")
@@ -31,12 +34,13 @@ public class VoucherController {
         return responseFactory.success(voucherService.createVoucher(request.getData()));
     }
 
-    @GetMapping("/receiveVoucherDetailList/{voucherCode}")
-    public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@PathVariable String voucherCode) {
-        return responseFactory.success(voucherDetailService.getAllVoucherDetail(voucherCode));
+    @PostMapping("/receiveVoucherDetailList/{voucherCode}")
+    public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@RequestBody BodyRequest request
+            , @PathVariable String voucherCode, @PageableDefault Pageable pageable) {
+        return responseFactory.success(voucherDetailService.getVoucherDetailList(voucherCode, pageable));
     }
 
-    @GetMapping("/receiveVoucherDetailInactiveList/{voucherCode}")
+    @PostMapping("/receiveVoucherDetailInactiveList/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
     }
