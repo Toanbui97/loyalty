@@ -12,9 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("vn.com.loyalty.core.repository")
 @EntityScan("vn.com.loyalty.core.entity")
 public class LoyaltyVoucherApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(LoyaltyVoucherApplication.class, args);
     }
-
 }
