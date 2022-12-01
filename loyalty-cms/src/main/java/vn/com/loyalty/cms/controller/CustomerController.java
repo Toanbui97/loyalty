@@ -1,6 +1,8 @@
 package vn.com.loyalty.cms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +38,9 @@ public class CustomerController {
         return responseFactory.success(customerService.updateCustomer(req.getData()));
     }
 
-    @GetMapping("/receiveCustomerList")
-    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList() {
-        return responseFactory.success(customerService.getAllCustomer());
+    @PostMapping("/receiveCustomerList")
+    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList(@RequestBody BodyRequest req, @PageableDefault Pageable pageable) {
+        return responseFactory.success(customerService.getListCustomer(pageable));
     }
 
 

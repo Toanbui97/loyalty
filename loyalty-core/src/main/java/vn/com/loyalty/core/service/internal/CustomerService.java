@@ -1,5 +1,7 @@
 package vn.com.loyalty.core.service.internal;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
@@ -8,7 +10,7 @@ import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerResponse> getAllCustomer();
+    Page<CustomerResponse> getListCustomer(Pageable pageable);
 
     CustomerResponse createCustomer(CustomerRequest customerRequest);
 

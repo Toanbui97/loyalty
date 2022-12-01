@@ -1,6 +1,8 @@
 package vn.com.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.utils.ObjectUtil;
@@ -23,9 +25,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper customerMapper;
 
     @Override
-    public List<CustomerResponse> getAllCustomer() {
-        List<CustomerEntity> customerEntityList = customerRepository.findAll();
-        return customerEntityList.stream().map(customerMapper::entityToDTO).collect(Collectors.toList());
+    public Page<CustomerResponse> getListCustomer(Pageable pageable) {
+        Page<CustomerEntity> customerEntityPage = customerRepository.findAll(pageable);
+        return customerEntityPage.map(customerMapper::entityToDTO);
     }
 
     @Override
