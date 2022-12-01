@@ -62,3 +62,5 @@ spec:
       targetPort: 5432
   selector:
     app: postgresdb
+status:
+  loadBalancer: {}
