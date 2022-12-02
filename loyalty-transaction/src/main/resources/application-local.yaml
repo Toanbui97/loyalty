@@ -1,12 +1,9 @@
 KAFKA_SERVERS: localhost:9092
-SHOW_SQL: true
-SERVER_PORT: 8082
+SERVER_PORT: 8083
 CMS_SERVICE_BASE_URL: http://localhost:8080
-DB_HOST: localhost
+DB_HOST: ${HOST:localhost}
 DB_PORT: 5433
 DB_NAME: loyalty
-DB_SCHEMA: voucher
+DB_SCHEMA: cms
 DB_USER: postgres
 DB_PASSWORD: postgres
-
-

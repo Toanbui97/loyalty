@@ -1,8 +1,9 @@
-package vn.com.loyalty.core.entity;
+package vn.com.loyalty.core.entity.voucher;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
+import vn.com.loyalty.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

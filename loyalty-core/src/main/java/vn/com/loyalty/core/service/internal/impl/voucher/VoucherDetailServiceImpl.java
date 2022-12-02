@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.service.internal.impl;
+package vn.com.loyalty.core.service.internal.impl.voucher;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
-import vn.com.loyalty.core.entity.VoucherDetailEntity;
-import vn.com.loyalty.core.entity.VoucherEntity;
+import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
+import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.service.internal.VoucherDetailService;

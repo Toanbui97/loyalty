@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.service.internal.impl;
+package vn.com.loyalty.core.service.internal.impl.voucher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
-import vn.com.loyalty.core.entity.VoucherDetailEntity;
-import vn.com.loyalty.core.entity.VoucherEntity;
+import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
+import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;

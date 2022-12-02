@@ -23,10 +23,12 @@
         <module>loyalty-cms</module>
         <module>loyalty-voucher</module>
         <module>loyalty-migration</module>
+        <module>loyalty-event-spam</module>
+        <module>loyalty-transaction</module>
     </modules>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <openapi.ui.version>1.6.6</openapi.ui.version>
         <mapstruct.version>1.5.1.Final</mapstruct.version>
         <common.lang3.version>3.12.0</common.lang3.version>

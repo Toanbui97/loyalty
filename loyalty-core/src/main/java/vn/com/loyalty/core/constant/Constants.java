@@ -23,4 +23,9 @@ public class Constants {
         public static final String KAFKA_POOL_PROPERTIES_PREFIX = "spring.kafka.poll";
     }
 
+    public static final class KafkaConstants {
+        public static final String TRANSACTION_TOPIC = "loyalty_transaction_topic";
+        public static final String TRANSACTION_GROUP = "loyalty_transaction_group";
+    }
+
 }

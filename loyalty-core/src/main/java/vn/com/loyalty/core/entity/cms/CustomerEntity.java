@@ -1,7 +1,9 @@
-package vn.com.loyalty.core.entity;
+package vn.com.loyalty.core.entity.cms;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.com.loyalty.core.entity.BaseEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;

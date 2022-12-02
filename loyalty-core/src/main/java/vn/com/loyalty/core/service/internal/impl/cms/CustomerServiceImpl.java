@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.service.internal.impl;
+package vn.com.loyalty.core.service.internal.impl.cms;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -8,14 +8,12 @@ import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
-import vn.com.loyalty.core.entity.CustomerEntity;
+import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.mapper.CustomerMapper;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

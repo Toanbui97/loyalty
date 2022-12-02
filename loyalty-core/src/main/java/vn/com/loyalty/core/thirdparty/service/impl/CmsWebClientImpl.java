@@ -11,7 +11,7 @@ import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.service.internal.WebClientCommonService;
 import vn.com.loyalty.core.utils.RequestUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
-import vn.com.loyalty.core.entity.CustomerEntity;
+import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 @RequiredArgsConstructor

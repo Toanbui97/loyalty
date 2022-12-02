@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.configuration.kafka.producer;
+package vn.com.loyalty.core.configuration.kafka;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

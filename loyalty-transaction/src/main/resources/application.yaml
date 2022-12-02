@@ -1,10 +1,8 @@
 server:
-  port: ${SERVER_PORT:8080}
-  servlet:
-    context-path: /cms
+  port: ${SERVER_PORT:8083}
 spring:
   application:
-    name: loyalty-cms
+    name: loyalty-event-spam
   jpa:
     properties:
       hibernate:
@@ -28,7 +26,7 @@ spring:
     producer:
      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
+     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     retries: 5
     deliveryTimeout: 20000

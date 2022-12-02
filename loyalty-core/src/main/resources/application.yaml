@@ -1,15 +1,17 @@
-
-spring:
-  application:
-    name: loyalty-api
+server:
+  port: ${SERVER_PORT:8082}
+  servlet:
+    context-path: /voucher
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      format_sql: true
     show-sql: ${SHOW_SQL:false}
+    hibernate:
+      ddl-auto: update
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:inventory_db}?currentSchema=${DB_SCHEMA:inventory_schema}&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:loyalty}?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: ${DB_USER:dev}
     password: ${DB_PASSWORD:password}
     hikari:
@@ -18,21 +20,19 @@ spring:
       idle-timeout: 600000
       max-lifetime: 18000000
   profiles:
-    active: ${ACTIVE_PROFILE:dev}
-
+    active: ${ACTIVE_PROFILE:local}
   kafka:
     producer:
-      bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
+     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+     key-serializer: org.apache.kafka.common.serialization.StringSerializer
+     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     retries: 5
     deliveryTimeout: 20000
     requestTimeout: 20000
     poll:
       maxPollRecords: 500
       maxPollInterval: 300000
-
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
@@ -60,7 +60,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus,health
+        include: prometheus,health,info
 
 webclient:
   http:
@@ -78,10 +78,5 @@ webclient:
     maxBackoff: 5
   cms-service:
     base-url: ${CMS_SERVICE_BASE_URL}
-    update_disbursements_amount: /api/v1/update_rank
-logging:
-  level:
-    reactor:
-      netty:
-        http:
-          client: debug
+    receive_customer_info: /api/v1/receiveCustomer/{customerCode}
+    perform_update_customer: /api/v1/performUpdateCustomer

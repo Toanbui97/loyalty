@@ -3,7 +3,7 @@ package vn.com.loyalty.core.service.internal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
-import vn.com.loyalty.core.entity.VoucherEntity;
+import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.configuration.kafka.consumer;
+package vn.com.loyalty.core.configuration.kafka;
 
 import vn.com.loyalty.core.dto.KafkaPoolPrefixDto;
 import lombok.extern.slf4j.Slf4j;

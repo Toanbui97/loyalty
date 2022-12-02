@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.configuration.kafka.consumer;
+package vn.com.loyalty.core.configuration.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class KafkaConsumerConfig {
             props.put("group.id", "default");
         }
         props.put("key.deserializer", StringDeserializer.class);
-        props.put("value.deserializer", StringDeserializer.class);
+        props.put("value.deserializer", JsonDeserializer.class);
 
         return new DefaultKafkaConsumerFactory<>(props);
     }

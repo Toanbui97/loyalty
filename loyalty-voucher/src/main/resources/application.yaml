@@ -26,10 +26,10 @@ spring:
     active: ${ACTIVE_PROFILE:local}
   kafka:
     producer:
-     bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
+     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    bootstrap-servers: ${KAFKA_SERVERS:10.20.0.11:9092}
+     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     retries: 5
     deliveryTimeout: 20000
     requestTimeout: 20000

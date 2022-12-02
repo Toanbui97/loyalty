@@ -38,7 +38,7 @@ spec:
             - containerPort: 8080
           env:
             - name: KEYCLOAK_FRONTEND_URL
-              value: https://keycloak.localhost/auth
+              value: http://kong-proxy.kong.svc.cluster.local/auth
             - name: PROXY_ADDRESS_FORWARDING
               value: "true"
             - name: KEYCLOAK_USER

@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,13 +25,15 @@ public class ApplicationAspect {
         // update log
         // update data db db
 
+
     }
 
 
     public static void main(String[] args) {
 
 
-        ExecutorService service = Executors.newFixedThreadPool(1);
+        int[] i = new int[]{4,2,1};
+        List<Integer> intt =  new ArrayList<>();
 
     }
 

@@ -41,28 +41,57 @@ services:
     depends_on:
       - zookeeper
 
-  loyalty-cms:
-    image: loyalty-cms:1.1
-    container_name: cms
-    environment:
-      - "ACTIVE_PROFILE=local"
-      - "HOST=host.docker.internal"
-    ports:
-      - "8080:8080"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+#  kafka-rest:
+#    image: nodefluent/kafka-rest
+#    ports:
+#      - "8082:8082"
+#    links:
+#      - kafka
+#      - zookeeper
+#    depends_on:
+#      - kafka
+#      - zookeeper
+#    environment:
+#      DEBUG: "*"
+#
+#  kafka-rest-ui:
+#    image: nodefluent/kafka-rest-ui
+#    ports:
+#      - "80:8000"
+#    links:
+#      - kafka-rest
+#    depends_on:
+#      - kafka-rest
+#    environment:
+#      DEBUG: "*"
+#      REACT_APP_KAFKA_REST_URL: "http://kafka-rest:8082/"
+#      REACT_APP_TIMEOUT: "3000"
+#      PROXY: "yes"
+#      BASIC_AUTH_USER: "admin"
+#      BASIC_AUTH_PASSWORD: "admin"
 
-  loyalty-voucher:
-    container_name: voucher
-    image: loyalty-voucher:1.1
-    environment:
-      - "ACTIVE_PROFILE=local"
-      - "HOST=host.docker.internal"
-      - "CMS_HOST=host.docker.internal"
-    ports:
-      - "8082:8082"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+#  loyalty-cms:
+#    image: loyalty-cms:1.1
+#    container_name: cms
+#    environment:
+#      - "ACTIVE_PROFILE=local"
+#      - "HOST=host.docker.internal"
+#    ports:
+#      - "8080:8080"
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#
+#  loyalty-voucher:
+#    container_name: voucher
+#    image: loyalty-voucher:1.1
+#    environment:
+#      - "ACTIVE_PROFILE=local"
+#      - "HOST=host.docker.internal"
+#      - "CMS_HOST=host.docker.internal"
+#    ports:
+#      - "8082:8082"
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
 
 volumes:
   postgres-data:
