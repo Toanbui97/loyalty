@@ -1,8 +1,8 @@
 package vn.com.loyalty.core.constant.enums;
 
 public enum TransactionType {
-    STOCK_TYPE("STOCK"),
-    BOUND_TYPE("BOUND");
+    STOCK_TYPE("STOCK_TYPE"),
+    BOUND_TYPE("BOUND_TYPE");
 
     private String type;
 
@@ -13,4 +13,5 @@ public enum TransactionType {
     public String getType() {
         return this.type;
     }
+
 }

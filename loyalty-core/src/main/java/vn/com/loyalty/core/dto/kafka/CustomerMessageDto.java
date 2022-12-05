@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.dto.request;
+package vn.com.loyalty.core.dto.kafka;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,15 +8,14 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@RequiredArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CustomerRequest implements Serializable {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomerMessageDto implements Serializable {
     String customerName;
     String customerCode;
     Long activeVoucher;
-    BigDecimal totalEpoint;
-    BigDecimal totalEloy;
+    BigDecimal epointGained;
+    BigDecimal eloyGained;
 }

@@ -10,7 +10,12 @@ import vn.com.loyalty.core.constant.Constants;
 public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic topicTest() {
+    public NewTopic transactionTopic() {
         return TopicBuilder.name(Constants.KafkaConstants.TRANSACTION_TOPIC).build();
+    }
+
+    @Bean
+    public NewTopic customerTopic() {
+        return TopicBuilder.name(Constants.KafkaConstants.CUSTOMER_TOPIC).build();
     }
 }

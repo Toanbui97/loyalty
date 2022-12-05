@@ -1,5 +1,9 @@
 package vn.com.loyalty.eventspam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.util.concurrent.Future;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -7,10 +11,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.connection.FutureResult;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.concurrent.FailureCallback;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.SuccessCallback;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.kafka.TransactionMessageDto;
@@ -33,10 +42,17 @@ public class LoyaltyEventSpamApplication {
     KafkaTemplate<String, Object> kafkaTemplate;
 
     @Scheduled(cron = "0/15 * * * * *")
-    private void sendMessage(){
+    private void sendMessage() {
         TransactionMessageDto message = this.buildTransactionStockMessage();
-        kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message);
-        log.info("Send message to topic loyalty_transaction_topic: {}", ObjectUtil.prettyPrintJsonObject(message));
+        ListenableFuture<SendResult<String, Object>> sendResult = kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message);
+        sendResult.addCallback(result -> {
+            log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
+                    result.getProducerRecord().topic(),
+                    result.getRecordMetadata().partition(),
+                    ObjectUtil.prettyPrintJsonObject(result.getProducerRecord().value()));
+        }, ex -> {
+            log.error("Kafka producer send message failed: {} ", ex.getMessage());
+        });
     }
 
 
@@ -52,7 +68,7 @@ public class LoyaltyEventSpamApplication {
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now().toString())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
-                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(92187321)).build())
+                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(92187321).toString()).build())
                 .build();
     }
 
@@ -62,9 +78,8 @@ public class LoyaltyEventSpamApplication {
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now().toString())
                 .transactionType(TransactionType.BOUND_TYPE.getType())
-                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(921857321)).build())
+                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(921857321).toString()).build())
                 .build();
     }
-
 
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.com.loyalty.core.dto.kafka.CustomerMessageDto;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
@@ -50,6 +51,23 @@ public class CustomerServiceImpl implements CustomerService {
         customerEntity = ObjectUtil.mergeObject(customerRequest, customerEntity);
         customerRepository.save(customerEntity);
         return customerMapper.entityToDTO(customerEntity);
+    }
+
+    @Override
+    public void handlePointGained(CustomerMessageDto customerMessageDto) {
+        if (customerRepository.existsByCustomerCode(customerMessageDto.getCustomerCode())) {
+            CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerMessageDto.getCustomerCode())
+                    .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerMessageDto.getCustomerCode()));
+            customerEntity.setTotalEloy(customerEntity.getTotalEloy().add(customerMessageDto.getEloyGained()));
+            customerEntity.setTotalEpoint(customerEntity.getTotalEpoint().add(customerMessageDto.getEpointGained()));
+            customerRepository.save(customerEntity);
+        } else {
+            customerRepository.save(CustomerEntity.builder()
+                    .customerCode(customerMessageDto.getCustomerCode())
+                    .totalEloy(customerMessageDto.getEloyGained())
+                    .totalEpoint(customerMessageDto.getEpointGained())
+                    .build());
+        }
     }
 
     private String generateCustomerCode() {

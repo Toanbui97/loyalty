@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,5 +17,7 @@ public class CustomerResponse {
 
     String customerName;
     String customerCode;
+    BigDecimal totalEpoint;
+    BigDecimal totalEloy;
     Long activeVoucher;
 }

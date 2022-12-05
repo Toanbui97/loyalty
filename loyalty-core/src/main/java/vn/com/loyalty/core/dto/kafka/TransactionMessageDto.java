@@ -7,12 +7,15 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionMessageDto implements Serializable {
     String transactionId;
     String customerCode;
@@ -24,7 +27,9 @@ public class TransactionMessageDto implements Serializable {
     @Setter
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Data implements Serializable {
-        BigDecimal transactionValue;
+        String transactionValue;
     }
 }

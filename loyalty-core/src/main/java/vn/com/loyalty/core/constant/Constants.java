@@ -25,7 +25,13 @@ public class Constants {
 
     public static final class KafkaConstants {
         public static final String TRANSACTION_TOPIC = "loyalty_transaction_topic";
+        public static final String CUSTOMER_TOPIC = "loylaty_customer_topic";
         public static final String TRANSACTION_GROUP = "loyalty_transaction_group";
+        public static final String CUSTOMER_GROUP = "loyalty_customer_group";
     }
 
+
+    public static final class RedisConstants {
+        public static final String EPOINT_DIR = "EPOINT_";
+    }
 }

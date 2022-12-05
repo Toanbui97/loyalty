@@ -52,4 +52,5 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, Object> customKafkaTemplate() {
         return new KafkaTemplate<>(customKafkaProducerFactory());
     }
+
 }

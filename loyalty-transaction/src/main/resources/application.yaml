@@ -2,7 +2,7 @@ server:
   port: ${SERVER_PORT:8083}
 spring:
   application:
-    name: loyalty-event-spam
+    name: loyalty-transaction
   jpa:
     properties:
       hibernate:
@@ -26,7 +26,7 @@ spring:
     producer:
      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+     value-serializer: org.apache.kafka.common.serialization.StringSerializer
     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     retries: 5
     deliveryTimeout: 20000
@@ -38,16 +38,6 @@ spring:
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
-    jedis:
-      pool:
-        max-active: 200
-        max-idle: 200
-        min-idle: 50
-        test-on-borrow: true
-        test-on-return: true
-        test-while-idle: false
-        block-when-exhausted: true
-        max-wait: 10
     lettuce:
       pool:
         time-between-eviction-runs: 30
