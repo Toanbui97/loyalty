@@ -34,4 +34,11 @@ public class Constants {
     public static final class RedisConstants {
         public static final String EPOINT_DIR = "EPOINT_";
     }
+
+    public static final class OrchestrationStepStatus {
+
+        public static final String STATUS_PENDING = "PENDING";
+        public static final String STATUS_COMPLETE = "COMPLETE";
+        public static final String STATUS_FAILED = "FAILED";
+    }
 }

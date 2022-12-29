@@ -2,8 +2,11 @@ package vn.com.loyalty.core.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 @Slf4j
 public class ObjectUtil {
+
 
     public <S, T> T mergeObject(S source, T target) {
         try {
@@ -42,6 +46,8 @@ public class ObjectUtil {
 
     public String prettyPrintJsonObject(Object object){
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -50,4 +56,11 @@ public class ObjectUtil {
             return null;
         }
     }
+
+    public static void main(String[] args) {
+        String s = "a";
+        s.concat("b");
+        System.out.println(s);
+    }
+
 }

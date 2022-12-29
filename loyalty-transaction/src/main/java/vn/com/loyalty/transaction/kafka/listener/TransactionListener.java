@@ -2,37 +2,33 @@ package vn.com.loyalty.transaction.kafka.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lettuce.core.internal.Futures;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.kafka.CustomerMessageDto;
-import vn.com.loyalty.core.dto.kafka.TransactionMessageDto;
+import vn.com.loyalty.core.dto.message.TransactionMessageDto;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.loyalty.core.entity.transaction.EPointEntity;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
 import vn.com.loyalty.core.entity.transaction.TransactionIncomeEntity;
+import vn.com.loyalty.core.orchestration.Orchestration;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.TransactionIncomeService;
 import vn.com.loyalty.core.service.internal.TransactionService;
 import vn.com.loyalty.core.service.internal.impl.EPointService;
 import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
-import vn.com.loyalty.core.utils.ObjectUtil;
+import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Component
 @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
@@ -44,20 +40,20 @@ public class TransactionListener {
     private final TransactionIncomeService transactionIncomeService;
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
-    private final CmsWebClient cmsWebClient;
     private final EPointService ePointService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final CmsWebClient webClient;
 
     @KafkaHandler
+    @Transactional(rollbackFor = Exception.class)
     public String handleTransactionInCome(String message) throws JsonProcessingException {
         log.info("Kafka consumer receive message: {}", message);
         transactionIncomeService.saveTransactionIncome(TransactionIncomeEntity.builder().messageReceived(message).build());
         TransactionMessageDto transactionMessageDto = objectMapper.readValue(message, TransactionMessageDto.class);
         TransactionEntity transaction = TransactionEntity.builder()
                 .customerCode(transactionMessageDto.getCustomerCode())
-                .transactionTime(LocalDateTime.parse(transactionMessageDto.getTransactionTime()))
+                .transactionTime(transactionMessageDto.getTransactionTime())
                 .transactionId(transactionMessageDto.getTransactionId())
-                .transactionValue(BigDecimal.valueOf(Long.valueOf(transactionMessageDto.getData().getTransactionValue())))
+                .transactionValue(transactionMessageDto.getData().getTransactionValue())
                 .transactionType(TransactionType.valueOf(transactionMessageDto.getTransactionType()))
                 .build();
         transaction = transactionService.saveTransaction(transaction);
@@ -78,38 +74,43 @@ public class TransactionListener {
         service.execute(() -> {
             ePointService.saveEpoint(ePointEntity);
         });
-        service.execute(() -> {
-            this.updateEpointCustomer(ePointEntity);
+        service.submit(() -> {
+            this.updateGainPointCustomer(ePointEntity);
         });
 
+
+
+        // TODO: handle rollback when call update customer failed
         service.shutdown();
 
         return "success";
     }
 
     private void updateTotalEpointRedis(EPointEntity ePointEntity){
-        String key = redisOperation.genEpointKey(ePointEntity.getCustomerCode());
-        if (redisOperation.hasValue(key)) {
-            redisOperation.setValue(key, ePointEntity.getEpointGained().add(redisOperation.getValue(key)));
-        } else {
-            redisOperation.setValue(key, ePointEntity.getEpointGained());
+        try {
+            String key = redisOperation.genEpointKey(ePointEntity.getCustomerCode());
+            if (redisOperation.hasValue(key)) {
+                redisOperation.setValue(key, ePointEntity.getEpointGained().add(redisOperation.getValue(key)));
+            } else {
+                redisOperation.setValue(key, ePointEntity.getEpointGained());
+            }
+        } catch (Exception e) {
+            redisOperation.discard();
         }
     }
 
-    private void updateEpointCustomer(EPointEntity ePointEntity) {
-
-        CustomerMessageDto message = CustomerMessageDto.builder()
+    private BodyResponse<CustomerResponse> updateGainPointCustomer(EPointEntity ePointEntity) {
+        return webClient.performUpdateCustomerInfo(BodyRequest.of(CustomerRequest.builder()
                 .customerCode(ePointEntity.getCustomerCode())
-                .epointGained(ePointEntity.getEpointGained())
-                .eloyGained(ePointEntity.getEpointGained())
-                .build();
-        kafkaTemplate.send(Constants.KafkaConstants.CUSTOMER_TOPIC, message).addCallback(result -> {
-            log.info("Kafka send message success: {} - {} \n {}", Constants.KafkaConstants.CUSTOMER_TOPIC, result.getProducerRecord().partition(),
-                    ObjectUtil.prettyPrintJsonObject(message));
-        }, ex -> {
-            // TODO: implement outbox pattern
-            log.error("Kafka send message failed: {} - \n{} \n {}", Constants.KafkaConstants.CUSTOMER_TOPIC,
-                    ObjectUtil.prettyPrintJsonObject(message), ex.getMessage());
-        });
+                .totalEpoint(ePointEntity.getEpointGained())
+                .gainedEloy(ePointEntity.getEpointGained())
+                .build()));
     }
+
+
+    private void handler(String message) {
+
+        Orchestration orchestration = new Orchestration() {};
+    }
+
 }

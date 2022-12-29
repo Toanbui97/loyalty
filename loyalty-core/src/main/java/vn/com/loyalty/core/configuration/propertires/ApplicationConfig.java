@@ -1,6 +1,7 @@
 package vn.com.loyalty.core.configuration.propertires;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.logging.LogLevel;
@@ -22,8 +23,8 @@ public class ApplicationConfig {
     @Bean
     public WebClient getWebClient() {
         HttpClient httpClient = HttpClient.create()
-                .wiretap("reactor.netty.http.client.HttpClient",
-                        LogLevel.INFO, AdvancedByteBufFormat.TEXTUAL)
+//                .wiretap("reactor.netty.http.client.HttpClient",
+//                        LogLevel.INFO, AdvancedByteBufFormat.TEXTUAL)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .responseTimeout(Duration.ofMillis(5000))
                 .doOnConnected(conn ->
@@ -39,6 +40,7 @@ public class ApplicationConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper.findAndRegisterModules();
     }
 }

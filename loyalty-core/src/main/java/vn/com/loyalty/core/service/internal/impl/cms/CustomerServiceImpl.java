@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import vn.com.loyalty.core.dto.kafka.CustomerMessageDto;
+import vn.com.loyalty.core.dto.message.CustomerMessageDto;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.dto.request.CustomerRequest;

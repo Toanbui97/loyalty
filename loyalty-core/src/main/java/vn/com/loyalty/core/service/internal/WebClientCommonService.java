@@ -1,10 +1,15 @@
 package vn.com.loyalty.core.service.internal;
 
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface WebClientCommonService {
+
+    <T> Mono<T> getAsync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz);
+
+    <T, R> Mono<T> postAsync(String baseUrl, String uri, R requestBody, Class<T> clazz);
 
     <T> T getSync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz);
 

@@ -1,9 +1,9 @@
-package vn.com.loyalty.core.dto.kafka;
+package vn.com.loyalty.core.dto.message;
 
-import com.fasterxml.classmate.AnnotationOverrides;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
+import vn.com.loyalty.core.utils.DateTimeUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,7 +20,8 @@ public class TransactionMessageDto implements Serializable {
     String transactionId;
     String customerCode;
     String transactionType;
-    String transactionTime;
+    @DateTimeFormat(pattern = DateTimeUtils.ISO_8601_FORMAT)
+    LocalDateTime transactionTime;
     Data data;
 
     @Getter
@@ -30,6 +31,6 @@ public class TransactionMessageDto implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Data implements Serializable {
-        String transactionValue;
+        BigDecimal transactionValue;
     }
 }

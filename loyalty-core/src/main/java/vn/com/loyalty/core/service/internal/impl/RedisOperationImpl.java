@@ -2,7 +2,6 @@ package vn.com.loyalty.core.service.internal.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.constant.Constants;
@@ -35,5 +34,9 @@ public class RedisOperationImpl implements RedisOperation {
         return Constants.RedisConstants.EPOINT_DIR + customerCode;
     }
 
+    @Override
+    public void discard() {
+        redisTemplate.discard();
+    }
 
 }

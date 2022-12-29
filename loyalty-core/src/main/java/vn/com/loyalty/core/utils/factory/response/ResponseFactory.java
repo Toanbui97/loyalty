@@ -41,7 +41,6 @@ public class ResponseFactory {
     }
 
     public ResponseEntity<BodyResponse<Object>> fail(HttpStatus status, ResponseStatusCode statusCode) {
-
         BodyResponse<Object> generalRes = new BodyResponse<>(statusCode, null, Constants.RESPONSE_STATUS_FAIL);
         log.error(" ====== > Exception - {code: {}, message: {}}", statusCode.getCode(), generalRes.getMessage());
         return ResponseEntity.status(status).body(generalRes);

@@ -8,4 +8,6 @@ public interface RedisOperation {
     boolean hasValue(String key);
 
     String genEpointKey(String customerCode);
+
+    void discard();
 }

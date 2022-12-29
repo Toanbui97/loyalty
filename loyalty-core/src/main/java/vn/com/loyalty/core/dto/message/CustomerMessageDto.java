@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.dto.kafka;
+package vn.com.loyalty.core.dto.message;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

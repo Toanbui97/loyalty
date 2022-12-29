@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import vn.com.loyalty.core.constant.Constants;
-import vn.com.loyalty.core.dto.kafka.CustomerMessageDto;
+import vn.com.loyalty.core.dto.message.CustomerMessageDto;
 import vn.com.loyalty.core.service.internal.CustomerService;
 
 @KafkaListener(topics = Constants.KafkaConstants.CUSTOMER_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)

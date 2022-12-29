@@ -38,16 +38,6 @@ spring:
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
-    jedis:
-      pool:
-        max-active: 200
-        max-idle: 200
-        min-idle: 50
-        test-on-borrow: true
-        test-on-return: true
-        test-while-idle: false
-        block-when-exhausted: true
-        max-wait: 10
     lettuce:
       pool:
         time-between-eviction-runs: 30

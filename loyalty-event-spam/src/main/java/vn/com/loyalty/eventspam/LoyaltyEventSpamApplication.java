@@ -1,9 +1,5 @@
 package vn.com.loyalty.eventspam;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.util.concurrent.Future;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -11,22 +7,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.redis.connection.FutureResult;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.SuccessCallback;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.kafka.TransactionMessageDto;
+import vn.com.loyalty.core.dto.message.TransactionMessageDto;
 import vn.com.loyalty.core.utils.ObjectUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 @SpringBootApplication
@@ -64,21 +58,21 @@ public class LoyaltyEventSpamApplication {
 
 
         return TransactionMessageDto.builder()
-                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21fa")
+                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" + new Random().nextInt(10))
                 .transactionId(UUID.randomUUID().toString())
-                .transactionTime(LocalDateTime.now().toString())
+                .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
-                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(92187321).toString()).build())
+                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
                 .build();
     }
 
     private TransactionMessageDto buildTransactionBoundMessage() {
         return TransactionMessageDto.builder()
-                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21fa")
+                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" +  new Random().nextInt(10))
                 .transactionId(UUID.randomUUID().toString())
-                .transactionTime(LocalDateTime.now().toString())
+                .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.BOUND_TYPE.getType())
-                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(921857321).toString()).build())
+                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
                 .build();
     }
 

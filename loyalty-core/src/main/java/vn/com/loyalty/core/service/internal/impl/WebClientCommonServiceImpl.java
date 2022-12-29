@@ -50,6 +50,18 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
     }
 
     @Override
+    public <T> Mono<T> getAsync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz) {
+        WebClient.RequestHeadersSpec<?> requestHeadersSpec = setUpUriAndBodyAndHeaders(baseUrl, uri, params, null, HttpMethod.GET);
+        return requestHeadersSpec.retrieve().bodyToMono(clazz);
+    }
+
+    @Override
+    public <T, R> Mono<T> postAsync(String baseUrl, String uri, R requestBody, Class<T> clazz) {
+        WebClient.RequestHeadersSpec<?> requestHeadersSpec = setUpUriAndBodyAndHeaders(baseUrl, uri, null, requestBody, HttpMethod.POST);
+        return requestHeadersSpec.retrieve().bodyToMono(clazz);
+    }
+
+    @Override
     public <T> T getSync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz) {
         WebClient.RequestHeadersSpec<?> requestHeadersSpec = setUpUriAndBodyAndHeaders(baseUrl, uri, params, null, HttpMethod.GET);
         return processMonoResponse(requestHeadersSpec, clazz);
