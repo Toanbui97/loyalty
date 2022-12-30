@@ -1,23 +1,30 @@
 package vn.com.loyalty.core.orchestration;
 
-import org.springframework.util.concurrent.ListenableFutureTask;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import vn.com.loyalty.core.constant.Constants;
-import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
 import vn.com.loyalty.core.dto.request.BodyRequest;
+import vn.com.loyalty.core.exception.OrchestrationException;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 public class Orchestration {
 
     private final List<OrchestrationStep> orchestrationPool;
 
-    public Orchestration(OrchestrationStep... steps) {
-        this.orchestrationPool = Arrays.stream(steps).toList();
+    private Orchestration(List<OrchestrationStep> orchestrationPool) {
+        super();
+        this.orchestrationPool = orchestrationPool;
     }
 
     public <T> Boolean syncProcessOrchestration(T data){
@@ -31,37 +38,58 @@ public class Orchestration {
         return true;
     }
 
-    public <T, S> Boolean asyncProcessOrchestration(T data) {
+    public <T> void asyncProcessOrchestration(T data) throws OrchestrationException {
 
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        for (OrchestrationStep step : orchestrationPool) {
-            ListenableFutureTask<BodyResponse<S>> future = new ListenableFutureTask<>(() -> step.process(BodyRequest.of(data)));
-            future.addCallback(
-                    response -> {
-                        if (response != null && !ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
-                            step.rollback(BodyRequest.of(data));
-                        }
-                    }, error -> step.rollback(BodyRequest.of(data))
-            );
-            executorService.submit(future);
+        ExecutorService service = Executors.newFixedThreadPool(orchestrationPool.size());
+
+        CompletableFuture.allOf(orchestrationPool.stream()
+                        .map(step -> CompletableFuture.supplyAsync(() -> step.process(BodyRequest.of(data)), service))
+                        .toArray(CompletableFuture[]::new))
+                .join();
+
+        service.shutdown();
+        log.info("Pool done");
+
+        if (this.orchestrationPool.stream().anyMatch(step -> !Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus()))) {
+            this.rollbackOrchestration(new Object());
         }
-
-        executorService.shutdown();
-        return null;
     }
 
     private <T> void rollbackOrchestration(T data) {
-        List<OrchestrationStep> rollbackPool = this.orchestrationPool.stream().filter(step -> Constants.OrchestrationStepStatus.STATUS_FAILED.equals(step.getStepStatus()))
-                .collect(Collectors.toList());
 
-        for (OrchestrationStep step : rollbackPool) {
-            step.rollback(BodyRequest.of(data));
+        Flux.fromStream(this.orchestrationPool.stream())
+                .flatMap(step -> {
+                    step.rollback(BodyRequest.of(data));
+                    return Mono.just(step);
+                })
+                .retry(3)
+                .handle((step, synchronousSink) -> {
+                    if (!Constants.OrchestrationStepStatus.STATUS_ROLLBACKED.equals(step.getStepStatus())) {
+                        //TODO save to db to manual process
+                    }
+                    synchronousSink.complete();
+                }).subscribe();
+
+    }
+
+    public static Orchestration ofSteps(OrchestrationStep... steps) {
+        return new Orchestration.OrchestrationBuilder().orchestrationPool(steps).build();
+    }
+
+    public static class OrchestrationBuilder {
+        private List<OrchestrationStep> orchestrationPool;
+
+        private Orchestration.OrchestrationBuilder orchestrationPool(OrchestrationStep... steps) {
+            this.orchestrationPool = Arrays.stream(steps).toList();
+            return this;
+        }
+
+        private Orchestration build() {
+            if (this.orchestrationPool.isEmpty()) {
+                this.orchestrationPool = new ArrayList<>();
+            }
+            return new Orchestration(this.orchestrationPool);
         }
     }
-
-    List<OrchestrationStep> getOrchestrationPool() {
-        return this.orchestrationPool;
-    }
-
 
 }

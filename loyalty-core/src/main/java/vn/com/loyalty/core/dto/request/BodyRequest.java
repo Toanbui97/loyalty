@@ -18,7 +18,7 @@ public class BodyRequest<T> implements Serializable {
 
     public static <T> BodyRequest<T> of(T data){
 
-        BodyRequest bodyRequest = new BodyRequest();
+        BodyRequest<T> bodyRequest = new BodyRequest<>();
         bodyRequest.setRequestId(UUID.randomUUID().toString());
         bodyRequest.setData(data);
         return bodyRequest;

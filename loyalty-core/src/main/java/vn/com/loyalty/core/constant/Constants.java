@@ -38,7 +38,8 @@ public class Constants {
     public static final class OrchestrationStepStatus {
 
         public static final String STATUS_PENDING = "PENDING";
-        public static final String STATUS_COMPLETE = "COMPLETE";
+        public static final String STATUS_COMPLETED = "COMPLETE";
         public static final String STATUS_FAILED = "FAILED";
+        public static final String STATUS_ROLLBACKED = "ROLLBACK";
     }
 }

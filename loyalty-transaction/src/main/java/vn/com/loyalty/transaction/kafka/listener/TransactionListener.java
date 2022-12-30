@@ -80,7 +80,7 @@ public class TransactionListener {
 
 
 
-        // TODO: handle rollback when call update customer failed
+        // TODO : handle rollback when call update customer failed
         service.shutdown();
 
         return "success";
@@ -110,7 +110,6 @@ public class TransactionListener {
 
     private void handler(String message) {
 
-        Orchestration orchestration = new Orchestration() {};
     }
 
 }

@@ -1,10 +1,12 @@
 package vn.com.loyalty.core.orchestration;
 
+import lombok.extern.slf4j.Slf4j;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
+@Slf4j
 public abstract class OrchestrationStep {
 
 
@@ -14,35 +16,43 @@ public abstract class OrchestrationStep {
         return this.stepStatus;
     }
 
-    <T, S> BodyResponse<T> process(BodyRequest<S> request) {
+    <T, V> BodyResponse<V> process(BodyRequest<T> request) {
 
         try {
-            BodyResponse<T> response = this.handleProcess(request);
+            BodyResponse<V> response = this.handleProcess(request);
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
-                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_COMPLETE;
+                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_COMPLETED;
+            } else {
+                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
+            }
+            log.info(response.getData() + " done");
+            return response;
+        } catch (Exception e) {
+            this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
+            return BodyResponse.<V>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
+        }
+
+    }
+
+    <T, V> BodyResponse<V> rollback(BodyRequest<T> request) {
+        try {
+            BodyResponse<V> response = this.handleRollback(request);
+            if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
+                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACKED;
             } else {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             }
             return response;
         } catch (Exception e) {
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
-            throw e;
+            return BodyResponse.<V>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
-
     }
 
-    void rollback(BodyRequest<?> request) {
-        try {
-            this.handleRollback(request);
-            this.stepStatus = Constants.OrchestrationStepStatus.STATUS_COMPLETE;
-        } catch (Exception e) {
-            this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
-        }
 
-    }
-    abstract <T, S> BodyResponse<S> handleProcess(BodyRequest<T> request);
+    abstract <T, V> BodyResponse<V> handleProcess(BodyRequest<T> request);
 
-    abstract <T, S> BodyResponse<S> handleRollback(BodyRequest<T> request);
+    abstract <T, V> BodyResponse<V> handleRollback(BodyRequest<T> request);
 
 
 }
