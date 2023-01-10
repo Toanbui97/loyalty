@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.configuration.propertires;
+package vn.com.loyalty.core.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,11 +10,13 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 import java.time.Duration;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -42,5 +44,17 @@ public class ApplicationConfig {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return objectMapper.findAndRegisterModules();
+    }
+
+    @Bean
+    public Executor asyncExecutor() {
+
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1000);
+        executor.setMaxPoolSize(1000);
+        executor.setQueueCapacity(1000);
+        executor.setThreadNamePrefix("Async-");
+        executor.initialize();
+        return  executor;
     }
 }

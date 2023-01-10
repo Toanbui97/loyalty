@@ -38,7 +38,7 @@ public abstract class OrchestrationStep {
         try {
             BodyResponse<V> response = this.handleRollback(request);
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
-                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACKED;
+                this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACK;
             } else {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             }

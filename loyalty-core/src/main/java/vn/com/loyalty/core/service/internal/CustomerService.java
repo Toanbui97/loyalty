@@ -17,5 +17,5 @@ public interface CustomerService {
 
     CustomerResponse updateCustomer(CustomerRequest customerRequest);
 
-    void handlePointGained(CustomerMessageDto customerMessageDto);
+    CustomerResponse updateGainPoint(CustomerRequest data);
 }

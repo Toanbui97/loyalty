@@ -25,7 +25,7 @@ public class Constants {
 
     public static final class KafkaConstants {
         public static final String TRANSACTION_TOPIC = "loyalty_transaction_topic";
-        public static final String CUSTOMER_TOPIC = "loylaty_customer_topic";
+        public static final String CUSTOMER_TOPIC = "loyalty_customer_topic";
         public static final String TRANSACTION_GROUP = "loyalty_transaction_group";
         public static final String CUSTOMER_GROUP = "loyalty_customer_group";
     }
@@ -40,6 +40,6 @@ public class Constants {
         public static final String STATUS_PENDING = "PENDING";
         public static final String STATUS_COMPLETED = "COMPLETE";
         public static final String STATUS_FAILED = "FAILED";
-        public static final String STATUS_ROLLBACKED = "ROLLBACK";
+        public static final String STATUS_ROLLBACK = "ROLLBACK";
     }
 }

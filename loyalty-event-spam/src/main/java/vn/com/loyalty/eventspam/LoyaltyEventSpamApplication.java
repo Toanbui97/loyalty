@@ -16,10 +16,13 @@ import org.springframework.util.concurrent.ListenableFuture;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.TransactionMessageDto;
+import vn.com.loyalty.core.entity.cms.CustomerEntity;
+import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.utils.ObjectUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -35,8 +38,13 @@ public class LoyaltyEventSpamApplication {
     @Autowired
     KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
+
     @Scheduled(cron = "0/15 * * * * *")
     private void sendMessage() {
+
         TransactionMessageDto message = this.buildTransactionStockMessage();
         ListenableFuture<SendResult<String, Object>> sendResult = kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message);
         sendResult.addCallback(result -> {
@@ -55,18 +63,20 @@ public class LoyaltyEventSpamApplication {
     }
 
     private TransactionMessageDto buildTransactionStockMessage() {
-
+        List<CustomerEntity> customerCode = customerRepository.findAll();
 
         return TransactionMessageDto.builder()
-                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" + new Random().nextInt(10))
+                .customerCode(customerCode.get(new Random().nextInt(customerCode.size())).getCustomerCode())
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
-                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
+                .data(TransactionMessageDto.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt(10000))).build())
                 .build();
     }
 
     private TransactionMessageDto buildTransactionBoundMessage() {
+
+
         return TransactionMessageDto.builder()
                 .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" +  new Random().nextInt(10))
                 .transactionId(UUID.randomUUID().toString())

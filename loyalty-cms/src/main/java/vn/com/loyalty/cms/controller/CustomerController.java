@@ -43,5 +43,10 @@ public class CustomerController {
         return responseFactory.success(customerService.getListCustomer(pageable));
     }
 
+    @PostMapping("/performUpdateGainPoint")
+    public ResponseEntity<BodyResponse<CustomerResponse>> updateGainPoint(@RequestBody BodyRequest<CustomerRequest> req) {
+        return responseFactory.success(customerService.updateGainPoint(req.getData()));
+    }
+
 
 }

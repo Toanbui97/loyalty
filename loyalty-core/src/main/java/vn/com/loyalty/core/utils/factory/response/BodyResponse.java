@@ -21,12 +21,13 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BodyResponse<T> implements Serializable {
 
-
     private int status; // 1: Success, 0: Fail
     private String code;
     private String message;
     private String errorMessage;
     private String requestId;
+    private LocalDateTime responseTime;
+    private List<String> details;
     private Integer page;
     private Integer size;
     private Long totalRecord;
@@ -35,11 +36,9 @@ public class BodyResponse<T> implements Serializable {
     private List<T> dataList;
 
 
-    @JsonFormat(pattern = DateTimeUtils.FORMAT_DATE_TIME3)
-    private LocalDateTime responseTime;
-    private List<String> details;
 
     public BodyResponse(int status, ResponseStatusCode responseStatusCode){
+        this.responseTime = LocalDateTime.now();
         this.status = status;
         this.code = responseStatusCode.getCode();
         this.message = responseStatusCode.getMessage();
@@ -47,6 +46,7 @@ public class BodyResponse<T> implements Serializable {
     }
 
     public BodyResponse(int status, ResponseStatusCode responseStatusCode, String requestId) {
+        this.responseTime = LocalDateTime.now();
         this.status = status;
         this.code = responseStatusCode.getCode();
         this.message = responseStatusCode.getMessage();

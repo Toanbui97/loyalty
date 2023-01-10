@@ -21,6 +21,7 @@ public class CustomerRequest implements Serializable {
     Long activeVoucher;
     BigDecimal totalEpoint;
     BigDecimal totalEloy;
-    BigDecimal gainedEpoint;
-    BigDecimal gainedEloy;
+    BigDecimal gainEpoint;
+    BigDecimal gainEloy;
+    BigDecimal spendPoint;
 }

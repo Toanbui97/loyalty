@@ -7,7 +7,7 @@ import vn.com.loyalty.core.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Table(name = "transaction_income", schema = "transaction")
+@Table(name = "transaction_message", schema = "transaction")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class TransactionIncomeEntity extends BaseEntity {
-
+public class TransactionMessageEntity extends BaseEntity {
     String messageReceived;
 }

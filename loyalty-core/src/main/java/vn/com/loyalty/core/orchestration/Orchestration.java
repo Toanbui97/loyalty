@@ -64,7 +64,7 @@ public class Orchestration {
                 })
                 .retry(3)
                 .handle((step, synchronousSink) -> {
-                    if (!Constants.OrchestrationStepStatus.STATUS_ROLLBACKED.equals(step.getStepStatus())) {
+                    if (!Constants.OrchestrationStepStatus.STATUS_ROLLBACK.equals(step.getStepStatus())) {
                         //TODO save to db to manual process
                     }
                     synchronousSink.complete();

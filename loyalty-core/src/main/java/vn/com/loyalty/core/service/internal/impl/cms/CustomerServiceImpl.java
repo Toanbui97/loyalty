@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.dto.message.CustomerMessageDto;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
+import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
@@ -14,6 +15,7 @@ import vn.com.loyalty.core.mapper.CustomerMapper;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final RedisOperation redisOperation;
 
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
@@ -41,6 +44,11 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse getCustomer(String customerCode)  {
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
+        BigDecimal cacheEpoint = BigDecimal.valueOf( (Double) redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode())));
+        if (!cacheEpoint.equals(customerEntity.getTotalEpoint())) {
+            customerEntity.setTotalEpoint(cacheEpoint);
+            customerRepository.save(customerEntity);
+        }
         return customerMapper.entityToDTO(customerEntity);
     }
 
@@ -53,21 +61,14 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.entityToDTO(customerEntity);
     }
 
+
     @Override
-    public void handlePointGained(CustomerMessageDto customerMessageDto) {
-        if (customerRepository.existsByCustomerCode(customerMessageDto.getCustomerCode())) {
-            CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerMessageDto.getCustomerCode())
-                    .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerMessageDto.getCustomerCode()));
-            customerEntity.setTotalEloy(customerEntity.getTotalEloy().add(customerMessageDto.getEloyGained()));
-            customerEntity.setTotalEpoint(customerEntity.getTotalEpoint().add(customerMessageDto.getEpointGained()));
-            customerRepository.save(customerEntity);
-        } else {
-            customerRepository.save(CustomerEntity.builder()
-                    .customerCode(customerMessageDto.getCustomerCode())
-                    .totalEloy(customerMessageDto.getEloyGained())
-                    .totalEpoint(customerMessageDto.getEpointGained())
-                    .build());
-        }
+    public CustomerResponse updateGainPoint(CustomerRequest customerRequest) {
+
+        CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerRequest.getCustomerCode())
+                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerRequest.getCustomerCode()));
+
+        return null;
     }
 
     private String generateCustomerCode() {
