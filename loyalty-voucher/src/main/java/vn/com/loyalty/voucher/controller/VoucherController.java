@@ -52,7 +52,8 @@ public class VoucherController {
     }
 
     @PostMapping("/receiveVoucherList/{customerCode}")
-    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@PathVariable String customerCode, @PageableDefault Pageable page) {
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherRequest> request
+            , @PathVariable String customerCode, @PageableDefault Pageable page) {
         return responseFactory.success(voucherService.getVoucherListOfCustomer(customerCode, page));
     }
 
