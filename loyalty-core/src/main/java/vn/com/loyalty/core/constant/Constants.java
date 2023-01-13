@@ -32,7 +32,8 @@ public class Constants {
 
 
     public static final class RedisConstants {
-        public static final String EPOINT_DIR = "EPOINT_";
+        public static final String EPOINT_DIR = "EPOINT:";
+        public static final String RPOINT_DIR = "RPOINT:";
     }
 
     public static final class OrchestrationStepStatus {
@@ -41,5 +42,11 @@ public class Constants {
         public static final String STATUS_COMPLETED = "COMPLETE";
         public static final String STATUS_FAILED = "FAILED";
         public static final String STATUS_ROLLBACK = "ROLLBACK";
+    }
+
+    public static final class MasterDataKey {
+        public static final String EPOINT_EXPIRE_TIME = "EPOINT_EXPIRE_TIME";
+        public static final String RANK_EXPIRE_TIME = "RANk_EXPIRE_TIME";
+        public static final String POINT_TO_VALUE = "POINT_TO_VALUE";
     }
 }

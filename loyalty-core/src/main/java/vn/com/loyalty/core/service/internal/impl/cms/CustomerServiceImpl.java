@@ -1,10 +1,11 @@
 package vn.com.loyalty.core.service.internal.impl.cms;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import vn.com.loyalty.core.dto.message.CustomerMessageDto;
+import vn.com.loyalty.core.entity.cache.CustomerPointCache;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.utils.ObjectUtil;
@@ -15,7 +16,6 @@ import vn.com.loyalty.core.mapper.CustomerMapper;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -25,11 +25,23 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final RedisOperation redisOperation;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(pageable);
-        return customerEntityPage.map(customerMapper::entityToDTO);
+
+        return customerEntityPage.map(customer -> {
+
+            CustomerPointCache customerPointCache = objectMapper.convertValue(redisOperation.getValue(redisOperation.genEpointKey(customer.getCustomerCode()))
+                    , CustomerPointCache.class);
+            customer.setTotalRpoint(customerPointCache.getRpoint());
+            customer.setTotalEpoint(customerPointCache.getEpoint());
+
+            customerRepository.save(customer);
+
+            return customerMapper.entityToDTO(customer);
+        });
     }
 
     @Override
@@ -42,13 +54,19 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCustomer(String customerCode)  {
+
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
-        BigDecimal cacheEpoint = BigDecimal.valueOf( (Double) redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode())));
-        if (!cacheEpoint.equals(customerEntity.getTotalEpoint())) {
-            customerEntity.setTotalEpoint(cacheEpoint);
+        CustomerPointCache customerPointCache = objectMapper.convertValue(redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode())), CustomerPointCache.class);
+
+        if (!customerPointCache.getEpoint().equals(customerEntity.getTotalEpoint())
+                || !customerPointCache.getRpoint().equals(customerEntity.getTotalEpoint())) {
+
+            customerEntity.setTotalEpoint(customerEntity.getTotalEpoint());
+            customerEntity.setTotalRpoint(customerPointCache.getRpoint());
             customerRepository.save(customerEntity);
         }
+
         return customerMapper.entityToDTO(customerEntity);
     }
 

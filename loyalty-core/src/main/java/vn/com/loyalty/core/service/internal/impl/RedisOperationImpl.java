@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -21,12 +24,17 @@ public class RedisOperationImpl implements RedisOperation {
 
     @Override
     public <T> T getValue(String key) {
-        return (T) redisTemplate.opsForValue().get(key);
+        try {
+            return (T) redisTemplate.opsForValue().get(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean hasValue(String key) {
-        return redisTemplate.hasKey(key) && redisTemplate.opsForValue().get(key) != null;
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key)) && redisTemplate.opsForValue().get(key) != null;
     }
 
     @Override
@@ -35,8 +43,28 @@ public class RedisOperationImpl implements RedisOperation {
     }
 
     @Override
-    public void discard() {
+    public String genRpointKey(String customerCode) {
+        return Constants.RedisConstants.RPOINT_DIR + customerCode;
+    }
+
+    @Override
+    public void rollback() {
         redisTemplate.discard();
     }
 
+    @Override
+    public void watchAndBegin(String... keys) {
+        redisTemplate.watch(Arrays.stream(keys).toList());
+        redisTemplate.multi();
+    }
+
+    @Override
+    public void begin() {
+        redisTemplate.multi();
+    }
+
+    @Override
+    public void commit() {
+        redisTemplate.exec();
+    }
 }

@@ -9,5 +9,12 @@ public interface RedisOperation {
 
     String genEpointKey(String customerCode);
 
-    void discard();
+    String genRpointKey(String customerCode);
+
+    void watchAndBegin(String... keys);
+
+    void begin();
+    void commit();
+
+    void rollback();
 }

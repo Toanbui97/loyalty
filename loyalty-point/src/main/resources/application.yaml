@@ -1,8 +1,8 @@
 server:
-  port: ${SERVER_PORT:8081}
+  port: ${SERVER_PORT:8083}
 spring:
   application:
-    name: loyalty-event-spam
+    name: loyalty-transaction
   jpa:
     open-in-view: false
     properties:
@@ -27,7 +27,7 @@ spring:
     producer:
      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+     value-serializer: org.apache.kafka.common.serialization.StringSerializer
     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     retries: 5
     deliveryTimeout: 20000
@@ -43,8 +43,8 @@ spring:
       pool:
         time-between-eviction-runs: 30
         min-idle: 60
-      shutdown-timeout: 10000
-    timeout: 10000
+        num-test-per-eviction-run: 3
+
 management:
   endpoint:
     health:
@@ -71,4 +71,5 @@ webclient:
     maxBackoff: 5
   cms-service:
     base-url: ${CMS_SERVICE_BASE_URL}
-    update_disbursements_amount: /api/v1/update_rank
+    receive_customer_info: /api/v1/receiveCustomer/{customerCode}
+    perform_update_customer: /api/v1/performUpdateCustomer

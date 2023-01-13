@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Table(name = "customer", schema = "cms")
 @Entity
@@ -23,7 +24,10 @@ public class CustomerEntity extends BaseEntity {
     String customerCode;
     Long activeVoucher;
     BigDecimal totalEpoint;
-    BigDecimal totalEloy;
+    BigDecimal totalRpoint;
+    Long rank;
+    LocalDateTime rankExpired;
+
 
     @PrePersist
     public void prePersist() {
@@ -31,13 +35,14 @@ public class CustomerEntity extends BaseEntity {
             this.activeVoucher = 0L;
         }
 
-        if (this.totalEloy == null) {
-            this.totalEloy = BigDecimal.ZERO;
+        if (this.totalRpoint == null) {
+            this.totalRpoint = BigDecimal.ZERO;
         }
 
         if (this.totalEpoint == null) {
             this.totalEpoint = BigDecimal.ZERO;
         }
+
     }
 
 }

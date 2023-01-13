@@ -7,8 +7,10 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -46,15 +48,4 @@ public class ApplicationConfig {
         return objectMapper.findAndRegisterModules();
     }
 
-    @Bean
-    public Executor asyncExecutor() {
-
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1000);
-        executor.setMaxPoolSize(1000);
-        executor.setQueueCapacity(1000);
-        executor.setThreadNamePrefix("Async-");
-        executor.initialize();
-        return  executor;
-    }
 }

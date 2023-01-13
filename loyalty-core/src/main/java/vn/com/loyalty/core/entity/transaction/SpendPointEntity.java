@@ -2,7 +2,6 @@ package vn.com.loyalty.core.entity.transaction;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
@@ -10,7 +9,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "transaction", schema = "transaction")
+@Table(name = "spend_point", schema = "transaction")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -18,15 +17,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class TransactionEntity extends BaseEntity {
+public class SpendPointEntity extends BaseEntity {
 
-    String transactionId;
     String customerCode;
-    TransactionType transactionType;
+    String transactionId;
+    BigDecimal epointSpend;
     LocalDateTime transactionTime;
-    BigDecimal transactionValue;
-    BigDecimal transactionDiscount;
-    BigDecimal pointToDiscount;
-    BigDecimal epointGain;
-    BigDecimal rpointGain;
 }

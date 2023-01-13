@@ -23,7 +23,8 @@ public class VoucherDetailEntity extends BaseEntity {
     String voucherCode;
     String voucherDetailCode;
     String customerCode;
-    boolean inactive;
+    Long transactionId;
     @Enumerated(EnumType.STRING)
     VoucherStatusCode status;
+
 }

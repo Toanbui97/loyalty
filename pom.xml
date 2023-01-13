@@ -24,7 +24,7 @@
         <module>loyalty-voucher</module>
         <module>loyalty-migration</module>
         <module>loyalty-event-spam</module>
-        <module>loyalty-transaction</module>
+        <module>loyalty-point</module>
     </modules>
 
     <properties>

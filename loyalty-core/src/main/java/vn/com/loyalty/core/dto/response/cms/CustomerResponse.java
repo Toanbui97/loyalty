@@ -18,6 +18,6 @@ public class CustomerResponse {
     String customerName;
     String customerCode;
     BigDecimal totalEpoint;
-    BigDecimal totalEloy;
+    BigDecimal totalRpoint;
     Long activeVoucher;
 }
