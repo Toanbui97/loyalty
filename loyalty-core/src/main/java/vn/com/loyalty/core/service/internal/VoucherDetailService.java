@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface VoucherDetailService {
     Page<VoucherDetailResponse> getVoucherDetailList(String voucherCode, Pageable pageable);
+    Page<VoucherDetailResponse> getVoucherDetailListOfCustomer(String customerCode, Pageable pageable);
     List<VoucherDetailResponse> generateVoucherDetail(VoucherEntity voucher);
     List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode);
 }

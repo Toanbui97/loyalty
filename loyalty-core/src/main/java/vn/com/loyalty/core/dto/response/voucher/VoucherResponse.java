@@ -3,6 +3,9 @@ package vn.com.loyalty.core.dto.response.voucher;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +22,5 @@ public class VoucherResponse {
     Long totalVoucher;
     Long active;
     Long inActive;
+    List<VoucherDetailResponse> detailEntities;
 }

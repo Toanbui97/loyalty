@@ -12,9 +12,13 @@ import java.util.List;
 public interface VoucherService {
     List<VoucherResponse> getAllVoucher();
 
+    Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page);
+
     VoucherResponse createVoucher(VoucherRequest request);
 
     VoucherResponse buyVoucher(String voucherCode);
 
     Page<VoucherResponse> getVoucherList(Pageable page);
+
+
 }

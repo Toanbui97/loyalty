@@ -7,6 +7,7 @@ import vn.com.loyalty.core.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Table(name = "voucher", schema = "voucher")
 @Entity
@@ -21,7 +22,8 @@ public class VoucherEntity extends BaseEntity {
     String voucherName;
     String voucherCode;
     String description;
-    Long inactiveVoucher;
+    boolean inactive;
     Long totalVoucher;
     BigDecimal discountPercent;
+    LocalDateTime expireTime;
 }

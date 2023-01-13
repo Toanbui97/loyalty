@@ -22,11 +22,18 @@ import java.util.stream.Collectors;
 public class VoucherDetailServiceImpl implements VoucherDetailService {
 
     private final VoucherDetailRepository voucherDetailRepository;
+
     private final VoucherDetailMapper voucherDetailMapper;
 
     @Override
     public Page<VoucherDetailResponse> getVoucherDetailList(String voucherCode, Pageable pageable) {
         Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByVoucherCode(voucherCode, pageable);
+        return voucherDetailEntityPage.map(voucherDetailMapper::entityToDTO);
+    }
+
+    @Override
+    public Page<VoucherDetailResponse> getVoucherDetailListOfCustomer(String customerCode, Pageable pageable) {
+        Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCode(customerCode, pageable);
         return voucherDetailEntityPage.map(voucherDetailMapper::entityToDTO);
     }
 

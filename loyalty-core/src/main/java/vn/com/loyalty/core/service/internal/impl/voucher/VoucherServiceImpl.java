@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
+import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.utils.RequestUtil;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
@@ -27,16 +29,19 @@ import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class VoucherServiceImpl implements VoucherService {
 
     private final VoucherRepository voucherRepository;
     private final VoucherMapper voucherMapper;
+    private final VoucherDetailMapper voucherDetailMapper;
     private final VoucherDetailService voucherDetailService;
     private final HttpServletRequest httpRequest;
     private final VoucherDetailRepository voucherDetailRepository;
@@ -56,11 +61,24 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page) {
+        Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCode(customerCode, page);
+        return voucherDetailEntityPage.map(detail -> {
+            VoucherResponse response = voucherMapper.entityToDTO(voucherRepository.findByVoucherCode(detail.getCustomerCode())
+                    .orElseThrow(() -> new ResourceNotFoundException(VoucherEntity.class, detail.getVoucherCode())));
+
+            response.setDetailEntities(List.of(voucherDetailMapper.entityToDTO(detail)));
+
+            return response;
+        });
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public VoucherResponse createVoucher(VoucherRequest request) {
         VoucherEntity entity = voucherMapper.DTOToEntity(request);
         entity.setVoucherCode(UUID.randomUUID().toString());
-        entity.setInactiveVoucher(entity.getTotalVoucher());
+        entity.setInactive(false);
         entity = voucherRepository.save(entity);
         voucherDetailService.generateVoucherDetail(entity);
         return voucherMapper.entityToDTO(entity);
@@ -84,7 +102,6 @@ public class VoucherServiceImpl implements VoucherService {
         voucherDetailEntity.setStatus(VoucherStatusCode.BOUGHT);
 
         voucherDetailRepository.save(voucherDetailEntity);
-        voucherEntity.setInactiveVoucher(voucherEntity.getInactiveVoucher() - 1);
         voucherRepository.save(voucherEntity);
 
         cmsWebClient.performUpdateCustomerInfo(BodyRequest.of(CustomerRequest.builder()
@@ -94,6 +111,8 @@ public class VoucherServiceImpl implements VoucherService {
 
         return voucherMapper.entityToDTO(voucherEntity);
     }
+
+
 
 
 }
