@@ -25,8 +25,7 @@ public class TransactionEntity extends BaseEntity {
     TransactionType transactionType;
     LocalDateTime transactionTime;
     BigDecimal transactionValue;
-    BigDecimal transactionDiscount;
-    BigDecimal pointToDiscount;
     BigDecimal epointGain;
     BigDecimal rpointGain;
+    BigDecimal epointSpend;
 }

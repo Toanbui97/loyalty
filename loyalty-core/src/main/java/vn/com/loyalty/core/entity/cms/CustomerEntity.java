@@ -9,6 +9,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Table(name = "customer", schema = "cms")
 @Entity
@@ -41,6 +42,12 @@ public class CustomerEntity extends BaseEntity {
 
         if (this.totalEpoint == null) {
             this.totalEpoint = BigDecimal.ZERO;
+        }
+        if (this.rank == null) {
+            this.rank = 0L;
+        }
+        if (this.rankExpired == null) {
+            this.rankExpired = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         }
 
     }

@@ -38,6 +38,7 @@
         <com.sipios.version>0.2.4</com.sipios.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
         <fasterxml.jackson.datatype.version>2.13.3</fasterxml.jackson.datatype.version>
+        <jpamodelgen.version>5.6.12.Final</jpamodelgen.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +96,12 @@
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${fasterxml.jackson.datatype.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>5.6.12.Final</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -127,6 +134,11 @@
                                 <artifactId>mapstruct-processor</artifactId>
                                 <groupId>org.mapstruct</groupId>
                                 <version>${mapstruct.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-jpamodelgen</artifactId>
+                                <version>${jpamodelgen.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>

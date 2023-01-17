@@ -10,14 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
-import vn.com.loyalty.core.entity.transaction.GainPointEntity;
-import vn.com.loyalty.core.entity.transaction.SpendPointEntity;
-import vn.com.loyalty.core.entity.transaction.TransactionEntity;
-import vn.com.loyalty.core.entity.transaction.TransactionMessageEntity;
+import vn.com.loyalty.core.entity.transaction.*;
+import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
-import vn.com.loyalty.core.repository.GainPointRepository;
+import vn.com.loyalty.core.repository.CustomerPointRepository;
+import vn.com.loyalty.core.repository.EpointGainRepository;
+import vn.com.loyalty.core.repository.EpointSpendRepository;
 import vn.com.loyalty.core.repository.MasterDataRepository;
-import vn.com.loyalty.core.repository.SpendPointRepository;
 import vn.com.loyalty.core.service.internal.*;
 
 import java.math.BigDecimal;
@@ -35,8 +34,9 @@ public class TransactionListener {
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
     private final MasterDataRepository masterDataRepository;
-    private final GainPointRepository gainPointRepository;
-    private final SpendPointRepository spendPointRepository;
+    private final CustomerPointRepository customerPointRepository;
+    private final EpointGainRepository epointGainRepository;
+    private final EpointSpendRepository epointSpendRepository;
 
     @KafkaHandler
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
@@ -60,31 +60,15 @@ public class TransactionListener {
                     .transactionId(transactionMessage.getTransactionId())
                     .transactionValue(transactionMessage.getData().getTransactionValue())
                     .transactionType(TransactionType.valueOf(transactionMessage.getTransactionType()))
-                    .transactionDiscount(transactionMessage.getData().getTransactionValue())
-                    .pointToDiscount(epointSpend)
                     .epointGain(epointGain)
                     .rpointGain(rpointGain)
+                    .epointSpend(epointSpend)
                     .build());
-
-            gainPointRepository.save(GainPointEntity.builder()
-                    .customerCode(transactionMessage.getCustomerCode())
-                    .epointGain(epointGain)
-                    .rpointGain(rpointGain)
-                    .transactionId(transactionMessage.getTransactionId())
-                    .expireTime(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusMonths(Long.parseLong(masterDataRepository.findByKey(Constants.MasterDataKey.EPOINT_EXPIRE_TIME).getValue())))
-                    .build());
-
-            if (transactionMessage.getData().getPointToDiscount() != null) {
-                spendPointRepository.save(SpendPointEntity.builder()
-                        .transactionId(transactionMessage.getCustomerCode())
-                        .epointSpend(transactionMessage.getData().getPointToDiscount())
-                        .customerCode(transactionMessage.getCustomerCode()).build());
-            }
 
             this.savePointToRedis(transactionEntity);
             redisOperation.commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("ERROR: {}", e);
             redisOperation.rollback();
             throw new TransactionException(e.getMessage());
         }
@@ -97,11 +81,11 @@ public class TransactionListener {
 
         BigDecimal epoint = redisOperation.hasValue(epointKey) ? redisOperation.getValue(epointKey) : BigDecimal.ZERO;
 
-        if (epoint.compareTo(transaction.getPointToDiscount()) < 0) {
-            // TODO throw error. not enough point to use
+        if (epoint.compareTo(transaction.getEpointSpend()) < 0) {
+            throw new CustomerPointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
         }
 
-        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getPointToDiscount()));
+        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()));
 
         String rpointKey = redisOperation.genRpointKey(transaction.getCustomerCode());
         if (redisOperation.hasValue(rpointKey)) {
