@@ -22,7 +22,7 @@ public class ObjectUtil {
 
     public <S, T> T mergeObject(S source, T target) {
         try {
-            List<String> targetFields = Arrays.stream(target.getClass().getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+            List<String> targetFields = Arrays.stream(target.getClass().getDeclaredFields()).map(Field::getName).toList();
             for (Field field : source.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
                 if (field.get(source) != null
@@ -56,11 +56,4 @@ public class ObjectUtil {
             return null;
         }
     }
-
-    public static void main(String[] args) {
-        String s = "a";
-        s.concat("b");
-        System.out.println(s);
-    }
-
 }

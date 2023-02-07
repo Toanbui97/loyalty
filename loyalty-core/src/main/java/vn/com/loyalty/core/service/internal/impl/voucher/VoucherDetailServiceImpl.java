@@ -15,7 +15,6 @@ import vn.com.loyalty.core.service.internal.VoucherDetailService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,13 +48,13 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
                     .build());
         }
 
-        return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
+        return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(voucherDetailMapper::entityToDTO).toList();
     }
 
     @Override
     public List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode) {
         List<VoucherDetailEntity> voucherDetailInActiveEntityList = voucherDetailRepository.findByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY);
-        return voucherDetailInActiveEntityList.stream().map(voucherDetailMapper::entityToDTO).collect(Collectors.toList());
+        return voucherDetailInActiveEntityList.stream().map(voucherDetailMapper::entityToDTO).toList();
     }
 
     private String generateVoucherDetailCode(String voucherName) {

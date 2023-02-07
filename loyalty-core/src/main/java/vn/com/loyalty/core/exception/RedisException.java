@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class RedisException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
     public RedisException(String message) {
         this.message = message;

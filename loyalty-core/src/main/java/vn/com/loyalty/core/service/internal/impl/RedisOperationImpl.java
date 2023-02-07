@@ -8,7 +8,6 @@ import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Service
 @Slf4j

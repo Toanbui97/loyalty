@@ -131,7 +131,6 @@ public class BodyResponse<T> implements Serializable {
 
     public BodyResponse(ResponseStatusCode responseStatus, String requestId, List<T> dataList) {
         this.requestId = requestId;
-        this.status = status;
         this.code = responseStatus.getCode();
         this.message = responseStatus.getMessage();
         this.responseTime = LocalDateTime.now();
@@ -175,7 +174,6 @@ public class BodyResponse<T> implements Serializable {
         this.message = responseStatus.getMessage();
         this.errorMessage = errorMessage;
         this.responseTime = LocalDateTime.now();
-        this.details = details;
         this.setCode(code);
     }
 

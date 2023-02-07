@@ -56,6 +56,6 @@ public class Constants {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SchedulerTaskName {
-        public final static String EPOINT_TASK = "EPOINT_TASK";
+        public static final String EPOINT_TASK = "EPOINT_TASK";
     }
 }

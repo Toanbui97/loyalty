@@ -52,9 +52,7 @@ public class LoyaltyEventSpamApplication {
                     result.getProducerRecord().topic(),
                     result.getRecordMetadata().partition(),
                     ObjectUtil.prettyPrintJsonObject(result.getProducerRecord().value()));
-        }, ex -> {
-            log.error("Kafka producer send message failed: {} ", ex.getMessage());
-        });
+        }, ex -> log.error("Kafka producer send message failed: {} ", ex.getMessage()));
     }
 
 

@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.utils.RequestUtil;
@@ -28,11 +26,8 @@ import vn.com.loyalty.core.service.internal.VoucherService;
 import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +46,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public List<VoucherResponse> getAllVoucher() {
         List<VoucherEntity> voucherEntityList = voucherRepository.findAll();
-        return voucherEntityList.stream().map(voucherMapper::entityToDTO).collect(Collectors.toList());
+        return voucherEntityList.stream().map(voucherMapper::entityToDTO).toList();
     }
 
     @Override

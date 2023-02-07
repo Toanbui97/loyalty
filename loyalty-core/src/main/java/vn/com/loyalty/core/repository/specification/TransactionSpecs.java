@@ -1,15 +1,15 @@
 package vn.com.loyalty.core.repository.specification;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity_;
 
-import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TransactionSpecs {
 
     public static Specification<TransactionEntity> inYesterday() {
