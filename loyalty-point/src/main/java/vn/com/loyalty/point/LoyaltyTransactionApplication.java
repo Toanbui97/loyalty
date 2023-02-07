@@ -1,5 +1,6 @@
 package vn.com.loyalty.point;
 
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableKafka
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @ComponentScan("vn.com.loyalty")
 @EnableJpaRepositories("vn.com.loyalty.core.repository")
 @EntityScan("vn.com.loyalty.core.entity")

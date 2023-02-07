@@ -3,6 +3,7 @@ package vn.com.loyalty.core.constant;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constants {
 
     public static final String QUEUE_INIT = "QUEUE_INIT";
@@ -23,6 +24,7 @@ public class Constants {
         public static final String KAFKA_POOL_PROPERTIES_PREFIX = "spring.kafka.poll";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class KafkaConstants {
         public static final String TRANSACTION_TOPIC = "loyalty_transaction_topic";
         public static final String CUSTOMER_TOPIC = "loyalty_customer_topic";
@@ -30,12 +32,13 @@ public class Constants {
         public static final String CUSTOMER_GROUP = "loyalty_customer_group";
     }
 
-
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class RedisConstants {
         public static final String EPOINT_DIR = "EPOINT:";
         public static final String RPOINT_DIR = "RPOINT:";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class OrchestrationStepStatus {
 
         public static final String STATUS_PENDING = "PENDING";
@@ -44,9 +47,15 @@ public class Constants {
         public static final String STATUS_ROLLBACK = "ROLLBACK";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class MasterDataKey {
         public static final String EPOINT_EXPIRE_TIME = "EPOINT_EXPIRE_TIME";
         public static final String RANK_EXPIRE_TIME = "RANk_EXPIRE_TIME";
         public static final String POINT_TO_VALUE = "POINT_TO_VALUE";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class SchedulerTaskName {
+        public final static String EPOINT_TASK = "EPOINT_TASK";
     }
 }

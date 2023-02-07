@@ -23,7 +23,7 @@ public class CustomerPointSpecs {
                 predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.CUSTOMER_CODE), customerCode));
             }
             LocalDateTime timeTruncate = day != null ? day.truncatedTo(ChronoUnit.DAYS) : LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-            predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.DAY), timeTruncate));
+            predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.TRANSACTION_DAY), timeTruncate));
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
     }
@@ -35,7 +35,7 @@ public class CustomerPointSpecs {
                 predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.CUSTOMER_CODE), customerCode));
             }
             LocalDateTime timeTruncate = day != null ? day.truncatedTo(ChronoUnit.DAYS) : LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get(CustomerPointEntity_.DAY), timeTruncate));
+            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get(CustomerPointEntity_.TRANSACTION_DAY), timeTruncate));
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
     }
@@ -52,7 +52,7 @@ public class CustomerPointSpecs {
     }
 
     public static Sort orderByDayDESC() {
-        return Sort.by(Sort.Direction.DESC, CustomerPointEntity_.DAY);
+        return Sort.by(Sort.Direction.DESC, CustomerPointEntity_.TRANSACTION_DAY);
     }
 
 }

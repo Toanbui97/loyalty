@@ -2,6 +2,8 @@ package vn.com.loyalty.point.worker;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PointScheduler {
 
     private final CustomerPointRepository customerPointRepository;
@@ -40,19 +43,11 @@ public class PointScheduler {
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
 
-    @Transactional
-    public void deactivePointExpire() {
-        List<CustomerPointEntity> customerPointEntityExpiredList = customerPointRepository.findByTransactionDay(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L));
-        customerPointRepository.saveAll(customerPointEntityExpiredList.stream().map(customerPointEntity -> {
-            customerPointEntity.setStatus(CustomerPointStatus.DEACTIVE);
-            return customerPointEntity;
-        }).toList());
-    }
-
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0/30 * * * * *")
+    @SchedulerLock(name = Constants.SchedulerTaskName.EPOINT_TASK, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
     @Transactional
     public void customerPointSchedule() {
-
+        log.info("=============================================>EPOINT SCHEDULE START");
         List<TransactionEntity> transactionEntityList = transactionRepository.findAll(TransactionSpecs.inYesterday());
         Set<String> customerCodeSet = transactionEntityList.stream().map(TransactionEntity::getCustomerCode).collect(Collectors.toSet());
         long batchSize = 20;
@@ -66,6 +61,7 @@ public class PointScheduler {
                 this.epointSchedule(customerCode);
             } catch (Exception e) {
                 redisOperation.rollback();
+                log.error("Customer code: {}", customerCode);
                 e.printStackTrace();
             }
         }
@@ -92,18 +88,22 @@ public class PointScheduler {
 
 
         List<CustomerPointEntity> customerPointActiveList = customerPointRepository.findAll(CustomerPointSpecs.byCustomerCodeAndActive(customerCode), CustomerPointSpecs.orderByDayDESC());
-        customerPointActiveList = this.calculateEpoint(epointSpend, customerPointActiveList);
+        customerPointActiveList = this.updateEpoint(epointSpend, customerPointActiveList);
 
         BigDecimal totalPoint = customerPointActiveList.stream().map(CustomerPointEntity::getRemainPoint)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         redisOperation.setValue(redisOperation.genEpointKey( customerCode), totalPoint.toString());
-
+        log.info("Customer: {} - EpointGain: {} - EpointSpend: {}" ,  customerCode, epointGain, epointSpend);
     }
 
-    private List<CustomerPointEntity> calculateEpoint(BigDecimal epointSpend, List<CustomerPointEntity> customerPointEntityList) {
+    private List<CustomerPointEntity> updateEpoint(BigDecimal epointSpend, List<CustomerPointEntity> customerPointEntityList) {
+
+        LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
         for (CustomerPointEntity customerPoint : customerPointEntityList) {
+
+            // calculate epoint
             if (epointSpend.compareTo(BigDecimal.ZERO) > 0) {
                 BigDecimal usablePoint = customerPoint.getEpointGain().subtract(customerPoint.getEpointSpend());
                 if (usablePoint.compareTo(epointSpend) > 0) {
@@ -117,6 +117,9 @@ public class PointScheduler {
                     customerPoint.setStatus(CustomerPointStatus.DEACTIVE);
                 }
             }
+
+            // update status if expire
+            if (customerPoint.getExpireTime().isAfter(today)) customerPoint.setStatus(CustomerPointStatus.DEACTIVE);
         }
 
         return customerPointRepository.saveAll(customerPointEntityList);
