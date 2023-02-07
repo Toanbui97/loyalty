@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long>, JpaSpecificationExecutor<TransactionEntity> {
 
-    List<TransactionEntity> findByDay(Specification<TransactionEntity> specs);
+    List<TransactionEntity> findAll(Specification<TransactionEntity> specs);
 }

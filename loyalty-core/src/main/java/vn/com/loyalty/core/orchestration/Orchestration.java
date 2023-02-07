@@ -48,8 +48,6 @@ public class Orchestration {
                 .join();
 
         service.shutdown();
-        log.info("Pool done");
-
         if (this.orchestrationPool.stream().anyMatch(step -> !Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus()))) {
             this.rollbackOrchestration(new Object());
         }

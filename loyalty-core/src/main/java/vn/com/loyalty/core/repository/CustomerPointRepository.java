@@ -13,8 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CustomerPointRepository extends JpaRepository<CustomerPointEntity, Long>, JpaSpecificationExecutor<CustomerPointEntity> {
 
-    Optional<CustomerPointEntity> findByCustomerCodeAndDay(Specification<CustomerPointEntity> specs);
-    List<CustomerPointEntity> findByCustomerCodeAndExpireTimeGreaterThanEqual(String customerCode, LocalDateTime time);
     Optional<CustomerPointEntity> findById(Long customerPointId);
-    List<CustomerPointEntity> findByDay(LocalDateTime day);
+    List<CustomerPointEntity> findByTransactionDay(LocalDateTime day);
+    List<CustomerPointEntity> findAll(Specification specs);
 }

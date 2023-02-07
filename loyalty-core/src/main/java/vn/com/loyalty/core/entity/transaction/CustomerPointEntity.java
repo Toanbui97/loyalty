@@ -33,7 +33,7 @@ public class CustomerPointEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     CustomerPointStatus status;
     @Builder.Default
-    LocalDateTime day = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+    LocalDateTime transactionDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
     @PrePersist
     public void init() {
@@ -47,8 +47,8 @@ public class CustomerPointEntity extends BaseEntity {
         if (this.epointSpend == null) {
             this.epointSpend = BigDecimal.ZERO;
         }
-        if (this.day == null) {
-            this.day = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        if (this.transactionDay == null) {
+            this.transactionDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         }
     }
 }

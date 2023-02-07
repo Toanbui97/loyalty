@@ -79,20 +79,20 @@ public class TransactionListener {
 
         String epointKey = redisOperation.genEpointKey(transaction.getCustomerCode());
 
-        BigDecimal epoint = redisOperation.hasValue(epointKey) ? redisOperation.getValue(epointKey) : BigDecimal.ZERO;
+        BigDecimal epoint = redisOperation.hasValue(epointKey) ? new BigDecimal(redisOperation.getValue(epointKey)) : BigDecimal.ZERO;
 
         if (epoint.compareTo(transaction.getEpointSpend()) < 0) {
             throw new CustomerPointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
         }
 
-        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()));
+        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()).toString());
 
         String rpointKey = redisOperation.genRpointKey(transaction.getCustomerCode());
         if (redisOperation.hasValue(rpointKey)) {
             BigDecimal rpoint = new BigDecimal(redisOperation.getValue(epointKey).toString());
-            redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()));
+            redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()).toString());
         } else {
-            redisOperation.setValue(rpointKey, transaction.getRpointGain());
+            redisOperation.setValue(rpointKey, transaction.getRpointGain().toString());
         }
 
     }

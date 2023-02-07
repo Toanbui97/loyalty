@@ -15,17 +15,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RedisOperationImpl implements RedisOperation {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public void setValue(String key, Object value) {
+    public void setValue(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
     @Override
-    public <T> T getValue(String key) {
+    public String getValue(String key) {
         try {
-            return (T) redisTemplate.opsForValue().get(key);
+            return redisTemplate.opsForValue().get(key);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

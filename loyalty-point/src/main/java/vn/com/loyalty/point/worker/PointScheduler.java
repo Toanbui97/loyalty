@@ -41,8 +41,8 @@ public class PointScheduler {
     private final EntityManager entityManager;
 
     @Transactional
-    public void updateStatusPointSchedule() {
-        List<CustomerPointEntity> customerPointEntityExpiredList = customerPointRepository.findByDay(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L));
+    public void deactivePointExpire() {
+        List<CustomerPointEntity> customerPointEntityExpiredList = customerPointRepository.findByTransactionDay(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L));
         customerPointRepository.saveAll(customerPointEntityExpiredList.stream().map(customerPointEntity -> {
             customerPointEntity.setStatus(CustomerPointStatus.DEACTIVE);
             return customerPointEntity;
@@ -53,9 +53,9 @@ public class PointScheduler {
     @Transactional
     public void customerPointSchedule() {
 
-        List<TransactionEntity> transactionEntityList = transactionRepository.findByDay(TransactionSpecs.findByDay());
+        List<TransactionEntity> transactionEntityList = transactionRepository.findAll(TransactionSpecs.inYesterday());
         Set<String> customerCodeSet = transactionEntityList.stream().map(TransactionEntity::getCustomerCode).collect(Collectors.toSet());
-        Long batchSize = 20L;
+        long batchSize = 20;
         for (String customerCode : customerCodeSet) {
             try {
                 redisOperation.begin();
@@ -73,11 +73,13 @@ public class PointScheduler {
 
 
     public void epointSchedule(String customerCode) {
-        BigDecimal epointGain = epointGainRepository.findByCustomerCodeAndDay(customerCode, LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L))
+        LocalDateTime yesterday = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L);
+
+        BigDecimal epointGain = epointGainRepository.findByCustomerCodeAndDay(customerCode, yesterday)
                 .stream().map(EpointGainEntity::getEpointGain)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal epointSpend = epointSpendRepository.findByCustomerCodeAndDay(customerCode, LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L))
+        BigDecimal epointSpend = epointSpendRepository.findByCustomerCodeAndDay(customerCode, yesterday)
                 .stream().map(EpointSpendEntity::getEpointSpend)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -95,7 +97,7 @@ public class PointScheduler {
         BigDecimal totalPoint = customerPointActiveList.stream().map(CustomerPointEntity::getRemainPoint)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        redisOperation.setValue(redisOperation.genEpointKey( customerCode), totalPoint);
+        redisOperation.setValue(redisOperation.genEpointKey( customerCode), totalPoint.toString());
 
     }
 

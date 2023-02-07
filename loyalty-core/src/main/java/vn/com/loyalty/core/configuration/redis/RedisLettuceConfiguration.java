@@ -64,14 +64,14 @@ public class RedisLettuceConfiguration {
 
     @Bean
     @Primary
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
         Jackson2JsonRedisSerializer serializer  = new Jackson2JsonRedisSerializer(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         serializer.setObjectMapper(objectMapper);
 
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
