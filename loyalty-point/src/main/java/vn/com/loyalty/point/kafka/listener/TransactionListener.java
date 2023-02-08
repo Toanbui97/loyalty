@@ -13,15 +13,13 @@ import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
-import vn.com.loyalty.core.repository.CustomerPointRepository;
+import vn.com.loyalty.core.repository.DayPointRepository;
 import vn.com.loyalty.core.repository.EpointGainRepository;
 import vn.com.loyalty.core.repository.EpointSpendRepository;
 import vn.com.loyalty.core.repository.MasterDataRepository;
 import vn.com.loyalty.core.service.internal.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Component
 @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
@@ -34,7 +32,7 @@ public class TransactionListener {
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
     private final MasterDataRepository masterDataRepository;
-    private final CustomerPointRepository customerPointRepository;
+    private final DayPointRepository dayPointRepository;
     private final EpointGainRepository epointGainRepository;
     private final EpointSpendRepository epointSpendRepository;
 

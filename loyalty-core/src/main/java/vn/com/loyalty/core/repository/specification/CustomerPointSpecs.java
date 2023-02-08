@@ -4,7 +4,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.enums.CustomerPointStatus;
-import vn.com.loyalty.core.entity.transaction.CustomerPointEntity;
+import vn.com.loyalty.core.entity.transaction.DayPointEntity;
 import vn.com.loyalty.core.entity.transaction.CustomerPointEntity_;
 
 import javax.persistence.criteria.Predicate;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CustomerPointSpecs {
 
-    public static Specification<CustomerPointEntity> findByDay(String customerCode, LocalDateTime day) {
+    public static Specification<DayPointEntity> findByDay(String customerCode, LocalDateTime day) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
 
@@ -28,7 +28,7 @@ public class CustomerPointSpecs {
         };
     }
 
-    public static Specification<CustomerPointEntity> findFromDay(String customerCode, LocalDateTime day) {
+    public static Specification<DayPointEntity> findFromDay(String customerCode, LocalDateTime day) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
             if (StringUtils.hasText(customerCode)) {
@@ -40,7 +40,7 @@ public class CustomerPointSpecs {
         };
     }
 
-    public static Specification<CustomerPointEntity> byCustomerCodeAndActive(String customerCode) {
+    public static Specification<DayPointEntity> byCustomerCodeAndActive(String customerCode) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
             if (StringUtils.hasText(customerCode)) {

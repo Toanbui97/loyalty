@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class CustomerPointEntity extends BaseEntity {
+public class DayPointEntity extends BaseEntity {
 
     String customerCode;
     @Builder.Default
