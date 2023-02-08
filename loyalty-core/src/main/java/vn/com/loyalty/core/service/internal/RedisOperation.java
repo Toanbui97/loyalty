@@ -1,9 +1,21 @@
 package vn.com.loyalty.core.service.internal;
 
-public interface RedisOperation {
-    void setValue(String key, String value);
+import vn.com.loyalty.core.service.internal.impl.RedisOperationImpl;
 
-    String getValue(String key);
+import java.util.List;
+
+public interface RedisOperation {
+    <T> List<?> getValuesMatchPrefix(String keyPrefix, Class<T> clazz);
+
+    void setValue(String key, Object value);
+//
+//    <T> T getValue(String key);
+
+//    <T> List<T> getValuesMatchPrefix(String keyPrefix);
+//
+//    <T> T getValue(String key, T clazz);
+
+    <T> T getValue(String key, Class<T> clazz);
 
     boolean hasValue(String key);
 

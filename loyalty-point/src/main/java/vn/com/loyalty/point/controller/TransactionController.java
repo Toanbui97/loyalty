@@ -17,7 +17,6 @@ public class TransactionController {
 
     @GetMapping("/startPointSchedule")
     public String startPointSchedule() {
-        pointScheduler.customerPointSchedule();
         return null;
     }
 }

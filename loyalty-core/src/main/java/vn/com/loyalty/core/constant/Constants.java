@@ -36,6 +36,7 @@ public class Constants {
     public static final class RedisConstants {
         public static final String EPOINT_DIR = "EPOINT:";
         public static final String RPOINT_DIR = "RPOINT:";
+        public static final String RANK_DIR = "MDATA:RANK:";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

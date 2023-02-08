@@ -1,5 +1,6 @@
 package vn.com.loyalty.core.service.internal.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -7,7 +8,11 @@ import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -15,16 +20,25 @@ import java.util.Arrays;
 public class RedisOperationImpl implements RedisOperation {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void setValue(String key, String value) {
-        redisTemplate.opsForValue().set(key, value);
+    public <T> List<T> getValuesMatchPrefix(String keyPrefix, Class<T> clazz) {
+        Set<String> keys = redisTemplate.keys(keyPrefix);
+        return Objects.requireNonNull(redisTemplate.opsForValue().multiGet( keys))
+                .stream().map(value -> objectMapper.convertValue(value, clazz)).toList();
     }
 
     @Override
-    public String getValue(String key) {
+    public void setValue(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value.toString());
+    }
+
+    @Override
+    public <T> T getValue(String key, Class<T> clazz) {
         try {
-            return redisTemplate.opsForValue().get(key);
+            String value = redisTemplate.opsForValue().get(key);
+            return objectMapper.convertValue(value, clazz);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

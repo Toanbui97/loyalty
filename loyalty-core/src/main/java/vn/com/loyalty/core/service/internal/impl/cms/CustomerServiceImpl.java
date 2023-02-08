@@ -33,8 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerEntityPage.map(customer -> {
 
-            CustomerPointCache customerPointCache = objectMapper.convertValue(redisOperation.getValue(redisOperation.genEpointKey(customer.getCustomerCode()))
-                    , CustomerPointCache.class);
+            CustomerPointCache customerPointCache = redisOperation.getValue(redisOperation.genEpointKey(customer.getCustomerCode()), CustomerPointCache.class);
             customer.setTotalRpoint(customerPointCache.getRpoint());
             customer.setTotalEpoint(customerPointCache.getEpoint());
 
@@ -57,7 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
-        CustomerPointCache customerPointCache = objectMapper.convertValue(redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode())), CustomerPointCache.class);
+        CustomerPointCache customerPointCache = redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()), CustomerPointCache.class);
 
         if (!customerPointCache.getEpoint().equals(customerEntity.getTotalEpoint())
                 || !customerPointCache.getRpoint().equals(customerEntity.getTotalEpoint())) {

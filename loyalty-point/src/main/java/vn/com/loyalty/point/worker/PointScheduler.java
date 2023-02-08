@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.CustomerPointStatus;
-import vn.com.loyalty.core.entity.transaction.DayPointEntity;
-import vn.com.loyalty.core.entity.transaction.EpointGainEntity;
-import vn.com.loyalty.core.entity.transaction.EpointSpendEntity;
-import vn.com.loyalty.core.entity.transaction.TransactionEntity;
+import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.repository.*;
 import vn.com.loyalty.core.repository.specification.CustomerPointSpecs;
 import vn.com.loyalty.core.repository.specification.TransactionSpecs;
@@ -39,6 +36,7 @@ public class PointScheduler {
     private final EpointSpendRepository epointSpendRepository;
     private final EpointGainRepository epointGainRepository;
     private final TransactionRepository transactionRepository;
+    private final RpointGainRepository rpointGainRepository;
 
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
@@ -46,7 +44,7 @@ public class PointScheduler {
     @Scheduled(cron = "0/30 * * * * *")
     @SchedulerLock(name = Constants.SchedulerTaskName.EPOINT_TASK, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
     @Transactional
-    public void customerPointSchedule() {
+    public void pointTask() {
         log.info("=============================================>EPOINT SCHEDULE START");
         List<TransactionEntity> transactionEntityList = transactionRepository.findAll(TransactionSpecs.inYesterday());
         Set<String> customerCodeSet = transactionEntityList.stream().map(TransactionEntity::getCustomerCode).collect(Collectors.toSet());
@@ -58,7 +56,8 @@ public class PointScheduler {
                     entityManager.flush();
                     entityManager.clear();
                 }
-                this.pointSchedule(customerCode);
+                // epoint task
+                this.pointTask(customerCode);
             } catch (Exception e) {
                 redisOperation.rollback();
                 log.error("Customer code: {}", customerCode);
@@ -68,16 +67,16 @@ public class PointScheduler {
     }
 
 
-    public void pointSchedule(String customerCode) {
+    public void pointTask(String customerCode) {
 
         LocalDateTime yesterday = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1L);
 
         BigDecimal epointGain = epointGainRepository.findByCustomerCodeAndDay(customerCode, yesterday)
-                .stream().map(EpointGainEntity::getEpointGain)
+                .stream().map(EpointGainEntity::getEpoint)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal epointSpend = epointSpendRepository.findByCustomerCodeAndDay(customerCode, yesterday)
-                .stream().map(EpointSpendEntity::getEpointSpend)
+                .stream().map(EpointSpendEntity::getEpoint)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         DayPointEntity dayPointEntity = DayPointEntity.builder().build();

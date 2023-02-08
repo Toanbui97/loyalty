@@ -7,19 +7,25 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
+import vn.com.loyalty.core.dto.response.cms.RankResponse;
+import vn.com.loyalty.core.entity.cms.RankEntity;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
-import vn.com.loyalty.core.repository.DayPointRepository;
-import vn.com.loyalty.core.repository.EpointGainRepository;
-import vn.com.loyalty.core.repository.EpointSpendRepository;
-import vn.com.loyalty.core.repository.MasterDataRepository;
 import vn.com.loyalty.core.service.internal.*;
+import vn.com.loyalty.core.service.internal.impl.RankService;
+import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
@@ -30,11 +36,9 @@ public class TransactionListener {
     private final ObjectMapper objectMapper;
     private final TransactionMessageService transactionMessageService;
     private final TransactionService transactionService;
+    private final RankService rankService;
     private final RedisOperation redisOperation;
-    private final MasterDataRepository masterDataRepository;
-    private final DayPointRepository dayPointRepository;
-    private final EpointGainRepository epointGainRepository;
-    private final EpointSpendRepository epointSpendRepository;
+    private final CmsWebClient cmsWebClient;
 
     @KafkaHandler
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
@@ -52,7 +56,7 @@ public class TransactionListener {
             BigDecimal epointSpend = transactionMessage.getData().getPointToDiscount() != null
                     ? transactionMessage.getData().getPointToDiscount() : BigDecimal.ZERO;
 
-            TransactionEntity transactionEntity = transactionService.saveTransaction(TransactionEntity.builder()
+            TransactionEntity transactionEntity = TransactionEntity.builder()
                     .customerCode(transactionMessage.getCustomerCode())
                     .transactionTime(transactionMessage.getTransactionTime())
                     .transactionId(transactionMessage.getTransactionId())
@@ -61,12 +65,18 @@ public class TransactionListener {
                     .epointGain(epointGain)
                     .rpointGain(rpointGain)
                     .epointSpend(epointSpend)
-                    .build());
+                    .build();
 
-            this.savePointToRedis(transactionEntity);
+            CompletableFuture.allOf(
+                    CompletableFuture.runAsync(() -> transactionService.saveTransaction(transactionEntity)),
+                    CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)),
+                    CompletableFuture.runAsync(() -> this.rankCheck(transactionEntity)))
+                    .exceptionally(throwable -> {
+                        throw new TransactionException(throwable.getMessage());
+                    }).join();
+
             redisOperation.commit();
         } catch (Exception e) {
-            log.error("ERROR: {}", e);
             redisOperation.rollback();
             throw new TransactionException(e.getMessage());
         }
@@ -77,7 +87,7 @@ public class TransactionListener {
 
         String epointKey = redisOperation.genEpointKey(transaction.getCustomerCode());
 
-        BigDecimal epoint = redisOperation.hasValue(epointKey) ? new BigDecimal(redisOperation.getValue(epointKey)) : BigDecimal.ZERO;
+        BigDecimal epoint = redisOperation.hasValue(epointKey) ? redisOperation.getValue(epointKey, BigDecimal.class) : BigDecimal.ZERO;
 
         if (epoint.compareTo(transaction.getEpointSpend()) < 0) {
             throw new CustomerPointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
@@ -87,10 +97,38 @@ public class TransactionListener {
 
         String rpointKey = redisOperation.genRpointKey(transaction.getCustomerCode());
         if (redisOperation.hasValue(rpointKey)) {
-            BigDecimal rpoint = new BigDecimal(redisOperation.getValue(epointKey));
+            BigDecimal rpoint = redisOperation.getValue(epointKey, BigDecimal.class);
             redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()).toString());
         } else {
             redisOperation.setValue(rpointKey, transaction.getRpointGain().toString());
+        }
+    }
+
+    private void rankCheck (TransactionEntity transaction) {
+
+        String customerCode = transaction.getCustomerCode();
+        BigDecimal rpoint = redisOperation.getValue(redisOperation.genRpointKey(customerCode), BigDecimal.class);
+
+        List<RankResponse> rankResponseList = new ArrayList<>();
+
+        try {
+            rankResponseList = (List<RankResponse>) redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankResponse.class);
+        } catch (Exception e) {
+            rankResponseList = cmsWebClient.receiveRankList().getDataList();
+        } finally {
+            rankResponseList.sort(Comparator.comparing(RankResponse::getRequirePoint,  Comparator.reverseOrder()));
+        }
+
+        String rankOfPoint = rankService.getRankByPoint(rpoint, rankResponseList);
+
+        /** TODO :
+         * update rank for customer if rankOfPoint != null (consider need to cache rank of customer or not)
+         * if not cache need to call cms service to get current rank of customer
+         * consider cache list rank sorted or not
+         * */
+
+        if (StringUtils.hasText(rankOfPoint)) {
+
         }
 
     }

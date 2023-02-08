@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.entity.transaction;
+package vn.com.loyalty.core.entity.cms;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,9 +7,9 @@ import vn.com.loyalty.core.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Table(name = "epoint_spend", schema = "transaction")
+
+@Table(name = "rank", schema = "cms")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -17,13 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class EpointSpendEntity extends BaseEntity {
+public class RankEntity extends BaseEntity {
 
-    String transactionId;
-    String customerCode;
-    BigDecimal epoint;
-    LocalDateTime day;
-
-
-
+    String rankCode;
+    String rankName;
+    BigDecimal requirePoint;
 }

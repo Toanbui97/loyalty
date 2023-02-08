@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Table(name = "gain_point", schema = "transaction")
+@Table(name = "day_point", schema = "transaction")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter

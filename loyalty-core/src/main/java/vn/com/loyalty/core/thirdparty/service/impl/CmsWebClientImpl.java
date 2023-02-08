@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.configuration.propertires.WebClientProperties;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
+import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
+import vn.com.loyalty.core.dto.response.cms.RankResponse;
+import vn.com.loyalty.core.entity.cms.RankEntity;
+import vn.com.loyalty.core.exception.ResourceExistedException;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.service.internal.WebClientCommonService;
 import vn.com.loyalty.core.utils.RequestUtil;
@@ -24,27 +28,25 @@ public class CmsWebClientImpl implements CmsWebClient {
 
     @Override
     public BodyResponse<CustomerResponse> receiveCustomerInfo(BodyRequest<CustomerRequest> req) {
-        try {
-            return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
-                    RequestUtil.insertValueForPathURI(webClientProperties.getCmsService().getReceiveCustomerInfo(), req.getData().getCustomerCode()),
-                    req,
-                    BodyResponse.class);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ResourceNotFoundException(CustomerEntity.class, req.getData().getCustomerCode());
-        }
+        return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
+                RequestUtil.insertValueForPathURI(webClientProperties.getCmsService().getReceiveCustomerInfo(), req.getData().getCustomerCode()),
+                req,
+                BodyResponse.class);
     }
 
     @Override
     public BodyResponse<CustomerResponse> performUpdateCustomerInfo(BodyRequest<CustomerRequest> req) {
-        try {
-            return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
-                    webClientProperties.getCmsService().getPerformUpdateCustomer(),
-                    req,
-                    BodyResponse.class);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ResourceNotFoundException(CustomerEntity.class, req.getData().getCustomerCode());
-        }
+        return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
+                webClientProperties.getCmsService().getPerformUpdateCustomer(),
+                req,
+                BodyResponse.class);
+    }
+
+    @Override
+    public BodyResponse<RankResponse> receiveRankList() {
+        return webClientService.postSync(webClientProperties.getCmsService().getBaseUrl(),
+                webClientProperties.getCmsService().getReceiveRankList(),
+                null,
+                BodyResponse.class);
     }
 }

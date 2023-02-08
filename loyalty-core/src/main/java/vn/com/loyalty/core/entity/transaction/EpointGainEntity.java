@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Table(name = "gain_epoint", schema = "transaction")
+@Table(name = "epoint_gain", schema = "transaction")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -19,8 +19,9 @@ import java.time.LocalDateTime;
 @Builder
 public class EpointGainEntity extends BaseEntity {
 
-    private String customerCode;
-    private BigDecimal epointGain;
-    private LocalDateTime day;
+    String customerCode;
+    String transactionId;
+    BigDecimal epoint;
+    LocalDateTime day;
 
 }
