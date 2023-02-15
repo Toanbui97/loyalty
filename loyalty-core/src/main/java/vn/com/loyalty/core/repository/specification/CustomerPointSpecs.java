@@ -5,7 +5,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.enums.CustomerPointStatus;
 import vn.com.loyalty.core.entity.transaction.DayPointEntity;
-import vn.com.loyalty.core.entity.transaction.CustomerPointEntity_;
+import vn.com.loyalty.core.entity.transaction.DayPointEntity_;
 
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
@@ -20,10 +20,10 @@ public class CustomerPointSpecs {
             List<Predicate> predicateList = new ArrayList<>();
 
             if (StringUtils.hasText(customerCode)) {
-                predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.CUSTOMER_CODE), customerCode));
+                predicateList.add(criteriaBuilder.equal(root.get(DayPointEntity_.CUSTOMER_CODE), customerCode));
             }
             LocalDateTime timeTruncate = day != null ? day.truncatedTo(ChronoUnit.DAYS) : LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-            predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.TRANSACTION_DAY), timeTruncate));
+            predicateList.add(criteriaBuilder.equal(root.get(DayPointEntity_.TRANSACTION_DAY), timeTruncate));
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
     }
@@ -32,10 +32,10 @@ public class CustomerPointSpecs {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
             if (StringUtils.hasText(customerCode)) {
-                predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.CUSTOMER_CODE), customerCode));
+                predicateList.add(criteriaBuilder.equal(root.get(DayPointEntity_.CUSTOMER_CODE), customerCode));
             }
             LocalDateTime timeTruncate = day != null ? day.truncatedTo(ChronoUnit.DAYS) : LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get(CustomerPointEntity_.TRANSACTION_DAY), timeTruncate));
+            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get(DayPointEntity_.TRANSACTION_DAY), timeTruncate));
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
     }
@@ -44,15 +44,15 @@ public class CustomerPointSpecs {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
             if (StringUtils.hasText(customerCode)) {
-                predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.CUSTOMER_CODE), customerCode));
+                predicateList.add(criteriaBuilder.equal(root.get(DayPointEntity_.CUSTOMER_CODE), customerCode));
             }
-            predicateList.add(criteriaBuilder.equal(root.get(CustomerPointEntity_.STATUS), CustomerPointStatus.ACTIVE));
+            predicateList.add(criteriaBuilder.equal(root.get(DayPointEntity_.STATUS), CustomerPointStatus.ACTIVE));
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
     }
 
     public static Sort orderByDayDESC() {
-        return Sort.by(Sort.Direction.DESC, CustomerPointEntity_.TRANSACTION_DAY);
+        return Sort.by(Sort.Direction.DESC, DayPointEntity_.TRANSACTION_DAY);
     }
 
 }

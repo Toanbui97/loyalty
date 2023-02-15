@@ -6,6 +6,7 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class RankEntity extends BaseEntity {
+public class RankEntity extends BaseEntity implements Serializable {
 
     String rankCode;
     String rankName;

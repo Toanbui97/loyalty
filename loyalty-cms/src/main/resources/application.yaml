@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: loyalty-cms
+  cache:
+    type: redis
   jpa:
     properties:
       hibernate:

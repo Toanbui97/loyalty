@@ -12,7 +12,6 @@ import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
-import vn.com.loyalty.core.entity.cms.RankEntity;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
@@ -22,7 +21,6 @@ import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -111,20 +109,13 @@ public class TransactionListener {
 
         List<RankResponse> rankResponseList = new ArrayList<>();
 
-        try {
-            rankResponseList = (List<RankResponse>) redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankResponse.class);
-        } catch (Exception e) {
-            rankResponseList = cmsWebClient.receiveRankList().getDataList();
-        } finally {
-            rankResponseList.sort(Comparator.comparing(RankResponse::getRequirePoint,  Comparator.reverseOrder()));
-        }
+
 
         String rankOfPoint = rankService.getRankByPoint(rpoint, rankResponseList);
 
         /** TODO :
          * update rank for customer if rankOfPoint != null (consider need to cache rank of customer or not)
          * if not cache need to call cms service to get current rank of customer
-         * consider cache list rank sorted or not
          * */
 
         if (StringUtils.hasText(rankOfPoint)) {

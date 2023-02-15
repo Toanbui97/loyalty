@@ -9,5 +9,9 @@ import vn.com.loyalty.core.entity.cms.RankEntity;
 public interface RankMapper {
 
     RankEntity DTOToEntity(RankRequest rankRequest);
+
     RankResponse entityToDTO(RankEntity rankEntity);
+
+    RankEntity DTOToEntity(RankResponse rankResponse);
 }
+

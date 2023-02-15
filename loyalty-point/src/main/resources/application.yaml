@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: loyalty-transaction
+  cache:
+    type: redis
   jpa:
     open-in-view: false
     properties:

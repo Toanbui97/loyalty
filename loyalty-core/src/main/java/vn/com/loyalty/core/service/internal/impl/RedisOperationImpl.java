@@ -1,18 +1,19 @@
 package vn.com.loyalty.core.service.internal.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.com.loyalty.core.constant.Constants;
+import vn.com.loyalty.core.exception.RedisException;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -24,14 +25,33 @@ public class RedisOperationImpl implements RedisOperation {
 
     @Override
     public <T> List<T> getValuesMatchPrefix(String keyPrefix, Class<T> clazz) {
-        Set<String> keys = redisTemplate.keys(keyPrefix);
-        return Objects.requireNonNull(redisTemplate.opsForValue().multiGet( keys))
-                .stream().map(value -> objectMapper.convertValue(value, clazz)).toList();
+        try {
+            Set<String> keys = redisTemplate.keys(keyPrefix);
+            JavaType type = objectMapper.constructType(clazz);
+            List<T> resultList = new ArrayList<>();
+            List<String> values = redisTemplate.opsForValue().multiGet(Objects.requireNonNull(keys));
+
+            if (!CollectionUtils.isEmpty(values)) {
+                for (String value : values) {
+                    resultList.add(objectMapper.readValue(value, type));
+                }
+            }
+            return resultList;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public void setValue(String key, Object value) {
-        redisTemplate.opsForValue().set(key, value.toString());
+        this.begin();
+        try {
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+            this.commit();
+        } catch (Exception ex) {
+            this.rollback();
+            throw new RedisException(ex.getMessage());
+        }
     }
 
     @Override
@@ -40,8 +60,30 @@ public class RedisOperationImpl implements RedisOperation {
             String value = redisTemplate.opsForValue().get(key);
             return objectMapper.convertValue(value, clazz);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public <T> Collection<T> getListValue(String key, Class<T> clazz) {
+       try {
+           String json = redisTemplate.opsForValue().get(key);
+           JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
+           return objectMapper.readValue(json, type);
+       } catch (Exception e) {
+           return Collections.emptyList();
+       }
+    }
+
+    @Override
+    public void delete(String key) {
+        this.begin();
+        try {
+            redisTemplate.delete(key);
+            this.commit();
+        } catch (Exception e) {
+            this.rollback();
+            throw new RedisException(e.getMessage());
         }
     }
 
