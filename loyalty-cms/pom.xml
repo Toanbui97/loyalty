@@ -32,8 +32,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>vn.com.loyalty.cms.LoyaltyCmsApplication</mainClass>
+                    <layout>JAR</layout>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>
