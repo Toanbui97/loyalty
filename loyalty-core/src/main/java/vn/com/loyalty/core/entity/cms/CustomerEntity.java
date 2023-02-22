@@ -1,12 +1,13 @@
 package vn.com.loyalty.core.entity.cms;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.entity.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -24,9 +25,9 @@ public class CustomerEntity extends BaseEntity {
     String customerName;
     String customerCode;
     Long activeVoucher;
-    BigDecimal totalEpoint;
-    BigDecimal totalRpoint;
-    Long rank;
+    BigDecimal epoint;
+    BigDecimal rpoint;
+    String rankCode;
     LocalDateTime rankExpired;
 
 
@@ -36,15 +37,15 @@ public class CustomerEntity extends BaseEntity {
             this.activeVoucher = 0L;
         }
 
-        if (this.totalRpoint == null) {
-            this.totalRpoint = BigDecimal.ZERO;
+        if (this.rpoint == null) {
+            this.rpoint = BigDecimal.ZERO;
         }
 
-        if (this.totalEpoint == null) {
-            this.totalEpoint = BigDecimal.ZERO;
+        if (this.epoint == null) {
+            this.epoint = BigDecimal.ZERO;
         }
-        if (this.rank == null) {
-            this.rank = 0L;
+        if (!StringUtils.hasText(rankCode)) {
+            this.rankCode = "NONE";
         }
         if (this.rankExpired == null) {
             this.rankExpired = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);

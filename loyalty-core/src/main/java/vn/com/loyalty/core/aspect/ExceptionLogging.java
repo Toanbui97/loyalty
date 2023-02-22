@@ -17,6 +17,6 @@ public class ExceptionLogging {
 
     @AfterThrowing(value = "exceptionPointCut()", throwing = "exception")
     public void exceptionLog(JoinPoint joinPoint, Throwable exception) {
-        log.error("ERROR: {}", exception.getMessage());
+        log.error(exception.getMessage(), exception);
     }
 }

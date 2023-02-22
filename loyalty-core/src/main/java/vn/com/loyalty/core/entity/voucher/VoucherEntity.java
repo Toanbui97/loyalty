@@ -1,11 +1,11 @@
 package vn.com.loyalty.core.entity.voucher;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.entity.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

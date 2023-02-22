@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionMessageDTO implements Serializable {
+    
     String transactionId;
     String customerCode;
     String transactionType;

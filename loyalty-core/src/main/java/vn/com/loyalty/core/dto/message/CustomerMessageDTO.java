@@ -12,10 +12,9 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerMessageDto implements Serializable {
-    String customerName;
+public class CustomerMessageDTO implements Serializable {
     String customerCode;
     Long activeVoucher;
-    BigDecimal epointGained;
-    BigDecimal eloyGained;
+    BigDecimal epoint;
+    BigDecimal rpoint;
 }

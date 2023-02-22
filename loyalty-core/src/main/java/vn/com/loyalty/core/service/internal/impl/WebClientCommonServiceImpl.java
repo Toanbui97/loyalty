@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -129,7 +130,7 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
 
     private <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
         T response = requestHeadersSpec.retrieve()
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     log.error("Error from Client side system");
                     return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, null));
                 })
@@ -145,7 +146,7 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
 
     private <T> List<T> processFluxResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
         List<T> responseList = requestHeadersSpec.retrieve()
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     log.error("Error from Client side system");
                     return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, ""));
                 })

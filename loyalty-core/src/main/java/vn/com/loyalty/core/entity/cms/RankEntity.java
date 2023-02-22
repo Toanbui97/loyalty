@@ -1,11 +1,11 @@
 package vn.com.loyalty.core.entity.cms;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.entity.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -23,4 +23,5 @@ public class RankEntity extends BaseEntity implements Serializable {
     String rankCode;
     String rankName;
     BigDecimal requirePoint;
+    BigDecimal keepPoint;
 }

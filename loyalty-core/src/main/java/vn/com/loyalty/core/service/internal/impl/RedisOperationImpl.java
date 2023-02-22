@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.exception.RedisException;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Service
@@ -38,20 +38,15 @@ public class RedisOperationImpl implements RedisOperation {
             }
             return resultList;
         } catch (Exception e) {
-            return Collections.emptyList();
+            log.error(e.getMessage(), e);
+            throw new RedisException(e.getMessage());
         }
     }
 
     @Override
+    @SneakyThrows
     public void setValue(String key, Object value) {
-        this.begin();
-        try {
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
-            this.commit();
-        } catch (Exception ex) {
-            this.rollback();
-            throw new RedisException(ex.getMessage());
-        }
+        redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
     }
 
     @Override
@@ -60,7 +55,8 @@ public class RedisOperationImpl implements RedisOperation {
             String value = redisTemplate.opsForValue().get(key);
             return objectMapper.convertValue(value, clazz);
         } catch (Exception e) {
-            return null;
+            throw new RedisException(e.getMessage());
+
         }
     }
 
@@ -71,18 +67,15 @@ public class RedisOperationImpl implements RedisOperation {
            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
            return objectMapper.readValue(json, type);
        } catch (Exception e) {
-           return Collections.emptyList();
+           throw new RedisException(e.getMessage());
        }
     }
 
     @Override
     public void delete(String key) {
-        this.begin();
         try {
             redisTemplate.delete(key);
-            this.commit();
         } catch (Exception e) {
-            this.rollback();
             throw new RedisException(e.getMessage());
         }
     }

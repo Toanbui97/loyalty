@@ -1,9 +1,9 @@
 package vn.com.loyalty.core.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "master_data", schema = "cms")

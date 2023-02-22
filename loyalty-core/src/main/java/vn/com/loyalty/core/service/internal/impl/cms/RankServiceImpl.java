@@ -74,19 +74,9 @@ public class RankServiceImpl implements RankService {
 
     @Override
     @Nullable
-    @SuppressWarnings("unchecked")
-    public String getRankByPoint(BigDecimal pointNumber, List<RankResponse> rankList) {
+    public String getRankByPoint(BigDecimal pointNumber) {
 
-        List<RankEntity> rankEntityList = new ArrayList<>();
-
-        try {
-            rankEntityList = (List<RankEntity>) redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankEntity.class);
-        } catch (Exception e) {
-            rankEntityList = cmsWebClient.receiveRankList().getDataList().stream().map(rankMapper::DTOToEntity).toList();
-        } finally {
-            rankEntityList.sort((o1, o2) -> o2.getRequirePoint().compareTo(o1.getRequirePoint()));
-        }
-
+        List<RankResponse> rankList = this.getReversalSortedRankList();
         for (RankResponse rank : rankList) {
             if (pointNumber.compareTo(rank.getRequirePoint()) > 0) return rank.getRankCode();
         }
@@ -94,8 +84,15 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public List<RankEntity> sortReversalRankList(List<RankEntity> rankEntityList) {
-        rankEntityList.sort((o1, o2) -> o2.getRequirePoint().compareTo(o1.getRequirePoint()));
+    public List<RankResponse> getReversalSortedRankList() {
+        List<RankResponse> rankEntityList = new ArrayList<>();
+        try {
+            rankEntityList = redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankResponse.class);
+        } catch (Exception e) {
+            rankEntityList = cmsWebClient.receiveRankList().getDataList();
+        } finally {
+            rankEntityList.sort((o1, o2) -> o2.getRequirePoint().compareTo(o1.getRequirePoint()));
+        }
         return rankEntityList;
     }
 }

@@ -5,24 +5,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
+import vn.com.loyalty.core.dto.message.CustomerMessageDTO;
 import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
-import vn.com.loyalty.core.dto.response.cms.RankResponse;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
+import vn.com.loyalty.core.repository.EpointGainRepository;
+import vn.com.loyalty.core.repository.EpointSpendRepository;
 import vn.com.loyalty.core.service.internal.*;
-import vn.com.loyalty.core.service.internal.impl.RankService;
-import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -34,9 +31,11 @@ public class TransactionListener {
     private final ObjectMapper objectMapper;
     private final TransactionMessageService transactionMessageService;
     private final TransactionService transactionService;
-    private final RankService rankService;
     private final RedisOperation redisOperation;
-    private final CmsWebClient cmsWebClient;
+    private final KafkaTemplate kafkaTemplate;
+    private final EpointGainRepository epointGainRepository;
+    private final EpointSpendRepository epointSpendRepository;
+    private final RpointGainEntity rpointGainEntity;
 
     @KafkaHandler
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
@@ -46,8 +45,6 @@ public class TransactionListener {
             transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(message).build());
 
             TransactionMessageDTO transactionMessage = objectMapper.readValue(message, TransactionMessageDTO.class);
-
-            redisOperation.begin();
 
             BigDecimal epointGain = transactionService.calculateEpointGain(transactionMessage);
             BigDecimal rpointGain = transactionService.calculateRpointGain(transactionMessage);
@@ -67,13 +64,16 @@ public class TransactionListener {
 
             CompletableFuture.allOf(
                     CompletableFuture.runAsync(() -> transactionService.saveTransaction(transactionEntity)),
-                    CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)),
-                    CompletableFuture.runAsync(() -> this.rankCheck(transactionEntity)))
+                    CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)))
                     .exceptionally(throwable -> {
                         throw new TransactionException(throwable.getMessage());
                     }).join();
 
-            redisOperation.commit();
+            kafkaTemplate.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessageDTO.builder()
+                    .customerCode(transactionMessage.getCustomerCode())
+                    .epoint(redisOperation.getValue(redisOperation.genRpointKey(transactionMessage.getCustomerCode()), BigDecimal.class))
+                    .rpoint(redisOperation.getValue(redisOperation.genRpointKey(transactionMessage.getCustomerCode()), BigDecimal.class)));
+
         } catch (Exception e) {
             redisOperation.rollback();
             throw new TransactionException(e.getMessage());
@@ -102,25 +102,4 @@ public class TransactionListener {
         }
     }
 
-    private void rankCheck (TransactionEntity transaction) {
-
-        String customerCode = transaction.getCustomerCode();
-        BigDecimal rpoint = redisOperation.getValue(redisOperation.genRpointKey(customerCode), BigDecimal.class);
-
-        List<RankResponse> rankResponseList = new ArrayList<>();
-
-
-
-        String rankOfPoint = rankService.getRankByPoint(rpoint, rankResponseList);
-
-        /** TODO :
-         * update rank for customer if rankOfPoint != null (consider need to cache rank of customer or not)
-         * if not cache need to call cms service to get current rank of customer
-         * */
-
-        if (StringUtils.hasText(rankOfPoint)) {
-
-        }
-
-    }
 }

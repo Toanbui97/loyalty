@@ -1,6 +1,7 @@
 package vn.com.loyalty.core.service.internal.impl.voucher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,6 @@ import vn.com.loyalty.core.service.internal.VoucherDetailService;
 import vn.com.loyalty.core.service.internal.VoucherService;
 import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 

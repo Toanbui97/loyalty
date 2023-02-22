@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.com.loyalty.core.dto.message.PointMessageDTO;
 import vn.com.loyalty.core.entity.cache.CustomerPointCache;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.service.internal.RedisOperation;
@@ -31,16 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(pageable);
 
-        return customerEntityPage.map(customer -> {
-
-            CustomerPointCache customerPointCache = redisOperation.getValue(redisOperation.genEpointKey(customer.getCustomerCode()), CustomerPointCache.class);
-            customer.setTotalRpoint(customerPointCache.getRpoint());
-            customer.setTotalEpoint(customerPointCache.getEpoint());
-
-            customerRepository.save(customer);
-
-            return customerMapper.entityToDTO(customer);
-        });
+        return customerEntityPage.map(customerMapper::entityToDTO);
     }
 
     @Override
@@ -56,16 +48,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
-        CustomerPointCache customerPointCache = redisOperation.getValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()), CustomerPointCache.class);
-
-        if (!customerPointCache.getEpoint().equals(customerEntity.getTotalEpoint())
-                || !customerPointCache.getRpoint().equals(customerEntity.getTotalEpoint())) {
-
-            customerEntity.setTotalEpoint(customerEntity.getTotalEpoint());
-            customerEntity.setTotalRpoint(customerPointCache.getRpoint());
-            customerRepository.save(customerEntity);
-        }
-
         return customerMapper.entityToDTO(customerEntity);
     }
 
@@ -76,16 +58,6 @@ public class CustomerServiceImpl implements CustomerService {
         customerEntity = ObjectUtil.mergeObject(customerRequest, customerEntity);
         customerRepository.save(customerEntity);
         return customerMapper.entityToDTO(customerEntity);
-    }
-
-
-    @Override
-    public CustomerResponse updateGainPoint(CustomerRequest customerRequest) {
-
-        CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerRequest.getCustomerCode())
-                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerRequest.getCustomerCode()));
-
-        return null;
     }
 
     private String generateCustomerCode() {

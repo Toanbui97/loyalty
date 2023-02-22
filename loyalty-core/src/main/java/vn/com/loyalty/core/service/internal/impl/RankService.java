@@ -15,9 +15,7 @@ public interface RankService {
 
     RankResponse deleteRank(RankRequest rankRequest);
 
-    @Nullable
-    @SuppressWarnings("unchecked")
-    String getRankByPoint(BigDecimal pointNumber, List<RankResponse> rankList);
+    String getRankByPoint(BigDecimal pointNumber);
 
-    List<RankEntity> sortReversalRankList(List<RankEntity> rankEntityList);
+    List<RankResponse> getReversalSortedRankList();
 }

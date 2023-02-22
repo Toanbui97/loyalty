@@ -1,5 +1,6 @@
 package vn.com.loyalty.eventspam;
 
+import io.github.classgraph.ClassGraph;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
 @EnableKafka
@@ -46,13 +48,17 @@ public class LoyaltyEventSpamApplication {
     public void sendMessage() {
 
         TransactionMessageDTO message = this.buildTransactionStockMessage();
-        ListenableFuture<SendResult<String, Object>> sendResult = kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message);
-        sendResult.addCallback(result -> {
-            log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
-                    result.getProducerRecord().topic(),
-                    result.getRecordMetadata().partition(),
-                    ObjectUtil.prettyPrintJsonObject(result.getProducerRecord().value()));
-        }, ex -> log.error("Kafka producer send message failed: {} ", ex.getMessage()));
+        kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
+                .whenComplete((result, throwable) -> {
+                    log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
+                            result.getProducerRecord().topic(),
+                            result.getRecordMetadata().partition(),
+                            ObjectUtil.prettyPrintJsonObject(result.getProducerRecord().value()));
+                }).exceptionally(e -> {
+                    log.error("Kafka producer send message failed: {}", e.getMessage());
+                    return null;
+                });
+
     }
 
 
