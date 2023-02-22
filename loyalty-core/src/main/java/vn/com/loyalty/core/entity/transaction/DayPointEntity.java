@@ -1,11 +1,11 @@
 package vn.com.loyalty.core.entity.transaction;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vn.com.loyalty.core.constant.enums.CustomerPointStatus;
+import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.BaseEntity;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -28,10 +28,10 @@ public class DayPointEntity extends BaseEntity {
     @Builder.Default
     BigDecimal epointSpend = BigDecimal.ZERO;
     BigDecimal epointExpire;
-    LocalDateTime expireTime;
-    BigDecimal remainPoint = this.epointGain;
+    LocalDateTime epointExpireTime;
+    BigDecimal epointRemain = this.epointGain;
     @Enumerated(EnumType.STRING)
-    CustomerPointStatus status;
+    PointStatus status;
     @Builder.Default
     LocalDateTime transactionDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 

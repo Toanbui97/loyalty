@@ -19,8 +19,8 @@ public class CustomerRequest implements Serializable {
     String customerName;
     String customerCode;
     Long activeVoucher;
-    BigDecimal totalEpoint;
-    BigDecimal totalEloy;
+    BigDecimal epoint;
+    BigDecimal rpoint;
     BigDecimal gainEpoint;
     BigDecimal gainEloy;
     BigDecimal spendPoint;

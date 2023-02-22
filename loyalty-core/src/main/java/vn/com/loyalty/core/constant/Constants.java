@@ -27,7 +27,9 @@ public class Constants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class KafkaConstants {
         public static final String TRANSACTION_TOPIC = "loyalty_transaction_topic";
+        public static final String POINT_TOPIC = "loyalty_point_topic";
         public static final String CUSTOMER_TOPIC = "loyalty_customer_topic";
+        public static final String POINT_GROUP = "loyalty_point_group";
         public static final String TRANSACTION_GROUP = "loyalty_transaction_group";
         public static final String CUSTOMER_GROUP = "loyalty_customer_group";
     }

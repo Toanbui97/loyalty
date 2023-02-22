@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
+import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.transaction.DayPointEntity;
 
 import java.time.LocalDateTime;
@@ -16,4 +17,6 @@ public interface DayPointRepository extends JpaRepository<DayPointEntity, Long>,
     Optional<DayPointEntity> findById(Long customerPointId);
     List<DayPointEntity> findByTransactionDay(LocalDateTime day);
     List<DayPointEntity> findAll(Specification specs);
+    List<DayPointEntity> findByStatus(PointStatus status);
+    List<DayPointEntity> findByEpointExpireTime(LocalDateTime expireDay);
 }

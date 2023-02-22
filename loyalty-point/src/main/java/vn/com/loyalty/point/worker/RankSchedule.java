@@ -1,6 +1,9 @@
 package vn.com.loyalty.point.worker;
 
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.SchedulerLock;
@@ -10,10 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.repository.*;
 import vn.com.loyalty.core.service.internal.RedisOperation;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 
 @Component
 @RequiredArgsConstructor

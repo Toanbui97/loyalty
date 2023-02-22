@@ -24,11 +24,14 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import vn.com.loyalty.core.configuration.propertires.RedisHostPortProperties;
 
 @Configuration
 @EnableConfigurationProperties(RedisHostPortProperties.class)
 @RequiredArgsConstructor
+@EnableTransactionManagement
 public class RedisLettuceConfiguration {
 
     private final RedisHostPortProperties redisHostPortProperties;
@@ -83,8 +86,9 @@ public class RedisLettuceConfiguration {
         template.setHashValueSerializer(serializer);
         template.setDefaultSerializer(serializer);
         template.afterPropertiesSet();
+
+        // sync with jdbc transaction
         template.setEnableTransactionSupport(true);
         return template;
     }
-
 }

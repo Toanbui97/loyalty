@@ -6,21 +6,29 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import javax.crypto.KeyGenerator;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfig {
+
+    private final DataSource dataSource;
 
     @Bean
     public WebClient getWebClient() {
@@ -46,5 +54,9 @@ public class ApplicationConfig {
         return objectMapper.findAndRegisterModules();
     }
 
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
 }

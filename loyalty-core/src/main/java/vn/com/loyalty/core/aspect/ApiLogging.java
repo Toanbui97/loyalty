@@ -2,6 +2,8 @@ package vn.com.loyalty.core.aspect;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -13,8 +15,6 @@ import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 @Aspect
@@ -52,8 +52,5 @@ public class ApiLogging {
                     , joinPoint.getSignature().getName(), ObjectUtil.prettyPrintJsonObject(response.getBody()));
         }
     }
-
-
-
 
 }

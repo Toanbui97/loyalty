@@ -1,12 +1,12 @@
 package vn.com.loyalty.core.constant.enums;
 
-public enum CustomerPointStatus {
+public enum PointStatus {
     ACTIVE("ACTIVE"),
     DEACTIVE("DEACTIVE");
 
     private String code;
     private String name;
-    CustomerPointStatus(String code) {
+    PointStatus(String code) {
         this.code = code;
         this.name= code;
     }
