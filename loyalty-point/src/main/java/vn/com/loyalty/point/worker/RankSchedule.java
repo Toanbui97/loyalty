@@ -25,7 +25,7 @@ public class RankSchedule {
     private final EpointSpendRepository epointSpendRepository;
     private final EpointGainRepository epointGainRepository;
     private final TransactionRepository transactionRepository;
-    private final RpointGainRepository rpointGainRepository;
+    private final RpointRepository rpointRepository;
 
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;

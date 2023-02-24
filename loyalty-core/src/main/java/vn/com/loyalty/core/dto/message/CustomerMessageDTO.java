@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CustomerMessageDTO implements Serializable {
     String customerCode;
+    String transactionId;
     Long activeVoucher;
     BigDecimal epoint;
     BigDecimal rpoint;

@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
+import vn.com.loyalty.core.entity.cms.RpointEntity;
 import vn.com.loyalty.core.entity.transaction.EpointGainEntity;
 import vn.com.loyalty.core.entity.transaction.EpointSpendEntity;
-import vn.com.loyalty.core.entity.transaction.RpointGainEntity;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
 import vn.com.loyalty.core.repository.*;
 import vn.com.loyalty.core.service.internal.TransactionService;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
 
 @Service
 @Slf4j
@@ -23,12 +22,12 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final EpointGainRepository epointGainRepository;
     private final EpointSpendRepository epointSpendRepository;
-    private final RpointGainRepository rpointGainRepository;
+    private final RpointRepository rpointRepository;
 
     @Override
     public TransactionEntity saveTransaction(TransactionEntity transactionEntity) {
 
-        LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDate today = LocalDate.now();
 
         // save epoint gain
         if (transactionEntity.getEpointGain()!= null && transactionEntity.getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
@@ -36,7 +35,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .transactionId(transactionEntity.getTransactionId())
                     .customerCode(transactionEntity.getCustomerCode())
                     .epoint(transactionEntity.getEpointGain())
-                    .day(today)
+                    .transactionDay(today)
                     .build());
         }
 
@@ -46,17 +45,17 @@ public class TransactionServiceImpl implements TransactionService {
                     .transactionId(transactionEntity.getTransactionId())
                     .customerCode(transactionEntity.getCustomerCode())
                     .epoint(transactionEntity.getEpointSpend())
-                    .day(today)
+                    .transactionDay(today)
                     .build());
         }
 
         // save rpoint gain
         if (transactionEntity.getRpointGain() != null && transactionEntity.getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
-            rpointGainRepository.save(RpointGainEntity.builder()
+            rpointRepository.save(RpointEntity.builder()
                     .transactionId(transactionEntity.getTransactionId())
                     .customerCode(transactionEntity.getCustomerCode())
                     .rpoint(transactionEntity.getRpointGain())
-                    .day(today)
+                    .transactionDay(today)
                     .build());
         }
 

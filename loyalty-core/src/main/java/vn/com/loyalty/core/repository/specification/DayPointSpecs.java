@@ -5,7 +5,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.enums.PointStatus;
-import vn.com.loyalty.core.entity.transaction.DayPointEntity;
 import vn.com.loyalty.core.entity.transaction.DayPointEntity_;
 
 import java.time.LocalDateTime;

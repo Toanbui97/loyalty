@@ -33,8 +33,6 @@ public class TransactionListener {
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
     private final KafkaTemplate kafkaTemplate;
-    private final EpointGainRepository epointGainRepository;
-    private final EpointSpendRepository epointSpendRepository;
 
     @KafkaHandler
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
@@ -70,8 +68,7 @@ public class TransactionListener {
 
             kafkaTemplate.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessageDTO.builder()
                     .customerCode(transactionMessage.getCustomerCode())
-                    .epoint(redisOperation.getValue(redisOperation.genRpointKey(transactionMessage.getCustomerCode()), BigDecimal.class))
-                    .rpoint(redisOperation.getValue(redisOperation.genRpointKey(transactionMessage.getCustomerCode()), BigDecimal.class)));
+                    .rpoint(rpointGain));
 
         } catch (Exception e) {
             redisOperation.rollback();

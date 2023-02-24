@@ -10,6 +10,7 @@ import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Table(name = "epoint_gain", schema = "transaction")
@@ -26,10 +27,10 @@ public class EpointGainEntity extends BaseEntity {
     String transactionId;
     BigDecimal epoint;
     BigDecimal epointRemain;
-    LocalDateTime day;
+    LocalDate transactionDay;
     @Enumerated(EnumType.STRING)
     PointStatus status;
-    LocalDateTime expireDay;
+    LocalDate expireDay;
     String source;
 
 }
