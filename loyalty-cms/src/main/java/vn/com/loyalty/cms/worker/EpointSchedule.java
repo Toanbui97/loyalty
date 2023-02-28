@@ -40,9 +40,9 @@ public class EpointSchedule {
     private final EntityManager entityManager;
 
     // at 0:00 AM
-    @Scheduled(cron = "0/30 * * * * *")
-    @SchedulerLock(name = Constants.SchedulerTaskName.DEACTIVATE_EPOINT, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
-    @Transactional
+//    @Scheduled(cron = "0/30 * * * * *")
+//    @SchedulerLock(name = Constants.SchedulerTaskName.DEACTIVATE_EPOINT, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
+//    @Transactional
     public void deactivateEpointExpire() {
         LocalDate yesterday = LocalDate.now().minusDays(1L);
 
@@ -56,7 +56,7 @@ public class EpointSchedule {
         entityManager.createQuery(update).executeUpdate();
     }
 
-    @Scheduled(cron = "1 * * * * *")
+    @Scheduled(cron = "0/15 * * * * *")
     @SchedulerLock(name = Constants.SchedulerTaskName.SCHEDULE_EPOINT, lockAtLeastForString = "PT10M", lockAtMostForString = "PT1H")
     @Transactional
     public void launchEpointJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {

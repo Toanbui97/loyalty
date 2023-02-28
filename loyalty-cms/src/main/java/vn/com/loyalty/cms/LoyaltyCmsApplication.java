@@ -9,12 +9,14 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @ComponentScan("vn.com.loyalty")
 @EnableJpaRepositories("vn.com.loyalty.core.repository")
 @EntityScan("vn.com.loyalty.core.entity")
 @PropertySource("classpath:application.yaml")
+@EnableScheduling
 @EnableCaching
 @EnableBatchProcessing(tablePrefix = "CMS.BATCH_")
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")

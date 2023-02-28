@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
+import vn.com.loyalty.core.entity.cms.CustomerEntity;
+import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
@@ -21,6 +23,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ResponseFactory responseFactory;
+    private final CustomerRepository customerRepository;
 
     @PostMapping("/receiveCustomer/{customerCode}")
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req,
@@ -41,6 +44,12 @@ public class CustomerController {
     @PostMapping("/receiveCustomerList")
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList(@RequestBody BodyRequest req, @PageableDefault Pageable pageable) {
         return responseFactory.success(customerService.getListCustomer(pageable));
+    }
+
+    @PostMapping("/performCustomerEpointJob/{customerCode}")
+    public ResponseEntity<BodyResponse<CustomerEntity>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable String customerCode) {
+        return responseFactory.success(customerService.calculateEpoint(customerRepository.findByCustomerCode(customerCode)
+                .orElse(new CustomerEntity())));
     }
 
 }
