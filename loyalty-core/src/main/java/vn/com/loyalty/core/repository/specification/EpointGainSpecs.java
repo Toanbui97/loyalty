@@ -4,8 +4,8 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import vn.com.loyalty.core.constant.enums.PointStatus;
-import vn.com.loyalty.core.entity.transaction.EpointGainEntity;
-import vn.com.loyalty.core.entity.transaction.EpointGainEntity_;
+import vn.com.loyalty.core.entity.cms.EpointGainEntity;
+import vn.com.loyalty.core.entity.cms.EpointGainEntity_;
 
 import java.util.ArrayList;
 import java.util.List;

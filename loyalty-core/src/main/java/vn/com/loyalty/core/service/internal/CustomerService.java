@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.dto.message.PointMessageDTO;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
+import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 
@@ -16,4 +17,6 @@ public interface CustomerService {
     CustomerResponse getCustomer(String customerCode) throws ResourceNotFoundException;
 
     CustomerResponse updateCustomer(CustomerRequest customerRequest);
+
+    CustomerEntity calculateEpoint(CustomerEntity customerEntity);
 }

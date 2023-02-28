@@ -73,11 +73,9 @@ public class RedisLettuceConfiguration {
     @Primary
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
-        Jackson2JsonRedisSerializer serializer  = new Jackson2JsonRedisSerializer(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        serializer.setObjectMapper(objectMapper);
-
+        Jackson2JsonRedisSerializer serializer  = new Jackson2JsonRedisSerializer(objectMapper, Object.class);
         RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());

@@ -16,6 +16,7 @@ public class CustomerMessageDTO implements Serializable {
     String customerCode;
     String transactionId;
     Long activeVoucher;
-    BigDecimal epoint;
-    BigDecimal rpoint;
+    BigDecimal epointGain;
+    BigDecimal epointSpend;
+    BigDecimal rpointGain;
 }

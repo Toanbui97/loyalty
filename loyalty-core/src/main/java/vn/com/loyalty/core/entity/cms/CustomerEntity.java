@@ -31,7 +31,9 @@ public class CustomerEntity extends BaseEntity {
     BigDecimal epoint = BigDecimal.ZERO;
     @Builder.Default
     BigDecimal rpoint = BigDecimal.ZERO;
+    @Builder.Default
     String rankCode = "NONE";
+    @Builder.Default
     LocalDate rankExpired = LocalDate.now();
 
 }

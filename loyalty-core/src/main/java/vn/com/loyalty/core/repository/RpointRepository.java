@@ -10,5 +10,4 @@ import java.util.List;
 
 @Repository
 public interface RpointRepository extends JpaRepository<RpointEntity, Long>, JpaSpecificationExecutor<RpointEntity> {
-    List<RpointEntity> findByCustomerCodeAndDay(String customerCode, LocalDateTime yesterday);
 }
