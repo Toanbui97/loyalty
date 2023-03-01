@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.util.StringUtils;
+import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class CustomerEntity extends BaseEntity {
     @Builder.Default
     BigDecimal rpoint = BigDecimal.ZERO;
     @Builder.Default
-    String rankCode = "NONE";
+    String rankCode = Constants.MasterDataKey.RANK_DEFAULT;
     @Builder.Default
     LocalDate rankExpired = LocalDate.now();
 

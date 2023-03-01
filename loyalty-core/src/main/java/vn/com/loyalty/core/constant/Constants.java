@@ -56,6 +56,7 @@ public class Constants {
         public static final String EPOINT_EXPIRE_TIME = "EPOINT_EXPIRE_TIME";
         public static final String RANK_EXPIRE_TIME = "RANk_EXPIRE_TIME";
         public static final String POINT_TO_VALUE = "POINT_TO_VALUE";
+        public static final String RANK_DEFAULT = "NONE";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -63,4 +64,5 @@ public class Constants {
         public static final String DEACTIVATE_EPOINT = "DEACTIVATE_EPOINT";
         public static final String SCHEDULE_EPOINT = "SCHEDULE_EPOINT";
     }
+
 }

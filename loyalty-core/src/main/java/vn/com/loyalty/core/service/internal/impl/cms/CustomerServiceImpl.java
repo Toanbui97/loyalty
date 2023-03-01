@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
         BigDecimal totalEPoint = epointList.stream().map(EpointGainEntity::getEpointRemain)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        redisOperation.setValue(redisOperation.genEpointKey( customerEntity.getCustomerCode()), totalEPoint.toString());
+        redisOperation.setValue(redisOperation.genEpointKey( customerEntity.getCustomerCode()), totalEPoint);
         customerEntity.setEpoint(totalEPoint);
         epointGainRepository.saveAll(epointList);
         return customerEntity;

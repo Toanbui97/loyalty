@@ -58,7 +58,6 @@ public class EpointSchedule {
 
     @Scheduled(cron = "0/15 * * * * *")
     @SchedulerLock(name = Constants.SchedulerTaskName.SCHEDULE_EPOINT, lockAtLeastForString = "PT10M", lockAtMostForString = "PT1H")
-    @Transactional
     public void launchEpointJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("JobID", String.valueOf(LocalDateTime.now()))

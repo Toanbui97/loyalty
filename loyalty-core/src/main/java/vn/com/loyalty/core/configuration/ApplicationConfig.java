@@ -35,8 +35,6 @@ public class ApplicationConfig {
     @Bean
     public WebClient getWebClient() {
         HttpClient httpClient = HttpClient.create()
-//                .wiretap("reactor.netty.http.client.HttpClient",
-//                        LogLevel.INFO, AdvancedByteBufFormat.TEXTUAL)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .responseTimeout(Duration.ofMillis(5000))
                 .doOnConnected(conn ->
@@ -53,6 +51,8 @@ public class ApplicationConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.writerWithDefaultPrettyPrinter();
         return objectMapper.findAndRegisterModules();
     }
 

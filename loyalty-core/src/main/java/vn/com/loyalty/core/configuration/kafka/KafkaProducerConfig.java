@@ -35,8 +35,8 @@ public class KafkaProducerConfig {
     private final KafkaProperties.Producer producer = new KafkaProperties.Producer();
 
     @Primary
-    @Bean(name = "customKafkaProducerFactory")
-    public ProducerFactory<String, Object> customKafkaProducerFactory() {
+    @Bean
+    public ProducerFactory<String, Object> kafkaProducerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put("retries", retries);
         props.put("bootstrap.servers", bootstrapServers);
@@ -48,9 +48,9 @@ public class KafkaProducerConfig {
         return new DefaultKafkaProducerFactory<>(props);
     }
 
-    @Bean("customKafkaTemplate")
-    public KafkaTemplate<String, Object> customKafkaTemplate() {
-        return new KafkaTemplate<>(customKafkaProducerFactory());
+    @Bean
+    public KafkaTemplate<String, Object> kafkaTemplate() {
+        return new KafkaTemplate<>(kafkaProducerFactory());
     }
 
 }

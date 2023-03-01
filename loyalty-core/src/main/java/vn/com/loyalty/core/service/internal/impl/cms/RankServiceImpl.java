@@ -80,7 +80,7 @@ public class RankServiceImpl implements RankService {
         for (RankResponse rank : rankList) {
             if (pointNumber.compareTo(rank.getRequirePoint()) > 0) return rank.getRankCode();
         }
-        return null;
+        return Constants.MasterDataKey.RANK_DEFAULT;
     }
 
     @Override

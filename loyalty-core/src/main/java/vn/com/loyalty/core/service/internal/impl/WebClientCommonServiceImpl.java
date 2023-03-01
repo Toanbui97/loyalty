@@ -124,24 +124,18 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                     header.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
                     header.setAcceptCharset(List.of(StandardCharsets.UTF_8));
                 });
-        log.info("\n===================> Web client \n{}: {}{} \n{}", method, baseUrl, uri, ObjectUtil.prettyPrintJsonObject(requestBody));
         return (Objects.nonNull(requestBody) ? requestBodyUriSpec.body(BodyInserters.fromValue(requestBody)) : requestBodyUriSpec);
     }
 
-    private <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-        T response = requestHeadersSpec.retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    log.error("Error from Client side system");
-                    return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, null));
-                })
+    public <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+        return requestHeadersSpec.retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, null)))
                 .bodyToMono(clazz)
                 .retryWhen(Retry.backoff(attempt, Duration.ofSeconds(firstBackoff))
                         .filter(this::is5xxServerError)
                         .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new BaseResponseException(ResponseStatusCode.MAX_RETRY_ATTEMPTS_REACHED, ""))
                 )
                 .block();
-        log.info("\n===================> Web client response: \n{}", ObjectUtil.prettyPrintJsonObject(response));
-        return response;
     }
 
     private <T> List<T> processFluxResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
@@ -157,7 +151,6 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                 )
                 .collectList()
                 .block();
-        log.info("\n===================> Web client response: \n{}", ObjectUtil.prettyPrintJsonObject(responseList));
         return responseList;
     }
 

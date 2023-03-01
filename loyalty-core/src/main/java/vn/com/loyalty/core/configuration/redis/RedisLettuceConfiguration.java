@@ -20,10 +20,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import vn.com.loyalty.core.configuration.propertires.RedisHostPortProperties;
@@ -78,11 +75,12 @@ public class RedisLettuceConfiguration {
         Jackson2JsonRedisSerializer serializer  = new Jackson2JsonRedisSerializer(objectMapper, Object.class);
         RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
+        template.setKeySerializer(RedisSerializer.string());
         template.setValueSerializer(serializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(RedisSerializer.string());
         template.setHashValueSerializer(serializer);
-        template.setDefaultSerializer(serializer);
+        template.setDefaultSerializer(RedisSerializer.string());
+        template.setStringSerializer(RedisSerializer.string());
         template.afterPropertiesSet();
 
         // sync with jdbc transaction

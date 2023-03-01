@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.aspect;
+package vn.com.loyalty.core.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -17,6 +17,8 @@ public class ExceptionLogging {
 
     @AfterThrowing(value = "exceptionPointCut()", throwing = "exception")
     public void exceptionLog(JoinPoint joinPoint, Throwable exception) {
-        log.error(exception.getMessage(), exception);
+        log.error("Exception: {}.{}"
+        , joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName()
+        , exception);
     }
 }

@@ -1,5 +1,7 @@
 package vn.com.loyalty.eventspam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
 @EnableKafka
@@ -40,6 +41,9 @@ public class LoyaltyEventSpamApplication {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
 
     @Scheduled(cron = "0/15 * * * * *")
     public void sendMessage() {
@@ -47,10 +51,14 @@ public class LoyaltyEventSpamApplication {
         TransactionMessageDTO message = this.buildTransactionStockMessage();
         kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
                 .whenComplete((result, throwable) -> {
-                    log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
-                            result.getProducerRecord().topic(),
-                            result.getRecordMetadata().partition(),
-                            ObjectUtil.prettyPrintJsonObject(result.getProducerRecord().value()));
+                    try {
+                        log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
+                                result.getProducerRecord().topic(),
+                                result.getRecordMetadata().partition(),
+                                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.getProducerRecord().value()));
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }).exceptionally(e -> {
                     log.error("Kafka producer send message failed: {}", e.getMessage());
                     return null;

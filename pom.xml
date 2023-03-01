@@ -43,6 +43,7 @@
         <shedlock.version>2.2.0</shedlock.version>
         <apache.common.pool.version>2.4</apache.common.pool.version>
         <validation.version>3.0.2</validation.version>
+        <aspectj.version>1.9.19</aspectj.version>
     </properties>
 
     <dependencyManagement>

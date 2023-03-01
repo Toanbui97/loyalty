@@ -8,6 +8,7 @@ DB_PORT: 5433
 DB_NAME: loyalty
 DB_SCHEMA: cms
 DB_USER: postgres
+SHOW_SQL: false
 DB_PASSWORD: postgres
 
 

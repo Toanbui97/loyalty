@@ -5,7 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
@@ -18,10 +22,11 @@ import vn.com.loyalty.core.exception.TransactionException;
 import vn.com.loyalty.core.service.internal.*;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-@KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
 @Slf4j
 @RequiredArgsConstructor
 public class TransactionListener {
@@ -30,28 +35,27 @@ public class TransactionListener {
     private final TransactionMessageService transactionMessageService;
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaOperation kafkaOperation;
 
-    @KafkaHandler
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
-    public void handleTransactionInCome(String message) {
+    @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
+    public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) {
         try {
-            log.info("========================> Kafka Message \n{}", message);
-            transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(message).build());
+            transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 
-            TransactionMessageDTO transactionMessage = objectMapper.readValue(message, TransactionMessageDTO.class);
+            TransactionMessageDTO message = objectMapper.readValue(payload, TransactionMessageDTO.class);
 
-            BigDecimal epointGain = transactionService.calculateEpointGain(transactionMessage);
-            BigDecimal rpointGain = transactionService.calculateRpointGain(transactionMessage);
-            BigDecimal epointSpend = transactionMessage.getData().getPointToDiscount() != null
-                    ? transactionMessage.getData().getPointToDiscount() : BigDecimal.ZERO;
+            BigDecimal epointGain = transactionService.calculateEpointGain(message);
+            BigDecimal rpointGain = transactionService.calculateRpointGain(message);
+            BigDecimal epointSpend = message.getData().getPointToDiscount() != null
+                    ? message.getData().getPointToDiscount() : BigDecimal.ZERO;
 
             TransactionEntity transactionEntity = TransactionEntity.builder()
-                    .customerCode(transactionMessage.getCustomerCode())
-                    .transactionTime(transactionMessage.getTransactionTime())
-                    .transactionId(transactionMessage.getTransactionId())
-                    .transactionValue(transactionMessage.getData().getTransactionValue())
-                    .transactionType(TransactionType.valueOf(transactionMessage.getTransactionType()))
+                    .customerCode(message.getCustomerCode())
+                    .transactionTime(message.getTransactionTime())
+                    .transactionId(message.getTransactionId())
+                    .transactionValue(message.getData().getTransactionValue())
+                    .transactionType(TransactionType.valueOf(message.getTransactionType()))
                     .epointGain(epointGain)
                     .rpointGain(rpointGain)
                     .epointSpend(epointSpend)
@@ -64,15 +68,16 @@ public class TransactionListener {
                         throw new TransactionException(throwable.getMessage());
                     }).join();
 
-            kafkaTemplate.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessageDTO.builder()
-                    .customerCode(transactionMessage.getCustomerCode())
-                    .rpointGain(rpointGain)
-                    .epointGain(epointGain)
-                    .epointSpend(epointSpend));
+            kafkaOperation.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessageDTO.builder()
+                            .transactionId(message.getTransactionId())
+                            .customerCode(message.getCustomerCode())
+                            .rpointGain(rpointGain)
+                            .epointGain(epointGain)
+                            .epointSpend(epointSpend)
+                            .build());
 
         } catch (Exception e) {
             redisOperation.rollback();
-            throw new TransactionException(e.getMessage());
         }
 
     }
@@ -86,15 +91,15 @@ public class TransactionListener {
         if (epoint.compareTo(transaction.getEpointSpend()) < 0) {
             throw new CustomerPointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
         }
-        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()).toString());
+        redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()));
 
         // save rpoint to redis
         String rpointKey = redisOperation.genRpointKey(transaction.getCustomerCode());
         if (redisOperation.hasValue(rpointKey)) {
             BigDecimal rpoint = redisOperation.getValue(epointKey, BigDecimal.class);
-            redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()).toString());
+            redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()));
         } else {
-            redisOperation.setValue(rpointKey, transaction.getRpointGain().toString());
+            redisOperation.setValue(rpointKey, transaction.getRpointGain());
         }
     }
 

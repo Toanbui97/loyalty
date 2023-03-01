@@ -26,7 +26,7 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServer;
 
-    @Bean(name = "customConsumerFactory")
+    @Bean
     public ConsumerFactory<String, Object> customConsumerFactory() {
 
         String groupId = consumer.getGroupId();
@@ -43,7 +43,7 @@ public class KafkaConsumerConfig {
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
-    @Bean(name = "customKafkaListenerContainerFactory")
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> customKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(customConsumerFactory());

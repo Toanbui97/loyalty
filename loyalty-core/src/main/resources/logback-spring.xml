@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOGS" value="./logs" />
     <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-            </Pattern>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <charset>utf8</charset>
         </layout>
     </appender>
 
@@ -16,9 +16,9 @@
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+<!--            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>-->
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</Pattern>
         </encoder>
-
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->

@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.dto.message.CustomerMessageDTO;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
@@ -26,7 +29,7 @@ import java.time.LocalDateTime;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CustomerListener {
+public class CMSKafkaListener {
 
     private final ObjectMapper objectMapper;
     private final RankService rankService;
@@ -37,20 +40,20 @@ public class CustomerListener {
     private final EpointGainRepository epointGainRepository;
     private final EpointSpendRepository epointSpendRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     @KafkaListener(topics = Constants.KafkaConstants.POINT_TOPIC, groupId = Constants.KafkaConstants.POINT_GROUP)
-    public void pointListener(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
-
+    public void cmsTransactionListener(@Payload String payload, @Headers MessageHeaders headers) {
         LocalDate today = LocalDate.now();
 
         try {
 
-            CustomerMessageDTO messageDTO = objectMapper.readValue(message, CustomerMessageDTO.class);
-            CustomerEntity customerEntity = customerRepository.findByCustomerCode(messageDTO.getCustomerCode())
-                    .orElse(CustomerEntity.builder().customerCode(messageDTO.getCustomerCode()).build());
+            CustomerMessageDTO message = objectMapper.readValue(payload, CustomerMessageDTO.class);
+            CustomerEntity customerEntity = customerRepository.findByCustomerCode(message.getCustomerCode())
+                    .orElse(CustomerEntity.builder().customerCode(message.getCustomerCode()).build());
 
             if (redisOperation.hasValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()))) {
                 customerEntity.setEpoint(redisOperation.getValue(
-                        redisOperation.genEpointKey(messageDTO.getCustomerCode()), BigDecimal.class
+                        redisOperation.genEpointKey(message.getCustomerCode()), BigDecimal.class
                 ));
             }
 
@@ -69,37 +72,37 @@ public class CustomerListener {
             }
 
             // save rpoint
-            if (messageDTO.getRpointGain() != null && messageDTO.getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getRpointGain() != null && message.getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
                 rpointRepository.save(RpointEntity.builder()
-                        .customerCode(messageDTO.getCustomerCode())
-                        .rpoint(messageDTO.getRpointGain())
+                        .customerCode(message.getCustomerCode())
+                        .rpoint(message.getRpointGain())
                         .transactionDay(LocalDate.now())
-                        .transactionId(messageDTO.getTransactionId())
+                        .transactionId(message.getTransactionId())
                         .build());
             }
 
             // save epoint gain
-            if (messageDTO.getEpointGain() != null && messageDTO.getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getEpointGain() != null && message.getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
                 epointGainRepository.save(EpointGainEntity.builder()
-                        .transactionId(messageDTO.getTransactionId())
-                        .customerCode(messageDTO.getCustomerCode())
-                        .epoint(messageDTO.getEpointGain())
+                        .transactionId(message.getTransactionId())
+                        .customerCode(message.getCustomerCode())
+                        .epoint(message.getEpointGain())
                         .transactionDay(today)
                         .build());
             }
 
             // save epoint spend
-            if (messageDTO.getEpointSpend()!= null && messageDTO.getEpointSpend().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getEpointSpend()!= null && message.getEpointSpend().compareTo(BigDecimal.ZERO) > 0) {
                 epointSpendRepository.save(EpointSpendEntity.builder()
-                        .transactionId(messageDTO.getTransactionId())
-                        .customerCode(messageDTO.getCustomerCode())
-                        .epoint(messageDTO.getEpointSpend())
+                        .transactionId(message.getTransactionId())
+                        .customerCode(message.getCustomerCode())
+                        .epoint(message.getEpointSpend())
                         .transactionDay(today)
                         .build());
             }
 
-            if (messageDTO.getActiveVoucher() != null) {
-                customerEntity.setActiveVoucher(messageDTO.getActiveVoucher());
+            if (message.getActiveVoucher() != null) {
+                customerEntity.setActiveVoucher(message.getActiveVoucher());
             }
 
 

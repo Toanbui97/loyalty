@@ -26,7 +26,7 @@ public class RedisOperationImpl implements RedisOperation {
     @Override
     public <T> List<T> getValuesMatchPrefix(String keyPrefix, Class<T> clazz) {
         try {
-            Set<String> keys = redisTemplate.keys(keyPrefix);
+            Set<String> keys = redisTemplate.keys(keyPrefix + "*");
             JavaType type = objectMapper.constructType(clazz);
             List<T> resultList = new ArrayList<>();
             List<String> values = redisTemplate.opsForValue().multiGet(Objects.requireNonNull(keys));
@@ -46,7 +46,11 @@ public class RedisOperationImpl implements RedisOperation {
     @Override
     @SneakyThrows
     public void setValue(String key, Object value) {
-        redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+        if (value instanceof String) {
+            redisTemplate.opsForValue().set(key, String.valueOf(value));
+        } else {
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+        }
     }
 
     @Override
