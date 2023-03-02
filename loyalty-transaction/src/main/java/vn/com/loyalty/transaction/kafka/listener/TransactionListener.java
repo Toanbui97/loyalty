@@ -77,7 +77,7 @@ public class TransactionListener {
                             .build());
 
         } catch (Exception e) {
-            redisOperation.rollback();
+
         }
 
     }

@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.dto.request.BodyRequest;
@@ -34,7 +33,7 @@ public class ApiLogging {
 
         if (joinPoint.getArgs()[0] instanceof BodyRequest<?> request) {
             if (!StringUtils.hasText(request.getRequestId())) {
-                String reqId = httpSession.getAttribute(REQUEST_ID) != null ? (String) httpSession.getAttribute(REQUEST_ID) : UUID.randomUUID().toString();
+                String reqId =  UUID.randomUUID().toString();
                 httpSession.setAttribute(REQUEST_ID, reqId);
                 request.setRequestId(reqId);
             } else {
@@ -43,7 +42,7 @@ public class ApiLogging {
             log.info("""
                     
                     ===================> API Request: {}.{}
-                    URL: {}: {}
+                    {}: {}
                     {}
                     """
                     ,joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName()
@@ -52,7 +51,7 @@ public class ApiLogging {
             log.info("""
                     
                     ===================> API Request: {}.{}
-                    URL: {}: {}
+                    {}: {}
                     {}
                     """
                     ,joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName()
@@ -66,13 +65,12 @@ public class ApiLogging {
             body.setRequestId((String) httpSession.getAttribute(REQUEST_ID));
             log.info("""
                     
-                    ===================> Response: {}.{}
-                    URL: {}: {}
+                    ===================> API Response: {}.{}
+                    {}: {}
                     {}
                     """
                     , joinPoint.getSignature().getDeclaringType().getName(), joinPoint.getSignature().getName()
                     ,httpRequest.getMethod(), httpRequest.getRequestURL(), ObjectUtil.prettyPrintJsonObject(response.getBody()));
         }
     }
-
 }

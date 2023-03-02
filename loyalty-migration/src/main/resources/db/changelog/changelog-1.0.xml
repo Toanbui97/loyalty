@@ -2,13 +2,14 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+        xsi:schemaLocation="https://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog ">
 
     <changeSet author="toanbv" id="20220802103501_init_loyalty_tables.sql">
         <sqlFile path="db/sources/20220802103500_init_loyalty_tables.sql" relativeToChangelogFile="false"/>
-        <sqlFile path="db/sources/2022_02_28_init_spring_batch_schema.sql" relativeToChangelogFile="false" />
+        <sqlFile path="db/sources/2022_02_28_init_spring_batch_schema.sql" relativeToChangelogFile="false"/>
     </changeSet>
     <changeSet author="toanbv" id="2022_02_28_init_spring_batch_schema.sql">
-        <sqlFile path="db/sources/2022_02_28_init_spring_batch_schema.sql" relativeToChangelogFile="false" />
+        <sqlFile path="db/sources/2022_02_28_init_spring_batch_schema.sql" relativeToChangelogFile="false"/>
     </changeSet>
 </databaseChangeLog>

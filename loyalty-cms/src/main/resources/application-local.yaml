@@ -7,4 +7,4 @@ DB_NAME: loyalty
 DB_SCHEMA: cms
 DB_USER: postgres
 DB_PASSWORD: postgres
-SHOW_SQL: false
+SHOW_SQL: true

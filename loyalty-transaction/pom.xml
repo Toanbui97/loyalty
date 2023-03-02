@@ -7,7 +7,7 @@
         <artifactId>loyalty</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>loyalty-point</artifactId>
+    <artifactId>loyalty-transaction</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>loyalty-transaction</name>
     <description>loyalty-transaction</description>

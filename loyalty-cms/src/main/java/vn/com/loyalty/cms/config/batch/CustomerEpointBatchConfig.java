@@ -34,7 +34,6 @@ public class CustomerEpointBatchConfig {
     private final CustomerService customerService;
 
 
-
     public ItemReader<CustomerEntity> customerRepositoryItemReader() {
         RepositoryItemReader<CustomerEntity> reader = new RepositoryItemReader<>();
         reader.setRepository(customerRepository);
