@@ -14,16 +14,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.message.CustomerMessageDTO;
-import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
+import vn.com.loyalty.core.dto.message.CustomerMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessage;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
 import vn.com.loyalty.core.service.internal.*;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -43,7 +41,7 @@ public class TransactionListener {
         try {
             transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 
-            TransactionMessageDTO message = objectMapper.readValue(payload, TransactionMessageDTO.class);
+            TransactionMessage message = objectMapper.readValue(payload, TransactionMessage.class);
 
             BigDecimal epointGain = transactionService.calculateEpointGain(message);
             BigDecimal rpointGain = transactionService.calculateRpointGain(message);
@@ -68,7 +66,7 @@ public class TransactionListener {
                         throw new TransactionException(throwable.getMessage());
                     }).join();
 
-            kafkaOperation.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessageDTO.builder()
+            kafkaOperation.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessage.builder()
                             .transactionId(message.getTransactionId())
                             .customerCode(message.getCustomerCode())
                             .rpointGain(rpointGain)

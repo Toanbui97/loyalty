@@ -13,7 +13,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
-import vn.com.loyalty.core.dto.message.CustomerMessageDTO;
+import vn.com.loyalty.core.dto.message.CustomerMessage;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.entity.cms.EpointSpendEntity;
@@ -46,8 +46,7 @@ public class CMSKafkaListener {
         LocalDate today = LocalDate.now();
 
         try {
-
-            CustomerMessageDTO message = objectMapper.readValue(payload, CustomerMessageDTO.class);
+            CustomerMessage message = objectMapper.readValue(payload, CustomerMessage.class);
             CustomerEntity customerEntity = customerRepository.findByCustomerCode(message.getCustomerCode())
                     .orElse(CustomerEntity.builder().customerCode(message.getCustomerCode()).build());
 

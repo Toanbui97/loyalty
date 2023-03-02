@@ -15,10 +15,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.message.TransactionMessageDTO;
+import vn.com.loyalty.core.dto.message.TransactionMessage;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.repository.CustomerRepository;
-import vn.com.loyalty.core.utils.ObjectUtil;
+import vn.com.loyalty.core.service.internal.KafkaOperation;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ import java.util.UUID;
 public class LoyaltyEventSpamApplication {
 
     @Autowired
-    KafkaTemplate<String, Object> kafkaTemplate;
+    KafkaOperation kafkaOperation;
 
     @Autowired
     CustomerRepository customerRepository;
@@ -48,8 +48,8 @@ public class LoyaltyEventSpamApplication {
     @Scheduled(cron = "0/15 * * * * *")
     public void sendMessage() {
 
-        TransactionMessageDTO message = this.buildTransactionStockMessage();
-        kafkaTemplate.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
+        TransactionMessage message = this.buildTransactionStockMessage();
+        kafkaOperation.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
                 .whenComplete((result, throwable) -> {
                     try {
                         log.info("Kafka producer send message success to toppic - partition: {} - {} \n{}",
@@ -71,27 +71,27 @@ public class LoyaltyEventSpamApplication {
         SpringApplication.run(LoyaltyEventSpamApplication.class, args);
     }
 
-    private TransactionMessageDTO buildTransactionStockMessage() {
+    private TransactionMessage buildTransactionStockMessage() {
         List<CustomerEntity> customerCode = customerRepository.findAll();
 
-        return TransactionMessageDTO.builder()
+        return TransactionMessage.builder()
                 .customerCode(customerCode.get(new Random().nextInt(customerCode.size())).getCustomerCode())
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
-                .data(TransactionMessageDTO.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt(10000))).build())
+                .data(TransactionMessage.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt(10000))).build())
                 .build();
     }
 
-    private TransactionMessageDTO buildTransactionBoundMessage() {
+    private TransactionMessage buildTransactionBoundMessage() {
 
 
-        return TransactionMessageDTO.builder()
+        return TransactionMessage.builder()
                 .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" +  new Random().nextInt(10))
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.BOUND_TYPE.getType())
-                .data(TransactionMessageDTO.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
+                .data(TransactionMessage.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
                 .build();
     }
 

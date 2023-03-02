@@ -12,6 +12,9 @@ public class Constants {
     public static final Integer INIT_VERSION_APPROVED = 0;
     public static final String AUTH_HEADER = "Authorization";
     public static final String REGEX_PATH_URI = "(\\{[^\\}]*\\})";
+    public static final String REQUEST_ID = "requestId";
+    public static final String MESSAGE_ID = "messageId";
+
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ServiceConfig {

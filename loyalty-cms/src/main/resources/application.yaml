@@ -35,17 +35,21 @@ spring:
   profiles:
     active: ${ACTIVE_PROFILE:local}
   kafka:
-    producer:
-     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
-     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
-    retries: 5
-    deliveryTimeout: 20000
-    requestTimeout: 20000
-    poll:
-      maxPollRecords: 500
-      maxPollInterval: 300000
+    consumer:
+      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      max-poll-records: 500
+      properties:
+        spring.json.trusted.packages: vn.com.loyalty.core.dto.message
+    producer:
+      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 5
+      properties:
+        spring.json.add.type.headers: false
   data:
     redis:
       host: ${REDIS_HOST:localhost}

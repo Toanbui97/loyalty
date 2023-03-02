@@ -17,7 +17,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionMessageDTO implements Serializable {
+public class TransactionMessage implements Serializable {
     
     String transactionId;
     String customerCode;

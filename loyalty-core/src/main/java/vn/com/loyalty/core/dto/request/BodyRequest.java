@@ -13,7 +13,6 @@ import java.util.UUID;
 public class BodyRequest<T> implements Serializable {
 
     String requestId;
-
     T data;
 
     public static <T> BodyRequest<T> of(T data){
