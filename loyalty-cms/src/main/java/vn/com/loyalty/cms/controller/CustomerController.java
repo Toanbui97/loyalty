@@ -1,11 +1,18 @@
 package vn.com.loyalty.cms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import vn.com.loyalty.cms.worker.ApplicationScheduler;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
@@ -24,6 +31,7 @@ public class CustomerController {
     private final CustomerService customerService;
     private final ResponseFactory responseFactory;
     private final CustomerRepository customerRepository;
+    private final ApplicationScheduler applicationScheduler;
 
     @PostMapping("/receiveCustomer/{customerCode}")
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req,
@@ -46,10 +54,17 @@ public class CustomerController {
         return responseFactory.success(customerService.getListCustomer(pageable));
     }
 
-    @PostMapping("/performCustomerEpointJob/{customerCode}")
-    public ResponseEntity<BodyResponse<CustomerEntity>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable String customerCode) {
-        return responseFactory.success(customerService.calculateEpoint(customerRepository.findByCustomerCode(customerCode)
-                .orElse(new CustomerEntity())));
+    @PostMapping(value = {"/performCustomerEpointJob/{customerCode}", "/performCustomerEpointJob"})
+    public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+
+        if (StringUtils.hasText(customerCode)) {
+            customerService.calculateEpoint(customerRepository.findByCustomerCode(customerCode)
+                    .orElse(new CustomerEntity()));
+            return responseFactory.success(customerService.getCustomer(customerCode));
+        } else {
+            applicationScheduler.launchEpointJob();
+            return responseFactory.success(customerService.getListCustomer(Pageable.unpaged()));
+        }
     }
 
 }

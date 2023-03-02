@@ -71,39 +71,38 @@ public class CMSKafkaListener {
             }
 
             // save rpoint
-            if (message.getRpointGain() != null && message.getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getData().getRpointGain() != null && message.getData().getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
                 rpointRepository.save(RpointEntity.builder()
                         .customerCode(message.getCustomerCode())
-                        .rpoint(message.getRpointGain())
+                        .rpoint(message.getData().getRpointGain())
                         .transactionDay(LocalDate.now())
                         .transactionId(message.getTransactionId())
                         .build());
             }
 
             // save epoint gain
-            if (message.getEpointGain() != null && message.getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getData().getEpointGain() != null && message.getData().getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
                 epointGainRepository.save(EpointGainEntity.builder()
                         .transactionId(message.getTransactionId())
                         .customerCode(message.getCustomerCode())
-                        .epoint(message.getEpointGain())
+                        .epoint(message.getData().getEpointGain())
                         .transactionDay(today)
                         .build());
             }
 
             // save epoint spend
-            if (message.getEpointSpend()!= null && message.getEpointSpend().compareTo(BigDecimal.ZERO) > 0) {
+            if (message.getData().getEpointSpend()!= null && message.getData().getEpointSpend().compareTo(BigDecimal.ZERO) > 0) {
                 epointSpendRepository.save(EpointSpendEntity.builder()
                         .transactionId(message.getTransactionId())
                         .customerCode(message.getCustomerCode())
-                        .epoint(message.getEpointSpend())
+                        .epoint(message.getData().getEpointSpend())
                         .transactionDay(today)
                         .build());
             }
 
-            if (message.getActiveVoucher() != null) {
-                customerEntity.setActiveVoucher(message.getActiveVoucher());
+            if (message.getData().getActiveVoucher() != null) {
+                customerEntity.setActiveVoucher(message.getData().getActiveVoucher());
             }
-
 
             customerRepository.save(customerEntity);
 

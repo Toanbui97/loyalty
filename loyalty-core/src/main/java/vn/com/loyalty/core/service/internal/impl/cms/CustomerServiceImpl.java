@@ -53,7 +53,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCustomer(String customerCode)  {
-
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode)
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
         return customerMapper.entityToDTO(customerEntity);

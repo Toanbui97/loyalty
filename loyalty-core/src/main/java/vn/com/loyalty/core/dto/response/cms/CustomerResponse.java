@@ -3,8 +3,10 @@ package vn.com.loyalty.core.dto.response.cms;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.com.loyalty.core.constant.Constants;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,7 +19,9 @@ public class CustomerResponse {
 
     String customerName;
     String customerCode;
-    BigDecimal totalEpoint;
-    BigDecimal totalRpoint;
+    BigDecimal epoint;
+    BigDecimal rpoint;
+    String rankCode;
+    LocalDate rankExpired;
     Long activeVoucher;
 }

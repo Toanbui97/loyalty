@@ -69,12 +69,15 @@ public class TransactionListener {
             kafkaOperation.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessage.builder()
                             .transactionId(message.getTransactionId())
                             .customerCode(message.getCustomerCode())
-                            .rpointGain(rpointGain)
-                            .epointGain(epointGain)
-                            .epointSpend(epointSpend)
+                            .data(CustomerMessage.Data.builder()
+                                            .rpointGain(rpointGain)
+                                            .epointGain(epointGain)
+                                            .epointSpend(epointSpend)
+                                            .build()
+                                    )
                             .build());
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 

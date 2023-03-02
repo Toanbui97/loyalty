@@ -1,11 +1,19 @@
 package vn.com.loyalty.core.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring"
+        , nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT
+        , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
+        , nullValueMapMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
+        , nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
+        , nullValueIterableMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public interface VoucherMapper {
 
     VoucherResponse entityToDTO(VoucherEntity entity);
