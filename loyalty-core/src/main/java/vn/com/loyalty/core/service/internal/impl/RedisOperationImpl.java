@@ -86,7 +86,7 @@ public class RedisOperationImpl implements RedisOperation {
 
     @Override
     public boolean hasValue(String key) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key)) && redisTemplate.opsForValue().get(key) != null;
+        return redisTemplate.opsForValue().get(key) != null;
     }
 
     @Override

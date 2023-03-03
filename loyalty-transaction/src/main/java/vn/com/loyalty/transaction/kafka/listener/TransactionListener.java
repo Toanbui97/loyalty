@@ -1,5 +1,7 @@
 package vn.com.loyalty.transaction.kafka.listener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +39,7 @@ public class TransactionListener {
 
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
     @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
-    public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) {
-        try {
+    public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) throws Exception {
             transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 
             TransactionMessage message = objectMapper.readValue(payload, TransactionMessage.class);
@@ -76,10 +77,6 @@ public class TransactionListener {
                                             .build()
                                     )
                             .build());
-
-        } catch (Exception ignored) {
-
-        }
 
     }
 

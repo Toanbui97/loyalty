@@ -22,8 +22,11 @@ public class RpointEntity extends BaseEntity {
 
     String transactionId;
     String customerCode;
-    BigDecimal rpoint;
-    LocalDate transactionDay;
-    String source;
+    @Builder.Default
+    BigDecimal rpoint = BigDecimal.ZERO;
+    @Builder.Default
+    LocalDate transactionDay = LocalDate.now();
+    @Builder.Default
+    String source = "NONE";
 
 }

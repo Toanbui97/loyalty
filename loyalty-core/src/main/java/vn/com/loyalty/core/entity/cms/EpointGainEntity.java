@@ -1,9 +1,6 @@
 package vn.com.loyalty.core.entity.cms;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.constant.enums.PointStatus;
@@ -11,7 +8,6 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Table(name = "epoint_gain", schema = "cms")
 @Entity
@@ -25,12 +21,23 @@ public class EpointGainEntity extends BaseEntity {
 
     String customerCode;
     String transactionId;
-    BigDecimal epoint;
+    @Builder.Default
+    BigDecimal epoint = BigDecimal.ZERO;
     BigDecimal epointRemain;
-    LocalDate transactionDay;
+    @Builder.Default
+    LocalDate transactionDay = LocalDate.now();
     @Enumerated(EnumType.STRING)
-    PointStatus status;
+    @Builder.Default
+    PointStatus status = PointStatus.ACTIVE;
     LocalDate expireDay;
-    String source;
+    @Builder.Default
+    String source = "NONE";
+
+    @PrePersist
+    public void prePersist () {
+        if (this.epointRemain == null) {
+            this.epointRemain = this.epoint;
+        }
+    }
 
 }

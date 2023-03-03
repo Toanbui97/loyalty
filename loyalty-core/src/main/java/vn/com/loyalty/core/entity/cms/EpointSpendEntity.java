@@ -22,8 +22,11 @@ public class EpointSpendEntity extends BaseEntity {
 
     String transactionId;
     String customerCode;
-    BigDecimal epoint;
-    LocalDate transactionDay;
-    String source;
+    @Builder.Default
+    BigDecimal epoint = BigDecimal.ZERO;
+    @Builder.Default
+    LocalDate transactionDay = LocalDate.now();
+    @Builder.Default
+    String source = "NONE";
 
 }

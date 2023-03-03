@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
+import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.dto.message.CustomerMessage;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity;
@@ -75,7 +76,6 @@ public class CMSKafkaListener {
                 rpointRepository.save(RpointEntity.builder()
                         .customerCode(message.getCustomerCode())
                         .rpoint(message.getData().getRpointGain())
-                        .transactionDay(LocalDate.now())
                         .transactionId(message.getTransactionId())
                         .build());
             }
@@ -84,7 +84,7 @@ public class CMSKafkaListener {
             if (message.getData().getEpointGain() != null && message.getData().getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
                 epointGainRepository.save(EpointGainEntity.builder()
                         .transactionId(message.getTransactionId())
-                        .customerCode(message.getCustomerCode())
+                        .customerCode (message.getCustomerCode())
                         .epoint(message.getData().getEpointGain())
                         .transactionDay(today)
                         .build());
