@@ -15,17 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.dto.message.CustomerMessage;
+import vn.com.loyalty.core.entity.MasterDataEntity;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.entity.cms.EpointSpendEntity;
 import vn.com.loyalty.core.entity.cms.RpointEntity;
 import vn.com.loyalty.core.repository.*;
+import vn.com.loyalty.core.service.internal.MasterDataService;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.impl.RankService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 @Slf4j
@@ -35,7 +36,7 @@ public class CMSKafkaListener {
     private final ObjectMapper objectMapper;
     private final RankService rankService;
     private final CustomerRepository customerRepository;
-    private final MasterDataRepository masterDataRepository;
+    private final MasterDataService masterDataService;
     private final RpointRepository rpointRepository;
     private final RedisOperation redisOperation;
     private final EpointGainRepository epointGainRepository;
@@ -66,7 +67,7 @@ public class CMSKafkaListener {
             // check rank
             String rankCode = rankService.getRankByPoint(customerEntity.getRpoint());
             if (!customerEntity.getRankCode().equals(rankCode)) {
-                long monthRankExpire = Long.parseLong(masterDataRepository.findByKey(Constants.MasterDataKey.RANK_EXPIRE_TIME).getValue());
+                long monthRankExpire = masterDataService.getValue(Constants.MasterDataKey.RANK_EXPIRE_TIME, Long.class);
                 customerEntity.setRankCode(rankCode);
                 customerEntity.setRankExpired(customerEntity.getRankExpired().plusMonths(monthRankExpire));
             }
@@ -86,6 +87,7 @@ public class CMSKafkaListener {
                         .transactionId(message.getTransactionId())
                         .customerCode (message.getCustomerCode())
                         .epoint(message.getData().getEpointGain())
+                        .expireDay(today.plusMonths(masterDataService.getValue(Constants.MasterDataKey.EPOINT_EXPIRE_TIME, Long.class)))
                         .transactionDay(today)
                         .build());
             }

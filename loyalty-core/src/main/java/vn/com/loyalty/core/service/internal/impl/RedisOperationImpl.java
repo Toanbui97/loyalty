@@ -20,7 +20,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RedisOperationImpl implements RedisOperation {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -29,11 +29,11 @@ public class RedisOperationImpl implements RedisOperation {
             Set<String> keys = redisTemplate.keys(keyPrefix + "*");
             JavaType type = objectMapper.constructType(clazz);
             List<T> resultList = new ArrayList<>();
-            List<String> values = redisTemplate.opsForValue().multiGet(Objects.requireNonNull(keys));
+            List<Object> values = redisTemplate.opsForValue().multiGet(Objects.requireNonNull(keys));
 
             if (!CollectionUtils.isEmpty(values)) {
-                for (String value : values) {
-                    resultList.add(objectMapper.readValue(value, type));
+                for (Object value : values) {
+                    resultList.add(objectMapper.convertValue(value, type));
                 }
             }
             return resultList;
@@ -49,14 +49,14 @@ public class RedisOperationImpl implements RedisOperation {
         if (value instanceof String) {
             redisTemplate.opsForValue().set(key, String.valueOf(value));
         } else {
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+            redisTemplate.opsForValue().set(key, value);
         }
     }
 
     @Override
     public <T> T getValue(String key, Class<T> clazz) {
         try {
-            String value = redisTemplate.opsForValue().get(key);
+            Object value = redisTemplate.opsForValue().get(key);
             return objectMapper.convertValue(value, clazz);
         } catch (Exception e) {
             throw new RedisException(e.getMessage());
@@ -67,9 +67,9 @@ public class RedisOperationImpl implements RedisOperation {
     @Override
     public <T> Collection<T> getListValue(String key, Class<T> clazz) {
        try {
-           String json = redisTemplate.opsForValue().get(key);
+           Object json = redisTemplate.opsForValue().get(key);
            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
-           return objectMapper.readValue(json, type);
+           return objectMapper.convertValue(json, type);
        } catch (Exception e) {
            throw new RedisException(e.getMessage());
        }

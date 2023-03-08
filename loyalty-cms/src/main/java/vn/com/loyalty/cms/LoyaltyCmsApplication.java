@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan("vn.com.loyalty.core.entity")
 @PropertySource("classpath:application.yaml")
 @EnableScheduling
-@EnableCaching
 @EnableBatchProcessing(tablePrefix = "CMS.BATCH_")
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 public class LoyaltyCmsApplication {

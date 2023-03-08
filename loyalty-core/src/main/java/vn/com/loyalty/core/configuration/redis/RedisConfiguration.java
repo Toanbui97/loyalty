@@ -8,6 +8,7 @@ import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -24,14 +25,17 @@ import org.springframework.data.redis.serializer.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import vn.com.loyalty.core.configuration.propertires.RedisHostPortProperties;
+import vn.com.loyalty.core.constant.Constants;
+import vn.com.loyalty.core.entity.MasterDataEntity;
 
 @Configuration
 @EnableConfigurationProperties(RedisHostPortProperties.class)
 @RequiredArgsConstructor
 @EnableTransactionManagement
-public class RedisLettuceConfiguration {
+public class RedisConfiguration {
 
     private final RedisHostPortProperties redisHostPortProperties;
+    private final ObjectMapper objectMapper;
 
     @Bean(destroyMethod = "shutdown")
     ClientResources clientResources() {
@@ -68,12 +72,10 @@ public class RedisLettuceConfiguration {
 
     @Bean
     @Primary
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        Jackson2JsonRedisSerializer serializer  = new Jackson2JsonRedisSerializer(objectMapper, Object.class);
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+        GenericJackson2JsonRedisSerializer serializer  = new GenericJackson2JsonRedisSerializer(objectMapper);
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(RedisSerializer.string());
         template.setValueSerializer(serializer);
@@ -87,4 +89,5 @@ public class RedisLettuceConfiguration {
         template.setEnableTransactionSupport(true);
         return template;
     }
+
 }

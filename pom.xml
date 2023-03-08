@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -34,11 +34,11 @@
         <mapstruct.version>1.5.1.Final</mapstruct.version>
         <common.lang3.version>3.12.0</common.lang3.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
-        <micrometer-prometheus.version>1.9.2</micrometer-prometheus.version>
+        <micrometer-prometheus.version>1.10.4</micrometer-prometheus.version>
         <reactor-netty.version>1.0.11</reactor-netty.version>
         <com.sipios.version>0.2.4</com.sipios.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
-        <fasterxml.jackson.datatype.version>2.13.3</fasterxml.jackson.datatype.version>
+        <fasterxml.jackson.datatype.version>2.14.2</fasterxml.jackson.datatype.version>
         <jpamodelgen.version>6.1.5.Final</jpamodelgen.version>
         <shedlock.version>2.2.0</shedlock.version>
         <apache.common.pool.version>2.4</apache.common.pool.version>
@@ -89,7 +89,6 @@
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${fasterxml.jackson.datatype.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>

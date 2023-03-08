@@ -57,9 +57,10 @@ public class Constants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class MasterDataKey {
         public static final String EPOINT_EXPIRE_TIME = "EPOINT_EXPIRE_TIME";
-        public static final String RANK_EXPIRE_TIME = "RANk_EXPIRE_TIME";
+        public static final String RANK_EXPIRE_TIME = "RANK_EXPIRE_TIME";
         public static final String POINT_TO_VALUE = "POINT_TO_VALUE";
         public static final String RANK_DEFAULT = "NONE";
+        public static final String M_DATA_FOLDER = "M_DATA:";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
