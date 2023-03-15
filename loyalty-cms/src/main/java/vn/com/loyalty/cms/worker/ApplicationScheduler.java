@@ -17,7 +17,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
@@ -34,7 +34,8 @@ import java.time.LocalDateTime;
 public class ApplicationScheduler {
 
     private final JobLauncher jobLauncher;
-    private final Job calculateEpointJob;
+    @Qualifier(value = "customerEPointJob")
+    private final Job calculateEPointJob;
 
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
@@ -42,27 +43,26 @@ public class ApplicationScheduler {
     // at 0:00 AM
 //    @Scheduled(cron = "0/30 * * * * *")
 //    @SchedulerLock(name = Constants.SchedulerTaskName.DEACTIVATE_EPOINT, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
-//    @Transactional
-    public void deactivateEpointExpire() {
-        LocalDate yesterday = LocalDate.now().minusDays(1L);
+    @Transactional
+    public void deactivatePointExpire() {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<EpointGainEntity> update = criteriaBuilder.createCriteriaUpdate(EpointGainEntity.class);
         Root<EpointGainEntity> root = update.from(EpointGainEntity.class);
 
-        update.where(criteriaBuilder.equal(root.get(EpointGainEntity_.EXPIRE_DAY), yesterday))
-                .set(root.get(EpointGainEntity_.STATUS), PointStatus.DEACTIVE);
+        update.where(criteriaBuilder.equal(root.get(EpointGainEntity_.EXPIRE_DAY), LocalDate.now().minusDays(1)))
+                .set(root.get(EpointGainEntity_.STATUS), PointStatus.DEACTIVATE);
 
         entityManager.createQuery(update).executeUpdate();
     }
 
-    @Scheduled(cron = "0/15 * * * * *")
+//    @Scheduled(cron = "0/15 * * * * *")
     @SchedulerLock(name = Constants.SchedulerTaskName.SCHEDULE_EPOINT, lockAtLeastForString = "PT10M", lockAtMostForString = "PT1H")
-    public void launchEpointJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public void launchEPointJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("JobID", String.valueOf(LocalDateTime.now()))
                 .toJobParameters();
 
-        jobLauncher.run(calculateEpointJob, jobParameters);
+        jobLauncher.run(calculateEPointJob, jobParameters);
     }
 }

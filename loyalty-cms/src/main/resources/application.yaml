@@ -16,7 +16,7 @@ spring:
         order_inserts: true
         order_updates: true
         jdbc:
-          batch_size: 100
+          batch_size: 5
       dialect: org.hibernate.dialect.PostgreSQLDialect
       format_sql: true
     show-sql: ${SHOW_SQL:true}
@@ -39,7 +39,7 @@ spring:
     producer:
       bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: vn.com.loyalty.core.configuration.kafka.CustomJsonSerializer
       retries: 5
   data:
     redis:
@@ -49,7 +49,6 @@ spring:
         pool:
           time-between-eviction-runs: 30
           min-idle: 60
-
           enabled: true
 
 management:

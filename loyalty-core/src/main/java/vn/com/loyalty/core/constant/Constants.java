@@ -41,7 +41,7 @@ public class Constants {
     public static final class RedisConstants {
         public static final String EPOINT_DIR = "EPOINT:";
         public static final String RPOINT_DIR = "RPOINT:";
-        public static final String RANK_DIR = "MDATA:RANK:";
+        public static final String RANK_DIR = "M_DATA:RANK:";
         public static final String CRANK_DIR = "CRANK:";
     }
 

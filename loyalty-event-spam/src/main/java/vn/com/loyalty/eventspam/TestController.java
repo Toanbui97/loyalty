@@ -3,22 +3,15 @@ package vn.com.loyalty.eventspam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.KafkaOperation;
@@ -29,14 +22,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-@SpringBootApplication
-@EnableKafka
-@EnableScheduling
-@ComponentScan("vn.com.loyalty")
-@EnableJpaRepositories("vn.com.loyalty.core.repository")
-@EntityScan("vn.com.loyalty.core.entity")
+@RequestMapping("/")
+@RestController
 @Slf4j
-public class LoyaltyEventSpamApplication {
+public class TestController {
 
     @Autowired
     KafkaOperation kafkaOperation;
@@ -48,11 +37,12 @@ public class LoyaltyEventSpamApplication {
     ObjectMapper objectMapper;
 
 
+    @GetMapping("/")
+    public void a(@RequestBody BodyRequest<?> req) {
+        this.sendMessage();
+    }
 
-
-    @Scheduled(cron = "0/10 * * * * *")
-    public void sendMessage() {
-
+    private void sendMessage() {
         TransactionMessage message = this.buildTransactionStockMessage();
         kafkaOperation.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
                 .whenComplete((result, throwable) -> {
@@ -68,39 +58,20 @@ public class LoyaltyEventSpamApplication {
                     log.error("Kafka producer send message failed: {}", e.getMessage());
                     return null;
                 });
-
-    }
-
-
-    public static void main(String[] args) {
-        SpringApplication.run(LoyaltyEventSpamApplication.class, args);
     }
 
     private TransactionMessage buildTransactionStockMessage() {
         List<CustomerEntity> customerCode = customerRepository.findAll();
 
         return TransactionMessage.builder()
-                .customerCode(customerCode.get(new Random().nextInt(customerCode.size())).getCustomerCode())
+                .customerCode("83c881a7-1d38-40b7-b52d-8f4247f8acc6")
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
                 .data(TransactionMessage.Data.builder()
-                        .transactionValue(BigDecimal.valueOf(new Random().nextInt(100000)))
-                        .pointToDiscount(BigDecimal.valueOf(new Random().nextInt(100)))
+                        .transactionValue(BigDecimal.valueOf(new Random().nextInt(10000)))
+//                        .pointToDiscount(BigDecimal.valueOf(new Random().nextInt(5)))
                         .build())
                 .build();
     }
-
-    private TransactionMessage buildTransactionBoundMessage() {
-
-
-        return TransactionMessage.builder()
-                .customerCode("9ab5c1b2-e4ac-4870-87cb-fd93682f21f" +  new Random().nextInt(10))
-                .transactionId(UUID.randomUUID().toString())
-                .transactionTime(LocalDateTime.now())
-                .transactionType(TransactionType.BOUND_TYPE.getType())
-                .data(TransactionMessage.Data.builder().transactionValue(BigDecimal.valueOf(new Random().nextInt())).build())
-                .build();
-    }
-
 }

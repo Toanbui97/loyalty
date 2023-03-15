@@ -17,6 +17,6 @@ public interface CustomerService {
 
     CustomerResponse updateCustomer(CustomerRequest customerRequest);
 
-    CustomerEntity calculateEpoint(CustomerEntity customerEntity);
+    CustomerEntity calculateEPoint(CustomerEntity customerEntity);
 
 }

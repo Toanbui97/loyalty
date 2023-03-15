@@ -50,21 +50,27 @@ public class CustomerController {
     }
 
     @PostMapping("/receiveCustomerList")
-    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList(@RequestBody BodyRequest req, @PageableDefault Pageable pageable) {
+    public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList(@RequestBody BodyRequest<?> req, @PageableDefault Pageable pageable) {
         return responseFactory.success(customerService.getListCustomer(pageable));
     }
 
-    @PostMapping(value = {"/performCustomerEpointJob/{customerCode}", "/performCustomerEpointJob"})
+    @PostMapping(value = {"/executeCustomerEpointJob/{customerCode}", "/executeCustomerEpointJob"})
     public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
 
         if (StringUtils.hasText(customerCode)) {
-            customerService.calculateEpoint(customerRepository.findByCustomerCode(customerCode)
+            customerService.calculateEPoint(customerRepository.findByCustomerCode(customerCode)
                     .orElse(new CustomerEntity()));
             return responseFactory.success(customerService.getCustomer(customerCode));
         } else {
-            applicationScheduler.launchEpointJob();
+            applicationScheduler.launchEPointJob();
             return responseFactory.success(customerService.getListCustomer(Pageable.unpaged()));
         }
+    }
+
+    @PostMapping("/executeDeactivatePointJob")
+    public ResponseEntity<BodyResponse<Object>> performExecuteDeactivatePointJob(@RequestBody BodyRequest<?> req) {
+        applicationScheduler.deactivatePointExpire();
+        return responseFactory.success();
     }
 
 }

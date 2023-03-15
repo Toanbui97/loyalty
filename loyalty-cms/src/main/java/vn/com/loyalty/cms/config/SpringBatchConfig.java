@@ -1,4 +1,4 @@
-package vn.com.loyalty.cms.config.batch;
+package vn.com.loyalty.cms.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.repository.JobRepository;

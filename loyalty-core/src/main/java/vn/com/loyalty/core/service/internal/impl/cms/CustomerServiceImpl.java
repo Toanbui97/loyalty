@@ -1,6 +1,5 @@
 package vn.com.loyalty.core.service.internal.impl.cms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,38 +67,41 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerEntity calculateEpoint(CustomerEntity customerEntity) {
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1L);
-
-        List<EpointGainEntity> epointList = epointGainRepository.findAll(
+    public CustomerEntity calculateEPoint(CustomerEntity customerEntity) {
+        List<EpointGainEntity> gainList = epointGainRepository.findAll(
                 EpointGainSpecs.byCustomerCodeAndStatus(customerEntity.getCustomerCode(), PointStatus.ACTIVE),
                 EpointGainSpecs.orderByExpireDayDESC());
 
-        BigDecimal epointSpend = epointSpendRepository.findByCustomerCodeAndTransactionDay(customerEntity.getCustomerCode(), yesterday).stream()
+        List<EpointSpendEntity> spendList = epointSpendRepository.findByCustomerCodeAndStatus(customerEntity.getCustomerCode(), PointStatus.UNCOUNTED);
+        BigDecimal spendNumber = spendList.stream()
                 .map(EpointSpendEntity::getEpoint)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        for (EpointGainEntity point : epointList) {
-            if (epointSpend.compareTo(BigDecimal.ZERO) > 0) {
+        for (EpointGainEntity point : gainList) {
+            if (spendNumber.compareTo(BigDecimal.ZERO) > 0) {
                 BigDecimal usablePoint = point.getEpointRemain();
-                if (usablePoint.compareTo(epointSpend) > 0) {
-                    point.setEpointRemain(usablePoint.subtract(epointSpend));
-                    epointSpend = BigDecimal.ZERO;
+                if (usablePoint.compareTo(spendNumber) > 0) {
+                    point.setEpointRemain(usablePoint.subtract(spendNumber));
+                    spendNumber = BigDecimal.ZERO;
                 } else {
                     point.setEpointRemain(BigDecimal.ZERO);
-                    epointSpend = epointSpend.subtract(usablePoint);
-                    point.setStatus(PointStatus.DEACTIVE);
+                    spendNumber = spendNumber.subtract(usablePoint);
+                    point.setStatus(PointStatus.DEACTIVATE);
                 }
             }
         }
 
-        BigDecimal totalEPoint = epointList.stream().map(EpointGainEntity::getEpointRemain)
+        BigDecimal gainNumber = gainList.stream().map(EpointGainEntity::getEpointRemain)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        redisOperation.setValue(redisOperation.genEpointKey( customerEntity.getCustomerCode()), totalEPoint);
-        customerEntity.setEpoint(totalEPoint);
-        epointGainRepository.saveAll(epointList);
+        epointSpendRepository.saveAllAndFlush(spendList.stream().map(spend -> {
+            spend.setStatus(PointStatus.COUNTED);
+            return spend;
+        }).toList());
+
+        redisOperation.setValue(redisOperation.genEpointKey( customerEntity.getCustomerCode()), gainNumber);
+        customerEntity.setEpoint(gainNumber);
+        epointGainRepository.saveAllAndFlush(gainList);
         return customerEntity;
     }
 

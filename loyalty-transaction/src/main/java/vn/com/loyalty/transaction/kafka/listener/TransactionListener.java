@@ -94,8 +94,8 @@ public class TransactionListener {
         // save rpoint to redis
         String rpointKey = redisOperation.genRpointKey(transaction.getCustomerCode());
         if (redisOperation.hasValue(rpointKey)) {
-            BigDecimal rpoint = redisOperation.getValue(epointKey, BigDecimal.class);
-            redisOperation.setValue(epointKey, rpoint.add(transaction.getRpointGain()));
+            BigDecimal rpoint = redisOperation.getValue(rpointKey, BigDecimal.class);
+            redisOperation.setValue(rpointKey, rpoint.add(transaction.getRpointGain()));
         } else {
             redisOperation.setValue(rpointKey, transaction.getRpointGain());
         }

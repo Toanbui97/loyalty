@@ -39,7 +39,7 @@ spring:
     producer:
       bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: vn.com.loyalty.core.configuration.kafka.CustomJsonSerializer
       retries: 5
 
   data:

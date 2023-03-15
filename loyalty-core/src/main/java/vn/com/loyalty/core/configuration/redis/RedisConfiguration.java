@@ -74,19 +74,19 @@ public class RedisConfiguration {
     @Primary
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
-        GenericJackson2JsonRedisSerializer serializer  = new GenericJackson2JsonRedisSerializer(objectMapper);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(RedisSerializer.string());
+        template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
-        template.setHashKeySerializer(RedisSerializer.string());
+        template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
-        template.setDefaultSerializer(RedisSerializer.string());
-        template.setStringSerializer(RedisSerializer.string());
-        template.afterPropertiesSet();
-
+        template.setDefaultSerializer(new StringRedisSerializer());
         // sync with jdbc transaction
         template.setEnableTransactionSupport(true);
+
+        template.afterPropertiesSet();
+
         return template;
     }
 

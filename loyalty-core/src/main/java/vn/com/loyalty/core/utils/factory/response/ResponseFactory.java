@@ -1,6 +1,5 @@
 package vn.com.loyalty.core.utils.factory.response;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,10 @@ import java.util.List;
 @Slf4j
 @Component
 public class ResponseFactory {
+
+    public ResponseEntity<BodyResponse<Object>> success() {
+        return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, (Object) null));
+    }
 
     public <T> ResponseEntity<BodyResponse<T>> success(T data) {
         return ResponseEntity.ok(new BodyResponse<>(0, ResponseStatusCode.SUCCESS, data));

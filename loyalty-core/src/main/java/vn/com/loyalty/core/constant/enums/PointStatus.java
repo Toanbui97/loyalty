@@ -2,7 +2,9 @@ package vn.com.loyalty.core.constant.enums;
 
 public enum PointStatus {
     ACTIVE("ACTIVE"),
-    DEACTIVE("DEACTIVE");
+    DEACTIVATE("DEACTIVATE"),
+    UNCOUNTED("UNCOUNTED"),
+    COUNTED("COUNTED");
 
     private String code;
     private String name;

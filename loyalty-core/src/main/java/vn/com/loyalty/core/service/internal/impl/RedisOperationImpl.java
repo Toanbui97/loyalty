@@ -44,13 +44,8 @@ public class RedisOperationImpl implements RedisOperation {
     }
 
     @Override
-    @SneakyThrows
     public void setValue(String key, Object value) {
-        if (value instanceof String) {
-            redisTemplate.opsForValue().set(key, String.valueOf(value));
-        } else {
-            redisTemplate.opsForValue().set(key, value);
-        }
+        redisTemplate.opsForValue().set(key, value);
     }
 
     @Override
