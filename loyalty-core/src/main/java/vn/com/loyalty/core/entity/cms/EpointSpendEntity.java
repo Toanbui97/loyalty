@@ -11,7 +11,6 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Table(name = "epoint_spend", schema = "cms")
 @Entity

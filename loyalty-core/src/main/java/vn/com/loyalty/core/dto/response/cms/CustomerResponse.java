@@ -3,7 +3,6 @@ package vn.com.loyalty.core.dto.response.cms;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import vn.com.loyalty.core.constant.Constants;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

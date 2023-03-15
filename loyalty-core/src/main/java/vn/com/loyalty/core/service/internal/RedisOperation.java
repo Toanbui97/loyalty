@@ -1,9 +1,5 @@
 package vn.com.loyalty.core.service.internal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import vn.com.loyalty.core.exception.RedisException;
-import vn.com.loyalty.core.service.internal.impl.RedisOperationImpl;
-
 import java.util.Collection;
 import java.util.List;
 

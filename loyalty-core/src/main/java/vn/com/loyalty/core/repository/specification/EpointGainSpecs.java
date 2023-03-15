@@ -1,6 +1,8 @@
 package vn.com.loyalty.core.repository.specification;
 
 import jakarta.persistence.criteria.Predicate;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import vn.com.loyalty.core.constant.enums.PointStatus;
@@ -10,6 +12,7 @@ import vn.com.loyalty.core.entity.cms.EpointGainEntity_;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EpointGainSpecs {
 
     public static Specification<EpointGainEntity> byCustomerCodeAndStatus(String customerCode, PointStatus status) {

@@ -139,7 +139,7 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
     }
 
     private <T> List<T> processFluxResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
-        List<T> responseList = requestHeadersSpec.retrieve()
+        return requestHeadersSpec.retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     log.error("Error from Client side system");
                     return Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, ""));
@@ -151,7 +151,6 @@ public class WebClientCommonServiceImpl implements WebClientCommonService {
                 )
                 .collectList()
                 .block();
-        return responseList;
     }
 
     private URI buildQueryParams(UriBuilder uriBuilder, String uri, MultiValueMap<String, String> params) {

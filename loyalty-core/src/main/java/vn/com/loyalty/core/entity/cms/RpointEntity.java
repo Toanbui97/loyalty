@@ -8,7 +8,6 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Table(name = "rpoint_gain", schema = "cms")
 @Entity

@@ -1,7 +1,6 @@
 package vn.com.loyalty.core.exception;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,14 +19,20 @@ import static vn.com.loyalty.core.constant.enums.ResponseStatusCode.*;
 
 @ControllerAdvice
 @RequiredArgsConstructor
-public class CustomExceptionHandler {
+public class ControllerAdvisor {
 
     private final ResponseFactory responseFactory;
+
+    @ExceptionHandler(SecurityException.class)
+    public final ResponseEntity<BodyResponse<Object>> handleSecurityException(SecurityException exception) {
+        BodyResponse<Object> response = new BodyResponse<>(UNAUTHORIZED, null, Constants.RESPONSE_STATUS_FAIL, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<BodyResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(ResourceExistedException.class)

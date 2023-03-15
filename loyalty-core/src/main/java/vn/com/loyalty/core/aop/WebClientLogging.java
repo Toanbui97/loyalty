@@ -22,7 +22,7 @@ public class WebClientLogging {
     private final ObjectMapper objectMapper;
 
     @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.impl.WebClientCommonServiceImpl.setUpUriAndBodyAndHeaders(String, String, Object , Object , Object)) && args(baseUrl, uri,  params, requestBody,  method)", argNames = "baseUrl,uri,params,requestBody,method")
-    public void webclientSetupLPointCut(String baseUrl, String uri, MultiValueMap<String, String> params, Object requestBody, HttpMethod method){};
+    public void webclientSetupLPointCut(String baseUrl, String uri, MultiValueMap<String, String> params, Object requestBody, HttpMethod method){}
 
     @After(value = "webclientSetupLPointCut(baseUrl, uri,  params, requestBody,  method)", argNames = "baseUrl,uri,params,requestBody,method")
     public void webclientSetupLogging(String baseUrl, String uri, MultiValueMap<String, String> params, Object requestBody, HttpMethod method) throws JsonProcessingException {
@@ -36,7 +36,7 @@ public class WebClientLogging {
     }
 
     @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.WebClientCommonService.*(*))")
-    public void webclientResponsePointCut(){};
+    public void webclientResponsePointCut(){}
 
     @AfterReturning(value = "webclientResponsePointCut()", returning = "response")
     public void webclientResponseLogging(JoinPoint joinPoint, Object response) throws JsonProcessingException {

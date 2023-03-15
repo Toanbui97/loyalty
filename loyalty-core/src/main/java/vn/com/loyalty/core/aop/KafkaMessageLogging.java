@@ -24,7 +24,7 @@ public class KafkaMessageLogging {
     public void kafkaSendPointCut(String topic, Object data) {}
 
     @Pointcut("@annotation(org.springframework.kafka.annotation.KafkaListener)")
-    public void kafkaReceivePointCut(){};
+    public void kafkaReceivePointCut(){}
 
     @Before(value = "kafkaSendPointCut(topic, data)", argNames = "topic,data")
     public void kafkaSendLogging(String topic, Object data) throws JsonProcessingException {

@@ -1,15 +1,11 @@
 package vn.com.loyalty.transaction.kafka.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -39,7 +35,7 @@ public class TransactionListener {
 
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
     @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
-    public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) throws Exception {
+    public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) throws JsonProcessingException {
             transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 
             TransactionMessage message = objectMapper.readValue(payload, TransactionMessage.class);

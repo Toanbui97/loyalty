@@ -10,7 +10,7 @@ import vn.com.loyalty.core.entity.BaseEntity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Table(name = "rank", schema = "cms")
+@Table(name = "rank_history", schema = "cms")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter

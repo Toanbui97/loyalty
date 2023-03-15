@@ -15,8 +15,7 @@ public class BodyRequest<T> implements Serializable {
 
     String requestId;
     Header header;
-    T data;
-
+    transient T data;
     public static <T> BodyRequest<T> of(T data){
 
         BodyRequest<T> bodyRequest = new BodyRequest<>();
@@ -31,7 +30,7 @@ public class BodyRequest<T> implements Serializable {
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Header implements Serializable{
-        List<String> roles;
+        transient String[] roles;
     }
 
 }

@@ -13,9 +13,7 @@ import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.PlatformTransactionManager;
-import vn.com.loyalty.core.entity.BaseEntity_;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
@@ -23,7 +21,6 @@ import vn.com.loyalty.core.service.internal.impl.RankService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor

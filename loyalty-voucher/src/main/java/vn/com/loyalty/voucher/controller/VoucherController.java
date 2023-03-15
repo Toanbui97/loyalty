@@ -24,7 +24,7 @@ public class VoucherController {
     private final VoucherDetailService voucherDetailService;
 
     @PostMapping("/receiveVoucherList")
-    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest request
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest<?> request
             , @PageableDefault Pageable page) {
         return responseFactory.success(voucherService.getVoucherList(page));
     }
@@ -35,7 +35,7 @@ public class VoucherController {
     }
 
     @PostMapping("/receiveVoucherDetailList/{voucherCode}")
-    public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@RequestBody BodyRequest request
+    public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@RequestBody BodyRequest<?> request
             , @PathVariable String voucherCode, @PageableDefault Pageable pageable) {
         return responseFactory.success(voucherDetailService.getVoucherDetailList(voucherCode, pageable));
     }

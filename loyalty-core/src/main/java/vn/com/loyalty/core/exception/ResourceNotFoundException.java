@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ResourceNotFoundException extends RuntimeException {
-    private final Class clazz;
+    private final Class<?> clazz;
     private final String resourceCode;
     private final String message;
 
-    public ResourceNotFoundException(Class clazz, String resourceCode) {
+    public <T> ResourceNotFoundException(Class<T> clazz, String resourceCode) {
         this.clazz = clazz;
         this.resourceCode = resourceCode;
         this.message = "Resource: " + clazz.getName() + " - " +resourceCode+ " not existed!";

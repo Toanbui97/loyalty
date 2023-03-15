@@ -39,7 +39,8 @@ public class RoleFilter {
 
         if (point.getArgs()[0] instanceof BodyRequest<?> request) {
             List<String> roleList = Arrays.stream(roles).toList();
-            if (!CollectionUtils.isEmpty(roleList) && Collections.disjoint(roleList, request.getHeader().getRoles())) {
+            List<String> userRoles = Arrays.stream(request.getHeader().getRoles()).toList();
+            if (!CollectionUtils.isEmpty(roleList) && Collections.disjoint(roleList, userRoles)) {
                 throw new SecurityException();
             }
         }

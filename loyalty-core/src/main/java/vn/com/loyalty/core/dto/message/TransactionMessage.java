@@ -35,7 +35,7 @@ public class TransactionMessage implements Serializable {
     public static class Data implements Serializable {
         BigDecimal transactionValue;
         BigDecimal pointToDiscount;
-        List<String> voucherDetailCodeList;
+        transient List<String> voucherDetailCodeList;
     }
 
 }

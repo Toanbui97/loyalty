@@ -32,8 +32,8 @@ public class BodyResponse<T> implements Serializable {
     private Integer size;
     private Long totalRecord;
     private Integer totalPage;
-    private T data;
-    private List<T> dataList;
+    private transient T data;
+    private transient List<T> dataList;
 
 
 
@@ -64,7 +64,7 @@ public class BodyResponse<T> implements Serializable {
         this.setDataList(dataList);
     }
 
-    public BodyResponse(int status, ResponseStatusCode responseStatusCode, Page page){
+    public BodyResponse(int status, ResponseStatusCode responseStatusCode, Page<T> page){
         this(status, responseStatusCode);
         this.setDataList(page.getContent());
         this.setPage(page.getNumber());
@@ -73,7 +73,7 @@ public class BodyResponse<T> implements Serializable {
         this.setTotalPage(page.getTotalPages());
     }
 
-    public BodyResponse(int status, ResponseStatusCode responseStatusCode, List<T> dataList,Page page){
+    public BodyResponse(int status, ResponseStatusCode responseStatusCode, List<T> dataList,Page<T> page){
         this(status, responseStatusCode);
         this.setDataList(dataList);
         this.setPage(page.getNumber());
@@ -92,7 +92,7 @@ public class BodyResponse<T> implements Serializable {
         this.setDataList(dataList);
     }
 
-    public BodyResponse(int status, ResponseStatusCode responseStatusCode, String requestId, PageImpl page){
+    public BodyResponse(int status, ResponseStatusCode responseStatusCode, String requestId, Page<T> page){
         this(status, responseStatusCode, requestId);
         this.setDataList(page.getContent());
         this.setPage(page.getNumber());

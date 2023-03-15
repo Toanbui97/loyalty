@@ -6,16 +6,11 @@ import org.springframework.stereotype.Service;
 import vn.com.loyalty.core.configuration.propertires.WebClientProperties;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
-import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
-import vn.com.loyalty.core.entity.cms.RankEntity;
-import vn.com.loyalty.core.exception.ResourceExistedException;
-import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.service.internal.WebClientCommonService;
 import vn.com.loyalty.core.utils.RequestUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
-import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 
 @RequiredArgsConstructor

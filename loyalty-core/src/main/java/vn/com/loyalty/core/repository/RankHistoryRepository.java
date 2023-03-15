@@ -1,6 +1,5 @@
 package vn.com.loyalty.core.repository;
 
-import com.sun.jdi.LongValue;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
