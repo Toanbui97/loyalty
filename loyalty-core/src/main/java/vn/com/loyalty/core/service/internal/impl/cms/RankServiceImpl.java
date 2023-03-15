@@ -2,9 +2,6 @@ package vn.com.loyalty.core.service.internal.impl.cms;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
@@ -73,25 +70,37 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public String getRankByPoint(BigDecimal pointNumber) {
+    public RankEntity getRankByPoint(BigDecimal pointNumber) {
 
-        List<RankResponse> rankList = this.getReversalSortedRankList();
-        for (RankResponse rank : rankList) {
-            if (pointNumber.compareTo(rank.getRequirePoint()) > 0) return rank.getRankCode();
+        List<RankEntity> rankList = this.getReversalSortedRankList();
+        for (RankEntity rank : rankList) {
+            if (pointNumber.compareTo(rank.getRequirePoint()) >= 0) return rank;
         }
-        return Constants.MasterDataKey.RANK_DEFAULT;
+        return RankEntity.builder().build();
     }
 
     @Override
-    public List<RankResponse> getReversalSortedRankList() {
-        List<RankResponse> rankEntityList = new ArrayList<>();
+    public List<RankEntity> getReversalSortedRankList() {
+        List<RankEntity> rankEntityList = new ArrayList<>();
         try {
-            rankEntityList = redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankResponse.class);
+            rankEntityList = redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankEntity.class);
         } catch (Exception e) {
-            rankEntityList = cmsWebClient.receiveRankList().getDataList();
+            rankEntityList = rankRepository.findAll();
         } finally {
             rankEntityList.sort((o1, o2) -> o2.getRequirePoint().compareTo(o1.getRequirePoint()));
         }
         return rankEntityList;
+    }
+
+    @Override
+    public RankEntity getInferiorityRank(RankEntity currentRank) {
+        List<RankEntity> reversalList =  this.getReversalSortedRankList();
+        int currentIndex = reversalList.indexOf(currentRank);
+        return reversalList.get(currentIndex + 1);
+    }
+
+    @Override
+    public RankEntity getRankByCode(String rankCode) {
+        return rankRepository.findByRankCode(rankCode).orElseThrow(() -> new ResourceNotFoundException(RankEntity.class, rankCode));
     }
 }

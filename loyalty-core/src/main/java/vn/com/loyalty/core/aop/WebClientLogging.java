@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.logging;
+package vn.com.loyalty.core.aop;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
-import vn.com.loyalty.core.utils.ObjectUtil;
 
 @Aspect
 @Component

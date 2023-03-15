@@ -36,13 +36,6 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
-        List<String> details = Collections.singletonList(ex.getLocalizedMessage());
-        BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, details);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
-
     @ExceptionHandler(BaseResponseException.class)
     public final ResponseEntity<BodyResponse<Object>> handleBaseResponseException(BaseResponseException ex) {
         return responseFactory.fail(ex.getHttpStatus(), ex.getResponseStatusCode());
@@ -58,5 +51,11 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
+        List<String> details = Collections.singletonList(ex.getLocalizedMessage());
+        BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, details);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
 
 }

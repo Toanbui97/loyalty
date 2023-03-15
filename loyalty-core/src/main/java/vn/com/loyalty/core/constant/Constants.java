@@ -67,6 +67,7 @@ public class Constants {
     public static final class SchedulerTaskName {
         public static final String DEACTIVATE_EPOINT = "DEACTIVATE_EPOINT";
         public static final String SCHEDULE_EPOINT = "SCHEDULE_EPOINT";
+        public static final String SCHEDULE_RPOINT = "SCHEDULE_RPOINT";
     }
 
 }

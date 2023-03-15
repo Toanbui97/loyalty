@@ -17,6 +17,7 @@ import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
+import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
@@ -71,6 +72,18 @@ public class CustomerController {
     public ResponseEntity<BodyResponse<Object>> performExecuteDeactivatePointJob(@RequestBody BodyRequest<?> req) {
         applicationScheduler.deactivatePointExpire();
         return responseFactory.success();
+    }
+
+    @PostMapping(value = {"/executeCustomerRpointJob/{customerCode}", "/executeCustomerRpointJob"})
+    public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerRPointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        if (StringUtils.hasText(customerCode)) {
+            customerService.calculateRank(customerRepository.findByCustomerCode(customerCode)
+                    .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode)));
+            return responseFactory.success(customerService.getCustomer(customerCode));
+        } else {
+            applicationScheduler.launchRPointJob();
+            return responseFactory.success(customerService.getListCustomer(Pageable.unpaged()));
+        }
     }
 
 }

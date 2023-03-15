@@ -18,6 +18,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
@@ -35,7 +36,10 @@ public class ApplicationScheduler {
 
     private final JobLauncher jobLauncher;
     @Qualifier(value = "customerEPointJob")
-    private final Job calculateEPointJob;
+    private final Job customerEPointJob;
+
+    @Qualifier(value = "customerRPointJob")
+    private final Job customerRPointJob;
 
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
@@ -63,6 +67,16 @@ public class ApplicationScheduler {
                 .addString("JobID", String.valueOf(LocalDateTime.now()))
                 .toJobParameters();
 
-        jobLauncher.run(calculateEPointJob, jobParameters);
+        jobLauncher.run(customerEPointJob, jobParameters);
+    }
+
+//    @Scheduled(cron = "* * * * * *")
+    @SchedulerLock(name = Constants.SchedulerTaskName.SCHEDULE_RPOINT, lockAtLeastForString = "PT10M", lockAtMostForString = "PT1H")
+    public void launchRPointJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("JobID", String.valueOf(LocalDateTime.now()))
+                .toJobParameters();
+
+        jobLauncher.run(customerRPointJob, jobParameters);
     }
 }

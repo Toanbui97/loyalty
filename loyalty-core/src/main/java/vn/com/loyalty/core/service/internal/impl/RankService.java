@@ -1,6 +1,5 @@
 package vn.com.loyalty.core.service.internal.impl;
 
-import org.springframework.lang.Nullable;
 import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
 import vn.com.loyalty.core.entity.cms.RankEntity;
@@ -15,7 +14,11 @@ public interface RankService {
 
     RankResponse deleteRank(RankRequest rankRequest);
 
-    String getRankByPoint(BigDecimal pointNumber);
+    RankEntity getRankByPoint(BigDecimal pointNumber);
 
-    List<RankResponse> getReversalSortedRankList();
+    List<RankEntity> getReversalSortedRankList();
+
+    RankEntity getInferiorityRank(RankEntity currentRank);
+
+    RankEntity getRankByCode(String rankCode);
 }

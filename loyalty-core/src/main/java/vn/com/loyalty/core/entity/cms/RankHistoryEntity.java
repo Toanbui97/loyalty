@@ -7,9 +7,8 @@ import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.entity.BaseEntity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-
+import java.time.LocalDate;
 
 @Table(name = "rank", schema = "cms")
 @Entity
@@ -19,14 +18,15 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class RankEntity extends BaseEntity implements Serializable {
+public class RankHistoryEntity extends BaseEntity {
 
+    String customerCode;
     @Builder.Default
     String rankCode = Constants.MasterDataKey.RANK_DEFAULT;
     @Builder.Default
-    String rankName = Constants.MasterDataKey.RANK_DEFAULT;
+    BigDecimal rpointGain = BigDecimal.ZERO;
     @Builder.Default
-    BigDecimal requirePoint = BigDecimal.ZERO;
-    @Builder.Default
-    BigDecimal keepPoint = BigDecimal.ZERO;
+    LocalDate updatedDate = LocalDate.now();
+
+
 }

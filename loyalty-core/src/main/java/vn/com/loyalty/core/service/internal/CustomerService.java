@@ -19,4 +19,7 @@ public interface CustomerService {
 
     CustomerEntity calculateEPoint(CustomerEntity customerEntity);
 
+    CustomerEntity calculateRank(CustomerEntity customerEntity);
+
+    void saveHistoryRankUpdate(CustomerEntity customerEntity);
 }

@@ -4,18 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
-import vn.com.loyalty.core.entity.cms.EpointGainEntity;
-import vn.com.loyalty.core.entity.cms.EpointSpendEntity;
+import vn.com.loyalty.core.entity.cms.*;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.repository.EpointGainRepository;
 import vn.com.loyalty.core.repository.EpointSpendRepository;
+import vn.com.loyalty.core.repository.RpointRepository;
 import vn.com.loyalty.core.repository.specification.EpointGainSpecs;
+import vn.com.loyalty.core.repository.specification.RpointGainSpecs;
+import vn.com.loyalty.core.service.internal.MasterDataService;
+import vn.com.loyalty.core.service.internal.RankHistoryService;
 import vn.com.loyalty.core.service.internal.RedisOperation;
+import vn.com.loyalty.core.service.internal.impl.RankService;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
-import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.mapper.CustomerMapper;
 import vn.com.loyalty.core.repository.CustomerRepository;
 import vn.com.loyalty.core.service.internal.CustomerService;
@@ -34,6 +38,10 @@ public class CustomerServiceImpl implements CustomerService {
     private final RedisOperation redisOperation;
     private final EpointGainRepository epointGainRepository;
     private final EpointSpendRepository epointSpendRepository;
+    private final RpointRepository rpointRepository;
+    private final RankHistoryService rankHistoryService;
+    private final RankService rankService;
+    private final MasterDataService masterDataService;
 
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
@@ -105,6 +113,55 @@ public class CustomerServiceImpl implements CustomerService {
         return customerEntity;
     }
 
+    @Override
+    public CustomerEntity calculateRank(CustomerEntity customerEntity) {
+
+        RankHistoryEntity lastUpdatedRank = rankHistoryService.getLastUpdated(customerEntity.getCustomerCode());
+        List<RpointEntity> rpointGainFromLastUpdate = rpointRepository.findAll(RpointGainSpecs.fromLastUpdate(lastUpdatedRank.getUpdatedDate()));
+        BigDecimal totalPointGain = rpointGainFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+        RankEntity currentRank = rankService.getRankByCode(customerEntity.getRankCode());
+
+        // case down rank
+        if (totalPointGain.compareTo(currentRank.getKeepPoint()) < 0) {
+            RankEntity inferiorityRank = rankService.getInferiorityRank(currentRank);
+            customerEntity.setRankCode(inferiorityRank.getRankCode());
+            customerEntity.setRpoint(inferiorityRank.getRequirePoint());
+        } else {
+        // case keep rank
+             BigDecimal currentPoint = currentRank.getRequirePoint().add(totalPointGain);
+             RankEntity rankOfCurrentPoint = rankService.getRankByPoint(currentPoint);
+             customerEntity.setRankCode(rankOfCurrentPoint.getRankCode());
+             customerEntity.setRpoint(rankOfCurrentPoint.getRequirePoint());
+        }
+
+        customerEntity.setRankExpired(LocalDate.now().plusMonths(masterDataService.getValue(Constants.MasterDataKey.RANK_EXPIRE_TIME, Long.class)));
+        customerEntity.setLastUpdatedRank(LocalDate.now());
+
+        // update new point to redis
+        redisOperation.setValue(redisOperation.genRpointKey(customerEntity.getCustomerCode()), customerEntity.getRpoint());
+        customerRepository.save(customerEntity);
+        rankHistoryService.saveHistory(RankHistoryEntity.builder()
+                .customerCode(customerEntity.getCustomerCode())
+                .rankCode(customerEntity.getRankCode())
+                .rpointGain(totalPointGain)
+                .updatedDate(LocalDate.now())
+                .build());
+
+        return customerEntity;
+    }
+
+    @Override
+    public void saveHistoryRankUpdate(CustomerEntity customerEntity) {
+        RankHistoryEntity lastUpdatedRank = rankHistoryService.getLastUpdated(customerEntity.getCustomerCode());
+        List<RpointEntity> rpointGainFromLastUpdate = rpointRepository.findAll(RpointGainSpecs.fromLastUpdate(lastUpdatedRank.getUpdatedDate()));
+        BigDecimal totalPointGain = rpointGainFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+        rankHistoryService.saveHistory(RankHistoryEntity.builder()
+                        .customerCode(customerEntity.getCustomerCode())
+                        .updatedDate(LocalDate.now())
+                        .rpointGain(totalPointGain)
+                        .rankCode(customerEntity.getRankCode())
+                        .build());
+    }
     private String generateCustomerCode() {
         return UUID.randomUUID().toString();
     }

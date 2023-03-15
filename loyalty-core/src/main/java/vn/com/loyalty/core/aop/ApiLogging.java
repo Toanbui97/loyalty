@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.logging;
+package vn.com.loyalty.core.aop;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

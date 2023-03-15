@@ -16,11 +16,9 @@ import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.dto.message.CustomerMessage;
 import vn.com.loyalty.core.entity.MasterDataEntity;
-import vn.com.loyalty.core.entity.cms.CustomerEntity;
-import vn.com.loyalty.core.entity.cms.EpointGainEntity;
-import vn.com.loyalty.core.entity.cms.EpointSpendEntity;
-import vn.com.loyalty.core.entity.cms.RpointEntity;
+import vn.com.loyalty.core.entity.cms.*;
 import vn.com.loyalty.core.repository.*;
+import vn.com.loyalty.core.service.internal.CustomerService;
 import vn.com.loyalty.core.service.internal.MasterDataService;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.impl.RankService;
@@ -41,6 +39,7 @@ public class CMSKafkaListener {
     private final RedisOperation redisOperation;
     private final EpointGainRepository epointGainRepository;
     private final EpointSpendRepository epointSpendRepository;
+    private final CustomerService customerService;
 
     @Transactional(rollbackFor = Exception.class)
     @KafkaListener(topics = Constants.KafkaConstants.POINT_TOPIC, groupId = Constants.KafkaConstants.POINT_GROUP)
@@ -52,37 +51,9 @@ public class CMSKafkaListener {
             CustomerEntity customerEntity = customerRepository.findByCustomerCode(message.getCustomerCode())
                     .orElse(CustomerEntity.builder().customerCode(message.getCustomerCode()).build());
 
-            if (redisOperation.hasValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()))) {
-                customerEntity.setEpoint(redisOperation.getValue(
-                        redisOperation.genEpointKey(message.getCustomerCode()), BigDecimal.class
-                ));
-            }
-
-            if (redisOperation.hasValue(redisOperation.genRpointKey(customerEntity.getCustomerCode()))) {
-                customerEntity.setRpoint(redisOperation.getValue(
-                        redisOperation.genRpointKey(customerEntity.getCustomerCode()), BigDecimal.class
-                ));
-            }
-
-            // check rank
-            String rankCode = rankService.getRankByPoint(customerEntity.getRpoint());
-            if (!customerEntity.getRankCode().equals(rankCode)) {
-                long monthRankExpire = masterDataService.getValue(Constants.MasterDataKey.RANK_EXPIRE_TIME, Long.class);
-                customerEntity.setRankCode(rankCode);
-                customerEntity.setRankExpired(customerEntity.getRankExpired().plusMonths(monthRankExpire));
-            }
-
-            // save rpoint
-            if (message.getData().getRpointGain() != null && message.getData().getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
-                rpointRepository.save(RpointEntity.builder()
-                        .customerCode(message.getCustomerCode())
-                        .rpoint(message.getData().getRpointGain())
-                        .transactionId(message.getTransactionId())
-                        .build());
-            }
-
             // save epoint gain
             if (message.getData().getEpointGain() != null && message.getData().getEpointGain().compareTo(BigDecimal.ZERO) > 0) {
+                customerEntity.setEpoint(customerEntity.getEpoint().add(message.getData().getEpointGain()));
                 epointGainRepository.save(EpointGainEntity.builder()
                         .transactionId(message.getTransactionId())
                         .customerCode (message.getCustomerCode())
@@ -100,6 +71,26 @@ public class CMSKafkaListener {
                         .epoint(message.getData().getEpointSpend())
                         .transactionDay(today)
                         .build());
+            }
+
+            // save rpoint
+            if (message.getData().getRpointGain() != null && message.getData().getRpointGain().compareTo(BigDecimal.ZERO) > 0) {
+                customerEntity.setRpoint(customerEntity.getRpoint().add(message.getData().getRpointGain()));
+                rpointRepository.save(RpointEntity.builder()
+                        .customerCode(message.getCustomerCode())
+                        .rpoint(message.getData().getRpointGain())
+                        .transactionId(message.getTransactionId())
+                        .build());
+            }
+
+            // check rank
+            RankEntity rank = rankService.getRankByPoint(customerEntity.getRpoint());
+            // case up rank
+            if (!customerEntity.getRankCode().equals(rank.getRankCode())) {
+                long monthRankExpire = masterDataService.getValue(Constants.MasterDataKey.RANK_EXPIRE_TIME, Long.class);
+                customerEntity.setRankCode(rank.getRankCode());
+                customerEntity.setRankExpired(customerEntity.getRankExpired().plusMonths(monthRankExpire));
+                customerService.saveHistoryRankUpdate(customerEntity);
             }
 
             if (message.getData().getActiveVoucher() != null) {

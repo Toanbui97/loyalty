@@ -1,18 +1,14 @@
 package vn.com.loyalty.core.entity.cms;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Table(name = "customer", schema = "cms")
 @Entity
@@ -36,5 +32,7 @@ public class CustomerEntity extends BaseEntity {
     String rankCode = Constants.MasterDataKey.RANK_DEFAULT;
     @Builder.Default
     LocalDate rankExpired = LocalDate.now();
+    @Builder.Default
+    LocalDate lastUpdatedRank = LocalDate.now();
 
 }

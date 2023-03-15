@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.logging;
+package vn.com.loyalty.core.aop;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

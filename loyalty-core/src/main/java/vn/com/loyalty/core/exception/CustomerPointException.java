@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class CustomerPointException extends RuntimeException{
+public class CustomerPointException extends RuntimeException {
 
     private final String message;
     private final BigDecimal pointUse;
