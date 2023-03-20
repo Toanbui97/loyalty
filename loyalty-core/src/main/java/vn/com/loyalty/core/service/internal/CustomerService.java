@@ -21,5 +21,5 @@ public interface CustomerService {
 
     CustomerEntity calculateRank(CustomerEntity customerEntity);
 
-    void saveHistoryRankUpdate(CustomerEntity customerEntity);
+    void saveHistoryRankUp(CustomerEntity customerEntity);
 }

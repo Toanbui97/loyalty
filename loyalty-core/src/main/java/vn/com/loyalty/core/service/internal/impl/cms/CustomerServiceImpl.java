@@ -118,20 +118,18 @@ public class CustomerServiceImpl implements CustomerService {
 
         RankHistoryEntity lastUpdatedRank = rankHistoryService.getLastUpdated(customerEntity.getCustomerCode());
         List<RpointEntity> rpointGainFromLastUpdate = rpointRepository.findAll(RpointGainSpecs.fromLastUpdate(lastUpdatedRank.getUpdatedDate()));
-        BigDecimal totalPointGain = rpointGainFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalFromLastUpdate = rpointGainFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
         RankEntity currentRank = rankService.getRankByCode(customerEntity.getRankCode());
 
         // case down rank
-        if (totalPointGain.compareTo(currentRank.getKeepPoint()) < 0) {
+        if (totalFromLastUpdate.compareTo(currentRank.getKeepPoint()) < 0) {
             RankEntity inferiorityRank = rankService.getInferiorityRank(currentRank);
             customerEntity.setRankCode(inferiorityRank.getRankCode());
             customerEntity.setRpoint(inferiorityRank.getRequirePoint());
         } else {
         // case keep rank
-             BigDecimal currentPoint = currentRank.getRequirePoint().add(totalPointGain);
-             RankEntity rankOfCurrentPoint = rankService.getRankByPoint(currentPoint);
-             customerEntity.setRankCode(rankOfCurrentPoint.getRankCode());
-             customerEntity.setRpoint(rankOfCurrentPoint.getRequirePoint());
+             customerEntity.setRankCode(currentRank.getRankCode());
+             customerEntity.setRpoint(currentRank.getRequirePoint());
         }
 
         customerEntity.setRankExpired(LocalDate.now().plusMonths(masterDataService.getValue(Constants.MasterDataKey.RANK_EXPIRE_TIME, Long.class)));
@@ -140,28 +138,28 @@ public class CustomerServiceImpl implements CustomerService {
         // update new point to redis
         redisOperation.setValue(redisOperation.genRpointKey(customerEntity.getCustomerCode()), customerEntity.getRpoint());
         customerRepository.save(customerEntity);
-        rankHistoryService.saveHistory(RankHistoryEntity.builder()
-                .customerCode(customerEntity.getCustomerCode())
-                .rankCode(customerEntity.getRankCode())
-                .rpointGain(totalPointGain)
-                .updatedDate(LocalDate.now())
-                .build());
+        this.saveHistoryRankUpdate(customerEntity, totalFromLastUpdate);
 
         return customerEntity;
     }
 
     @Override
-    public void saveHistoryRankUpdate(CustomerEntity customerEntity) {
+    public void saveHistoryRankUp(CustomerEntity customerEntity) {
         RankHistoryEntity lastUpdatedRank = rankHistoryService.getLastUpdated(customerEntity.getCustomerCode());
-        List<RpointEntity> rpointGainFromLastUpdate = rpointRepository.findAll(RpointGainSpecs.fromLastUpdate(lastUpdatedRank.getUpdatedDate()));
-        BigDecimal totalPointGain = rpointGainFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
-        rankHistoryService.saveHistory(RankHistoryEntity.builder()
-                        .customerCode(customerEntity.getCustomerCode())
-                        .updatedDate(LocalDate.now())
-                        .rpointGain(totalPointGain)
-                        .rankCode(customerEntity.getRankCode())
-                        .build());
+        List<RpointEntity> listFromLastUpdate = rpointRepository.findAll(RpointGainSpecs.fromLastUpdate(lastUpdatedRank.getUpdatedDate()));
+        BigDecimal totalFromLastUpdate = listFromLastUpdate.stream().map(RpointEntity::getRpoint).reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.saveHistoryRankUpdate(customerEntity, totalFromLastUpdate);
     }
+
+    private void saveHistoryRankUpdate(CustomerEntity customerEntity, BigDecimal totalFromLastUpdate) {
+        rankHistoryService.saveHistory(RankHistoryEntity.builder()
+                .customerCode(customerEntity.getCustomerCode())
+                .updatedDate(LocalDate.now())
+                .rpointGain(totalFromLastUpdate)
+                .rankCode(customerEntity.getRankCode())
+                .build());
+    }
+
     private String generateCustomerCode() {
         return UUID.randomUUID().toString();
     }
