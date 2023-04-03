@@ -53,20 +53,14 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
         redisOperation.setValue(redisOperation.genEpointKey(voucherMessage.getCustomerCode()), customerEpoint.subtract(usedPoint));
 
-        this.buildOrchestration(voucherMessage,
-                TransactionOrchestrationMessage.builder()
-                .customerCode(voucherMessage.getCustomerCode())
-                .activeVoucher(voucherMessage.getNumberVoucher())
-                .epointSpend(usedPoint)
-                .transactionId(voucherMessage.getTransactionId())
-                .build()).asyncProcessOrchestration();
+        this.buildOrchestration(voucherMessage).asyncProcessOrchestration();
 
         return null;
     }
 
-    private Orchestration buildOrchestration(OrchestrationMessage voucherStepMessage, OrchestrationMessage cmsStepMessage) {
+    private Orchestration buildOrchestration(OrchestrationMessage voucherOrchestrationMessage) {
 
-        return Orchestration.ofSteps(new OrchestrationStep(voucherStepMessage) {
+        return Orchestration.ofSteps(new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
@@ -82,7 +76,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        }, new OrchestrationStep(cmsStepMessage) {
+        }, new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),

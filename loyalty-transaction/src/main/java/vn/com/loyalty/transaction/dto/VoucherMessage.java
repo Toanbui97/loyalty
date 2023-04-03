@@ -15,5 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 public class VoucherMessage extends OrchestrationMessage {
     BigDecimal numberVoucher;
-    transient List<String> voucherCodeList;
+    String voucherCode;
 }
