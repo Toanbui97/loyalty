@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface WebClientCommonService {
+public interface WebClientService {
 
     <T> Mono<T> getAsync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz);
 

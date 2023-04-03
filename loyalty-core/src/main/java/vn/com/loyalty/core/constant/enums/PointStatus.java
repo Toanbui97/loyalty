@@ -4,7 +4,8 @@ public enum PointStatus {
     ACTIVE("ACTIVE"),
     DEACTIVATE("DEACTIVATE"),
     UNCOUNTED("UNCOUNTED"),
-    COUNTED("COUNTED");
+    COUNTED("COUNTED"),
+    ROLLBACK("ROLLBACK");
 
     private String code;
     private String name;

@@ -35,6 +35,7 @@ public class Constants {
         public static final String POINT_GROUP = "loyalty_point_group";
         public static final String TRANSACTION_GROUP = "loyalty_transaction_group";
         public static final String CUSTOMER_GROUP = "loyalty_customer_group";
+        public static final String ORCHESTRATION_TOPIC = "loyalty_transaction_orchestration_topic";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -43,6 +44,7 @@ public class Constants {
         public static final String RPOINT_DIR = "RPOINT:";
         public static final String RANK_DIR = "M_DATA:RANK:";
         public static final String CRANK_DIR = "CRANK:";
+        public static final String VOUCHER_DIR = "VOUCHER:";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,6 +54,13 @@ public class Constants {
         public static final String STATUS_COMPLETED = "COMPLETE";
         public static final String STATUS_FAILED = "FAILED";
         public static final String STATUS_ROLLBACK = "ROLLBACK";
+    }
+
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class OrchestrationActionType {
+        public static final String TYPE_NEW = "NEW";
+        public static final String TYPE_ROLLBACK = "ROLLBACK";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

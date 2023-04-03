@@ -28,5 +28,4 @@ public class RankHistoryEntity extends BaseEntity {
     @Builder.Default
     LocalDate updatedDate = LocalDate.now();
 
-
 }

@@ -9,13 +9,12 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BodyRequest<T> implements Serializable {
 
     String requestId;
     Header header;
-    transient T data;
+    T data;
     public static <T> BodyRequest<T> of(T data){
 
         BodyRequest<T> bodyRequest = new BodyRequest<>();
@@ -26,11 +25,10 @@ public class BodyRequest<T> implements Serializable {
 
     @Getter
     @Setter
-    @RequiredArgsConstructor
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Header implements Serializable{
-        transient String[] roles;
+    public static class Header implements Serializable {
+         String[] roles;
     }
 
 }

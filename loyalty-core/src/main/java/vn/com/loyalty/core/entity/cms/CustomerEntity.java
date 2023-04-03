@@ -9,6 +9,7 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 @Table(name = "customer", schema = "cms")
 @Entity

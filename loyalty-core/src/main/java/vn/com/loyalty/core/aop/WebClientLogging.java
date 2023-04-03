@@ -21,7 +21,7 @@ public class WebClientLogging {
 
     private final ObjectMapper objectMapper;
 
-    @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.impl.WebClientCommonServiceImpl.setUpUriAndBodyAndHeaders(String, String, Object , Object , Object)) && args(baseUrl, uri,  params, requestBody,  method)", argNames = "baseUrl,uri,params,requestBody,method")
+    @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.impl.WebClientServiceImpl.setUpUriAndBodyAndHeaders(String, String, Object , Object , Object)) && args(baseUrl, uri,  params, requestBody,  method)", argNames = "baseUrl,uri,params,requestBody,method")
     public void webclientSetupLPointCut(String baseUrl, String uri, MultiValueMap<String, String> params, Object requestBody, HttpMethod method){}
 
     @After(value = "webclientSetupLPointCut(baseUrl, uri,  params, requestBody,  method)", argNames = "baseUrl,uri,params,requestBody,method")
@@ -35,7 +35,7 @@ public class WebClientLogging {
                 , method, baseUrl, uri, requestBody != null ? objectMapper.writeValueAsString(requestBody) : "");
     }
 
-    @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.WebClientCommonService.*(*))")
+    @Pointcut(value = "execution(* vn.com.loyalty.core.service.internal.WebClientService.*(*))")
     public void webclientResponsePointCut(){}
 
     @AfterReturning(value = "webclientResponsePointCut()", returning = "response")

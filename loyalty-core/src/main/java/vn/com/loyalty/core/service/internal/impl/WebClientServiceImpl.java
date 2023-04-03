@@ -1,14 +1,11 @@
 package vn.com.loyalty.core.service.internal.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -22,8 +19,7 @@ import reactor.util.retry.Retry;
 import vn.com.loyalty.core.constant.WebClientConstant;
 import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
 import vn.com.loyalty.core.exception.BaseResponseException;
-import vn.com.loyalty.core.service.internal.WebClientCommonService;
-import vn.com.loyalty.core.utils.ObjectUtil;
+import vn.com.loyalty.core.service.internal.WebClientService;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Service
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = WebClientConstant.WEBCLIENT_RETRY_PROPERTIES_PREFIX)
-public class WebClientCommonServiceImpl implements WebClientCommonService {
+public class WebClientServiceImpl implements WebClientService {
 
     private Integer attempt;
     private Integer firstBackoff;

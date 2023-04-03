@@ -7,6 +7,8 @@ import vn.com.loyalty.core.repository.RankHistoryRepository;
 import vn.com.loyalty.core.repository.specification.RankHistorySpecs;
 import vn.com.loyalty.core.service.internal.RankHistoryService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RankHistoryServiceImpl implements RankHistoryService {
@@ -23,6 +25,13 @@ public class RankHistoryServiceImpl implements RankHistoryService {
                                 .build()
                 ));
 
+    }
+
+    @Override
+    public RankHistoryEntity getForRollback(String customerCode) {
+        List<RankHistoryEntity> rankHistoryEntities = rankHistoryRepository.findAll(RankHistorySpecs.orderByUpdatedDESC());
+        rankHistoryRepository.delete(rankHistoryEntities.get(0));
+        return rankHistoryEntities.get(1);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.service.internal.impl.voucher;
+package vn.com.loyalty.voucher.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,24 +7,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
-import vn.com.loyalty.core.utils.RequestUtil;
+import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.constant.Constants;
-import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
-import vn.com.loyalty.core.dto.request.BodyRequest;
-import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
-import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;
-import vn.com.loyalty.core.service.internal.VoucherDetailService;
-import vn.com.loyalty.core.service.internal.VoucherService;
-import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
+import vn.com.loyalty.voucher.dto.VoucherMessage;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,8 +35,8 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherDetailService voucherDetailService;
     private final HttpServletRequest httpRequest;
     private final VoucherDetailRepository voucherDetailRepository;
-    private final CmsWebClient cmsWebClient;
     private final ObjectMapper mapper;
+    private final RedisOperation redisOperation;
 
     @Override
     public List<VoucherResponse> getAllVoucher() {
@@ -71,38 +66,21 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public VoucherResponse createVoucher(VoucherRequest request) {
-        VoucherEntity entity = voucherMapper.DTOToEntity(request);
-        entity.setVoucherCode(UUID.randomUUID().toString());
-        entity.setInactive(false);
-        entity = voucherRepository.save(entity);
-        voucherDetailService.generateVoucherDetail(entity);
-        return voucherMapper.entityToDTO(entity);
+        VoucherEntity voucherEntity = voucherMapper.DTOToEntity(request);
+        voucherEntity.setVoucherCode(UUID.randomUUID().toString());
+        voucherEntity.setInactive(false);
+        voucherEntity = voucherRepository.save(voucherEntity);
+        redisOperation.setValue(Constants.RedisConstants.VOUCHER_DIR + voucherEntity.getVoucherCode(), voucherEntity);
+        return voucherMapper.entityToDTO(voucherEntity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public VoucherResponse buyVoucher(String voucherCode) {
+    public VoucherResponse processOrchestrationBuyVoucher(VoucherMessage message) {
 
-        String customerCode = RequestUtil.extractCustomerCodeFromToken(httpRequest.getHeader(Constants.AUTH_HEADER));
-        CustomerResponse customerResponse = mapper.convertValue(cmsWebClient.receiveCustomerInfo(
-                BodyRequest.of(CustomerRequest.builder().customerCode(customerCode).build()))
-                .getData(), CustomerResponse.class);
-
-        VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(voucherCode).orElseThrow(
-                () -> new ResourceNotFoundException(VoucherEntity.class, voucherCode));
-        VoucherDetailEntity voucherDetailEntity = voucherDetailRepository.findFirstByVoucherCodeAndStatus(voucherCode, VoucherStatusCode.READY_FOR_BUY)
-                .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class, voucherCode));
-
-        voucherDetailEntity.setCustomerCode(customerResponse.getCustomerCode());
-        voucherDetailEntity.setStatus(VoucherStatusCode.BOUGHT);
-
-        voucherDetailRepository.save(voucherDetailEntity);
-        voucherRepository.save(voucherEntity);
-
-        cmsWebClient.performUpdateCustomerInfo(BodyRequest.of(CustomerRequest.builder()
-                        .customerCode(customerResponse.getCustomerCode())
-                        .activeVoucher(customerResponse.getActiveVoucher() + 1)
-                        .build()));
+        VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(message.getVoucherCode()).orElseThrow(
+                () -> new ResourceNotFoundException(VoucherEntity.class, message.getVoucherCode()));
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailService.generateVoucherDetail(voucherEntity, message.getCustomerCode(), message.getNumberVoucher());
 
         return voucherMapper.entityToDTO(voucherEntity);
     }

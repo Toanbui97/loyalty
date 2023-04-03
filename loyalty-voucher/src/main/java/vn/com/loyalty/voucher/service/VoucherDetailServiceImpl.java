@@ -1,4 +1,4 @@
-package vn.com.loyalty.core.service.internal.impl.voucher;
+package vn.com.loyalty.voucher.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,8 +10,8 @@ import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
-import vn.com.loyalty.core.service.internal.VoucherDetailService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,18 +37,19 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     }
 
     @Override
-    public List<VoucherDetailResponse> generateVoucherDetail(VoucherEntity voucher) {
+    public List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, String customerCode, BigDecimal number) {
 
         List<VoucherDetailEntity> voucherDetailEntityList = new ArrayList<>();
-        for (int i = 0; i < voucher.getTotalVoucher(); i++) {
+        for (int i = 0; i < number.longValue(); i++) {
             voucherDetailEntityList.add(VoucherDetailEntity.builder()
                     .voucherCode(voucher.getVoucherCode())
                     .voucherDetailCode(this.generateVoucherDetailCode(voucher.getVoucherName()))
+                    .customerCode(customerCode)
                     .status(VoucherStatusCode.READY_FOR_BUY)
                     .build());
         }
 
-        return voucherDetailRepository.saveAll(voucherDetailEntityList).stream().map(voucherDetailMapper::entityToDTO).toList();
+        return voucherDetailRepository.saveAll(voucherDetailEntityList);
     }
 
     @Override

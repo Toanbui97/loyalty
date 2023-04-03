@@ -2,12 +2,8 @@ package vn.com.loyalty.core.utils.factory.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.constant.enums.ResponseStatusCode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import vn.com.loyalty.core.utils.DateTimeUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

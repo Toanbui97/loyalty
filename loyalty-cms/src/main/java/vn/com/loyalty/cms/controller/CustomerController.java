@@ -1,5 +1,6 @@
 package vn.com.loyalty.cms.controller;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -9,10 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import vn.com.loyalty.cms.service.OrchestrationService;
 import vn.com.loyalty.cms.worker.ApplicationScheduler;
+import vn.com.loyalty.core.annotation.HasRole;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.CustomerRequest;
 import vn.com.loyalty.core.dto.response.cms.CustomerResponse;
@@ -34,6 +36,7 @@ public class CustomerController {
     private final CustomerRepository customerRepository;
     private final ApplicationScheduler applicationScheduler;
 
+    @HasRole("admin")
     @PostMapping("/receiveCustomer/{customerCode}")
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req,
                                                                               @PathVariable String customerCode) {
@@ -54,6 +57,8 @@ public class CustomerController {
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfoList(@RequestBody BodyRequest<?> req, @PageableDefault Pageable pageable) {
         return responseFactory.success(customerService.getListCustomer(pageable));
     }
+
+
 
     @PostMapping(value = {"/executeCustomerEpointJob/{customerCode}", "/executeCustomerEpointJob"})
     public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {

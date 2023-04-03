@@ -26,4 +26,5 @@ public class VoucherEntity extends BaseEntity {
     Long totalVoucher;
     BigDecimal discountPercent;
     LocalDateTime expireTime;
+    BigDecimal price;
 }

@@ -5,14 +5,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
-import vn.com.loyalty.core.service.internal.VoucherDetailService;
-import vn.com.loyalty.core.service.internal.VoucherService;
+import vn.com.loyalty.voucher.service.VoucherDetailService;
+import vn.com.loyalty.voucher.service.VoucherService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
+import vn.com.loyalty.voucher.dto.VoucherMessage;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -43,18 +45,6 @@ public class VoucherController {
     @PostMapping("/receiveVoucherDetailInactiveList/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
-    }
-
-    @PostMapping("/performBuyVoucher/{voucherCode}")
-    public ResponseEntity<BodyResponse<VoucherResponse>> performBuyVoucher(@RequestBody BodyRequest<VoucherRequest> req,
-                                                                           @PathVariable String voucherCode) {
-        return responseFactory.success(voucherService.buyVoucher(voucherCode));
-    }
-
-    @PostMapping("/receiveVoucherList/{customerCode}")
-    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherRequest> request
-            , @PathVariable String customerCode, @PageableDefault Pageable page) {
-        return responseFactory.success(voucherService.getVoucherListOfCustomer(customerCode, page));
     }
 
 }

@@ -12,14 +12,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.message.CustomerMessage;
+import vn.com.loyalty.transaction.config.EndPointProperties;
+import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
+import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.entity.transaction.*;
 import vn.com.loyalty.core.exception.CustomerPointException;
 import vn.com.loyalty.core.exception.TransactionException;
+import vn.com.loyalty.core.orchestration.Orchestration;
 import vn.com.loyalty.core.service.internal.*;
+import vn.com.loyalty.core.utils.factory.response.BodyResponse;
+import vn.com.loyalty.core.orchestration.OrchestrationStep;
+import vn.com.loyalty.transaction.dto.VoucherMessage;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -31,48 +39,39 @@ public class TransactionListener {
     private final TransactionMessageService transactionMessageService;
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
-    private final KafkaOperation kafkaOperation;
+    private final WebClientService webClientService;
+    private final EndPointProperties endPointProperties;
 
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
     @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
     public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) throws JsonProcessingException {
-            transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
+        transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 
-            TransactionMessage message = objectMapper.readValue(payload, TransactionMessage.class);
+        TransactionMessage message = objectMapper.readValue(payload, TransactionMessage.class);
 
-            BigDecimal epointGain = transactionService.calculateEpointGain(message);
-            BigDecimal rpointGain = transactionService.calculateRpointGain(message);
-            BigDecimal epointSpend = message.getData().getPointToDiscount() != null
-                    ? message.getData().getPointToDiscount() : BigDecimal.ZERO;
+        BigDecimal epointGain = transactionService.calculateEpointGain(message);
+        BigDecimal rpointGain = transactionService.calculateRpointGain(message);
+        BigDecimal epointSpend = message.getData().getPointUsed() != null ? message.getData().getPointUsed() : BigDecimal.ZERO;
 
-            TransactionEntity transactionEntity = TransactionEntity.builder()
-                    .customerCode(message.getCustomerCode())
-                    .transactionTime(message.getTransactionTime())
-                    .transactionId(message.getTransactionId())
-                    .transactionValue(message.getData().getTransactionValue())
-                    .transactionType(TransactionType.valueOf(message.getTransactionType()))
-                    .epointGain(epointGain)
-                    .rpointGain(rpointGain)
-                    .epointSpend(epointSpend)
-                    .build();
+        TransactionEntity transactionEntity = TransactionEntity.builder()
+                .customerCode(message.getCustomerCode())
+                .transactionTime(message.getTransactionTime())
+                .transactionId(message.getTransactionId())
+                .transactionValue(message.getData().getTransactionValue())
+                .transactionType(TransactionType.valueOf(message.getTransactionType()))
+                .epointGain(epointGain)
+                .rpointGain(rpointGain)
+                .epointSpend(epointSpend)
+                .voucherDetailCodeList(message.getData().getVoucherDetailCodeList())
+                .build();
 
-            CompletableFuture.allOf(
-                    CompletableFuture.runAsync(() -> transactionService.saveTransaction(transactionEntity)),
-                    CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)))
-                    .exceptionally(throwable -> {
-                        throw new TransactionException(throwable.getMessage());
-                    }).join();
-
-            kafkaOperation.send(Constants.KafkaConstants.POINT_TOPIC, CustomerMessage.builder()
-                            .transactionId(message.getTransactionId())
-                            .customerCode(message.getCustomerCode())
-                            .data(CustomerMessage.Data.builder()
-                                            .rpointGain(rpointGain)
-                                            .epointGain(epointGain)
-                                            .epointSpend(epointSpend)
-                                            .build()
-                                    )
-                            .build());
+        CompletableFuture.allOf(
+                CompletableFuture.runAsync(() -> transactionService.saveTransaction(transactionEntity)),
+                CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)),
+                CompletableFuture.runAsync(() -> this.processOrchestration(transactionEntity))
+        ).exceptionally(throwable -> {
+            throw new TransactionException(throwable.getMessage());
+        }).join();
 
     }
 
@@ -95,6 +94,53 @@ public class TransactionListener {
         } else {
             redisOperation.setValue(rpointKey, transaction.getRpointGain());
         }
+
+    }
+
+
+    private void processOrchestration(TransactionEntity transaction) {
+        TransactionOrchestrationMessage transactionOrchestrationMessage = TransactionOrchestrationMessage.builder()
+                .transactionId(transaction.getTransactionId())
+                .customerCode(transaction.getCustomerCode())
+                .rpointGain(transaction.getRpointGain())
+                .epointGain(transaction.getEpointGain())
+                .epointSpend(transaction.getEpointSpend())
+                .voucherDetailCodeList(transaction.getVoucherDetailCodeList())
+                .build();
+
+        Orchestration.ofSteps(new OrchestrationStep(transactionOrchestrationMessage) {
+            @Override
+            public BodyResponse<OrchestrationMessage> sendProcess (BodyRequest<OrchestrationMessage> request) {
+                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
+                        endPointProperties.getCmsService().getProcessOrchestrationTransaction(),
+                        request,
+                        BodyResponse.class);
+            }
+
+            @Override
+            public BodyResponse<OrchestrationMessage> sendRollback (BodyRequest<OrchestrationMessage> request) {
+                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
+                        endPointProperties.getCmsService().getRollbackOrchestrationTransaction(),
+                        request,
+                        BodyResponse.class);
+            }
+        },new OrchestrationStep(transactionOrchestrationMessage) {
+            @Override
+            public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
+                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
+                        endPointProperties.getVoucherService().getProcessOrchestrationTransaction(),
+                        request,
+                        BodyResponse.class);
+            }
+
+            @Override
+            public BodyResponse<OrchestrationMessage> sendRollback(BodyRequest<OrchestrationMessage> request) {
+                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
+                        endPointProperties.getVoucherService().getRollbackOrchestrationTransaction(),
+                        request,
+                        BodyResponse.class);
+            }
+        }).asyncProcessOrchestration();
     }
 
 }

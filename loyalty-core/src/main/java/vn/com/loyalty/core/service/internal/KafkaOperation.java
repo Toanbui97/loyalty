@@ -1,7 +1,7 @@
 package vn.com.loyalty.core.service.internal;
 
+import jakarta.annotation.Nullable;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.lang.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 

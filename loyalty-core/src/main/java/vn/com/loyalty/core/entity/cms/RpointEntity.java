@@ -1,9 +1,9 @@
 package vn.com.loyalty.core.entity.cms;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
@@ -27,5 +27,8 @@ public class RpointEntity extends BaseEntity {
     LocalDate transactionDay = LocalDate.now();
     @Builder.Default
     String source = "NONE";
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    PointStatus status = PointStatus.ACTIVE;
 
 }

@@ -14,7 +14,6 @@ import vn.com.loyalty.core.mapper.RankMapper;
 import vn.com.loyalty.core.repository.RankRepository;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.impl.RankService;
-import vn.com.loyalty.core.thirdparty.service.CmsWebClient;
 import vn.com.loyalty.core.utils.ObjectUtil;
 
 import java.math.BigDecimal;
@@ -28,7 +27,6 @@ public class RankServiceImpl implements RankService {
     private final RankMapper rankMapper;
     private final RankRepository rankRepository;
     private final RedisOperation redisOperation;
-    private final CmsWebClient cmsWebClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

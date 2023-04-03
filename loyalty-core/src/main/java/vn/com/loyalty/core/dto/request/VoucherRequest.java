@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VoucherRequest implements Serializable {
+    String customerCode;
     String voucherName;
     String description;
     String voucherCode;
