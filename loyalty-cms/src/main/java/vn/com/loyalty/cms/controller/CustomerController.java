@@ -36,7 +36,6 @@ public class CustomerController {
     private final CustomerRepository customerRepository;
     private final ApplicationScheduler applicationScheduler;
 
-    @HasRole("admin")
     @PostMapping("/receiveCustomer/{customerCode}")
     public ResponseEntity<BodyResponse<CustomerResponse>> receiveCustomerInfo(@RequestBody BodyRequest<CustomerRequest> req,
                                                                               @PathVariable String customerCode) {

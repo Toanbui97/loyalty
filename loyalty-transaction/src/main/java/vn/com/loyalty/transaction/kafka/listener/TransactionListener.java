@@ -12,22 +12,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.transaction.config.EndPointProperties;
 import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.message.TransactionMessage;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.entity.transaction.*;
-import vn.com.loyalty.core.exception.CustomerPointException;
+import vn.com.loyalty.core.exception.PointException;
 import vn.com.loyalty.core.exception.TransactionException;
 import vn.com.loyalty.core.orchestration.Orchestration;
 import vn.com.loyalty.core.service.internal.*;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.orchestration.OrchestrationStep;
-import vn.com.loyalty.transaction.dto.VoucherMessage;
+import vn.com.loyalty.transaction.properties.EndpointProperties;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -40,7 +38,7 @@ public class TransactionListener {
     private final TransactionService transactionService;
     private final RedisOperation redisOperation;
     private final WebClientService webClientService;
-    private final EndPointProperties endPointProperties;
+    private final EndpointProperties endPointProperties;
 
     @Transactional(rollbackFor = {Exception.class, TransactionException.class})
     @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
@@ -70,6 +68,7 @@ public class TransactionListener {
                 CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)),
                 CompletableFuture.runAsync(() -> this.processOrchestration(transactionEntity))
         ).exceptionally(throwable -> {
+            throwable.printStackTrace();
             throw new TransactionException(throwable.getMessage());
         }).join();
 
@@ -82,7 +81,7 @@ public class TransactionListener {
         BigDecimal epoint = redisOperation.hasValue(epointKey) ? redisOperation.getValue(epointKey, BigDecimal.class) : BigDecimal.ZERO;
 
         if (epoint.compareTo(transaction.getEpointSpend()) < 0) {
-            throw new CustomerPointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
+            throw new PointException(transaction.getTransactionId(), transaction.getCustomerCode(), epoint, transaction.getEpointSpend());
         }
         redisOperation.setValue(epointKey, epoint.add(transaction.getEpointGain()).subtract(transaction.getEpointSpend()));
 
@@ -111,36 +110,39 @@ public class TransactionListener {
         Orchestration.ofSteps(new OrchestrationStep(transactionOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess (BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
-                        endPointProperties.getCmsService().getProcessOrchestrationTransaction(),
+                return webClientService.postSync(endPointProperties.getCmsEndpoint().getBaseUrl(),
+                        endPointProperties.getCmsEndpoint().getProcessOrchestrationTransaction(),
                         request,
                         BodyResponse.class);
             }
 
             @Override
             public BodyResponse<OrchestrationMessage> sendRollback (BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
-                        endPointProperties.getCmsService().getRollbackOrchestrationTransaction(),
+                return webClientService.postSync(endPointProperties.getCmsEndpoint().getBaseUrl(),
+                        endPointProperties.getCmsEndpoint().getRollbackOrchestrationTransaction(),
                         request,
                         BodyResponse.class);
             }
         },new OrchestrationStep(transactionOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
-                        endPointProperties.getVoucherService().getProcessOrchestrationTransaction(),
+                return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
+                        endPointProperties.getVoucherEndpoint().getProcessOrchestrationTransaction(),
                         request,
                         BodyResponse.class);
             }
 
             @Override
             public BodyResponse<OrchestrationMessage> sendRollback(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
-                        endPointProperties.getVoucherService().getRollbackOrchestrationTransaction(),
+                return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
+                        endPointProperties.getVoucherEndpoint().getRollbackOrchestrationTransaction(),
                         request,
                         BodyResponse.class);
             }
         }).asyncProcessOrchestration();
     }
 
+    public void processHttpTransaction(TransactionMessage transactionMessage) throws JsonProcessingException {
+        this.transactionListener(objectMapper.writeValueAsString(transactionMessage), null);
+    }
 }

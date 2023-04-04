@@ -3,6 +3,7 @@ package vn.com.loyalty.transaction;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
@@ -15,6 +16,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 @EnableJpaRepositories("vn.com.loyalty.core.repository")
 @EntityScan("vn.com.loyalty.core.entity")
 @PropertySource("classpath:application.yaml")
+@EnableConfigurationProperties
 @EnableCaching
 public class LoyaltyTransactionApplication {
 

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.PropertySource;
 
 @Data
 @Configuration
-@PropertySource("classpath:end-point.properties")
 public class WebClientProperties {
 
     CmsUrlInfo cmsService;

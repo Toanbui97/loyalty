@@ -14,9 +14,7 @@ import java.util.Optional;
 @Repository
 public interface VoucherDetailRepository extends JpaRepository<VoucherDetailEntity, Long>, JpaSpecificationExecutor<VoucherDetailEntity> {
     Page<VoucherDetailEntity> findByVoucherCode(String voucherCode, Pageable pageable);
-    Optional<VoucherDetailEntity> findFirstByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
     List<VoucherDetailEntity> findByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
-    List<VoucherDetailEntity> findByCustomerCodeAndVoucherCodeIn(List<String> voucherCode);
     Page<VoucherDetailEntity> findByCustomerCode(String customerCode, Pageable pageable);
     List<VoucherDetailEntity> findByTransactionId(String transactionId);
 }

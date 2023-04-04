@@ -16,8 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionOrchestrationMessage extends OrchestrationMessage {
-    String customerCode;
-    String transactionId;
     BigDecimal epointGain;
     BigDecimal epointSpend;
     BigDecimal rpointGain;

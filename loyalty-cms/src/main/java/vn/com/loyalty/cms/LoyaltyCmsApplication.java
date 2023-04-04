@@ -21,7 +21,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class LoyaltyCmsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(LoyaltyCmsApplication.class, args);
+        try {
+            SpringApplication.run(LoyaltyCmsApplication.class, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -16,9 +16,8 @@ import vn.com.loyalty.core.repository.TransactionMessageRepository;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.WebClientService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
-import vn.com.loyalty.transaction.config.EndPointProperties;
-import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
 import vn.com.loyalty.transaction.dto.VoucherMessage;
+import vn.com.loyalty.transaction.properties.EndpointProperties;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -28,7 +27,7 @@ import java.util.UUID;
 public class OrchestrationServiceImpl implements OrchestrationService {
 
     private final WebClientService webClientService;
-    private final EndPointProperties endPointProperties;
+    private final EndpointProperties endPointProperties;
     private final RedisOperation redisOperation;
     private final ObjectMapper objectMapper;
     private final TransactionMessageRepository transactionMessageRepository;
@@ -63,32 +62,32 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         return Orchestration.ofSteps(new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
-                        endPointProperties.getVoucherService().getProcessBuyVoucherOrchestration(),
+                return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
+                        endPointProperties.getVoucherEndpoint().getProcessBuyVoucherOrchestration(),
                         request,
                         BodyResponse.class);
             }
 
             @Override
             public BodyResponse<OrchestrationMessage> sendRollback(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getVoucherService().getBaseUrl(),
-                        endPointProperties.getVoucherService().getRollbackOrchestrationTransaction(),
+                return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
+                        endPointProperties.getVoucherEndpoint().getRollbackOrchestrationTransaction(),
                         request,
                         BodyResponse.class);
             }
         }, new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
-                        endPointProperties.getVoucherService().getProcessBuyVoucherOrchestration(),
+                return webClientService.postSync(endPointProperties.getCmsEndpoint().getBaseUrl(),
+                        endPointProperties.getCmsEndpoint().getProcessBuyVoucherOrchestration(),
                         request,
                         BodyResponse.class);
             }
 
             @Override
             public BodyResponse<OrchestrationMessage> sendRollback(BodyRequest<OrchestrationMessage> request) {
-                return webClientService.postSync(endPointProperties.getCmsService().getBaseUrl(),
-                        endPointProperties.getCmsService().getRollbackBuyVoucherOrchestration(),
+                return webClientService.postSync(endPointProperties.getCmsEndpoint().getBaseUrl(),
+                        endPointProperties.getCmsEndpoint().getRollbackBuyVoucherOrchestration(),
                         request,
                         BodyResponse.class);
             }
