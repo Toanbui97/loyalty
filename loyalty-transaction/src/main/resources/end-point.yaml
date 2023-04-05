@@ -1,5 +1,0 @@
-CMS:
-  baseUrl: localhost:8080
-  receiveCustomerInfo: /api/v1/receiveCustomer/{customerCode}
-  performUpdateCustomer: /api/v1/performUpdateCustomer
-  receiveRankList: /api/v1/receiveRankList
