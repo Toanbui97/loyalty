@@ -1,7 +1,9 @@
 package vn.com.loyalty.core.service.internal.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,6 +42,7 @@ public class WebClientServiceImpl implements WebClientService {
     private Integer attempt;
     private Integer firstBackoff;
     private WebClient webClient;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public void setWebClient(WebClient webClient) {
@@ -110,7 +113,17 @@ public class WebClientServiceImpl implements WebClientService {
         return throwable instanceof HttpServerErrorException;
     }
 
-    private <R> WebClient.RequestHeadersSpec<?> setUpUriAndBodyAndHeaders(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, HttpMethod method) {
+    @SneakyThrows
+    private  <R> WebClient.RequestHeadersSpec<?> setUpUriAndBodyAndHeaders(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, HttpMethod method) {
+
+        log.info("""
+                 
+                ===================> Web Client Request:
+                URL: {}: {}{}
+                {}
+                """
+                , method, baseUrl, uri, requestBody != null ? objectMapper.writeValueAsString(requestBody) : "");
+
         webClient = webClient.mutate().baseUrl(baseUrl).build();
         WebClient.RequestBodyUriSpec requestBodyUriSpec = webClient.method(method);
         requestBodyUriSpec.uri(uriBuilder -> (Objects.nonNull(params) ? buildQueryParams(uriBuilder, uri, params) : uriBuilder.path(uri).build()))

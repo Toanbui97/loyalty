@@ -40,15 +40,10 @@ public class LoyaltyEventSpamApplication {
 
     @Autowired
     KafkaOperation kafkaOperation;
-
     @Autowired
     CustomerRepository customerRepository;
-
     @Autowired
     ObjectMapper objectMapper;
-
-
-
 
     @Scheduled(cron = "0/10 * * * * *")
     public void sendMessage() {
@@ -86,7 +81,7 @@ public class LoyaltyEventSpamApplication {
                 .transactionType(TransactionType.STOCK_TYPE.getType())
                 .data(TransactionMessage.Data.builder()
                         .transactionValue(BigDecimal.valueOf(new Random().nextInt(100000)))
-                        .pointUsed(BigDecimal.valueOf(new Random().nextInt(100)))
+                        .pointUsed(BigDecimal.ZERO)
                         .build())
                 .build();
     }

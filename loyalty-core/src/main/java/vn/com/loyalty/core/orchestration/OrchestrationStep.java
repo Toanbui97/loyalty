@@ -40,7 +40,7 @@ public abstract class OrchestrationStep {
             }
             return response;
         } catch (Exception e) {
-            log.error("Error: {}",  e);
+            log.error("Error: ",  e);
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
@@ -49,7 +49,7 @@ public abstract class OrchestrationStep {
 
     BodyResponse<OrchestrationMessage> rollback() {
         try {
-            BodyResponse<OrchestrationMessage> response = this.sendProcess(BodyRequest.of(message));
+            BodyResponse<OrchestrationMessage> response = this.sendRollback(BodyRequest.of(message));
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACK;
             } else {
@@ -58,7 +58,7 @@ public abstract class OrchestrationStep {
             log.info("Orchestration sendProcess: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("Error: {}",  e);
+            log.error("Error: ",  e);
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }

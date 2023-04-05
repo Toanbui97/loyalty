@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public record Orchestration(List<OrchestrationStep> orchestrationPool) {
 
-    public Orchestration asyncProcessOrchestration() throws OrchestrationException {
+    public void asyncProcessOrchestration() throws OrchestrationException {
 
         CompletableFuture.allOf(orchestrationPool.stream()
                         .map(step -> CompletableFuture.supplyAsync(step::process))
@@ -25,7 +25,6 @@ public record Orchestration(List<OrchestrationStep> orchestrationPool) {
             this.rollbackOrchestration();
             throw new OrchestrationException("Orchestration Exception");
         }
-        return this;
     }
 
     private void rollbackOrchestration() {
@@ -35,7 +34,7 @@ public record Orchestration(List<OrchestrationStep> orchestrationPool) {
                 .log()
                 .map(OrchestrationStep::rollback)
                 .handle((response, synchronousSink) -> {
-                    if (response.getStatus() != 1) {
+                    if (response.getStatus() != 0) {
                         // TODO save to db to manual process
                     }
                     synchronousSink.complete();
