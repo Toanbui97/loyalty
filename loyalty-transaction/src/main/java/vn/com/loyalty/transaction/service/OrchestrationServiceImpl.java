@@ -1,10 +1,12 @@
 package vn.com.loyalty.transaction.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
@@ -40,6 +42,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final ObjectMapper objectMapper;
     private final TransactionMessageRepository transactionMessageRepository;
     private final TransactionService transactionService;
+    private final HttpSession httpSession;
 
     @Override
     @Transactional
@@ -64,14 +67,13 @@ public class OrchestrationServiceImpl implements OrchestrationService {
          CompletableFuture.allOf(
                 CompletableFuture.runAsync(() -> transactionService.saveTransaction(transactionEntity)),
                 CompletableFuture.runAsync(() -> this.savePointToRedis(transactionEntity)),
-                CompletableFuture.runAsync(() -> this.processTransactionOrchestration(transactionEntity))
+                CompletableFuture.runAsync(() -> this.buildTransactionOrchestration(transactionEntity))
         ).exceptionally(throwable -> {
             throwable.printStackTrace();
             throw new TransactionException(throwable.getMessage());
         }).join();
          return message;
     }
-
 
 
     @SneakyThrows
@@ -95,12 +97,12 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
         redisOperation.setValue(redisOperation.genEpointKey(message.getCustomerCode()), customerEpoint.subtract(usePoint));
 
-        this.buildOrchestration(message).asyncProcessOrchestration();
+        this.buildVoucherOrchestration(message);
 
         return null;
     }
 
-    private void processTransactionOrchestration(TransactionEntity transaction) {
+    private void buildTransactionOrchestration(TransactionEntity transaction) {
         TransactionOrchestrationMessage transactionOrchestrationMessage = TransactionOrchestrationMessage.builder()
                 .transactionId(transaction.getTransactionId())
                 .customerCode(transaction.getCustomerCode())
@@ -142,12 +144,11 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        }).asyncProcessOrchestration();
+        }).asyncProcessOrchestration(this.generateOrchestrationId());
     }
 
-    private Orchestration buildOrchestration(OrchestrationMessage voucherOrchestrationMessage) {
-
-        return Orchestration.ofSteps(new OrchestrationStep(voucherOrchestrationMessage) {
+    private void buildVoucherOrchestration(OrchestrationMessage voucherOrchestrationMessage) {
+        Orchestration.ofSteps(new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
@@ -179,7 +180,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        });
+        }).asyncProcessOrchestration(this.generateOrchestrationId());
     }
 
     private void savePointToRedis(TransactionEntity transaction) {
@@ -201,6 +202,9 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         } else {
             redisOperation.setValue(rpointKey, transaction.getRpointGain());
         }
+    }
 
+    private String generateOrchestrationId() {
+        return UUID.randomUUID().toString();
     }
 }

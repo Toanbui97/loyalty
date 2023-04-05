@@ -1,34 +1,52 @@
 package vn.com.loyalty.core.orchestration;
 
+import jakarta.annotation.Nullable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import vn.com.loyalty.core.constant.Constants;
-import vn.com.loyalty.core.exception.OrchestrationException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public record Orchestration(List<OrchestrationStep> orchestrationPool) {
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class Orchestration {
 
-    public void asyncProcessOrchestration() throws OrchestrationException {
+    private final List<OrchestrationStep> orchestrationPool;
 
+    public void asyncProcessOrchestration() {
+        this.asyncProcessOrchestration(UUID.randomUUID().toString());
+    }
+
+    public void asyncProcessOrchestration(String orchestrationId) {
+        log.info("===================> Start Orchestration - OrchestrationId: {}", orchestrationId);
+        log.info("===================> Process Orchestration");
         CompletableFuture.allOf(orchestrationPool.stream()
-                        .map(step -> CompletableFuture.supplyAsync(step::process))
+                        .map(step -> {
+                            step.setOrchestrationId(orchestrationId);
+                            return CompletableFuture.supplyAsync(step::process);
+                        })
                         .toArray(CompletableFuture[]::new))
                 .join();
 
         if (this.orchestrationPool.stream().anyMatch(step -> !Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus()))) {
             this.rollbackOrchestration();
-            throw new OrchestrationException("Orchestration Exception");
         }
+        log.info("===================> Complete Orchestration");
     }
 
     private void rollbackOrchestration() {
-
+        log.info("===================> Rollback Orchestration");
         Flux.fromStream(this.orchestrationPool.stream())
                 .subscribeOn(Schedulers.parallel())
                 .log()

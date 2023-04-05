@@ -63,6 +63,7 @@ public class ApiLogging {
     public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) {
         if (response != null && response.getBody() instanceof BodyResponse<?> body) {
             body.setRequestId((String) httpSession.getAttribute(REQUEST_ID));
+            httpSession.removeAttribute(REQUEST_ID);
             log.info("""
                     
                     ===================> API Response: {}.{}

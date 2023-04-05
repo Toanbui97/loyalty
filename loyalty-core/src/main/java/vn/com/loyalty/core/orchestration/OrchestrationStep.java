@@ -18,6 +18,7 @@ import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 public abstract class OrchestrationStep {
 
     private String stepStatus = Constants.OrchestrationStepStatus.STATUS_PENDING;
+    private String orchestrationId;
     private OrchestrationMessage message;
 
     protected OrchestrationStep(OrchestrationMessage message) {
@@ -32,7 +33,7 @@ public abstract class OrchestrationStep {
     BodyResponse<OrchestrationMessage> process() {
 
         try {
-            BodyResponse<OrchestrationMessage> response = this.sendProcess(BodyRequest.of(message));
+            BodyResponse<OrchestrationMessage> response = this.sendProcess(BodyRequest.of(this.orchestrationId, message));
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_COMPLETED;
             } else {
@@ -49,7 +50,7 @@ public abstract class OrchestrationStep {
 
     BodyResponse<OrchestrationMessage> rollback() {
         try {
-            BodyResponse<OrchestrationMessage> response = this.sendRollback(BodyRequest.of(message));
+            BodyResponse<OrchestrationMessage> response = this.sendRollback(BodyRequest.of(this.orchestrationId,message));
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACK;
             } else {

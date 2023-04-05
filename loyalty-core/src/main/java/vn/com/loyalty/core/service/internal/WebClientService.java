@@ -19,7 +19,7 @@ public interface WebClientService {
 
     <T, R> List<T> postListSync(String baseUrl, String uri, R requestBody, Class<T> clazz);
 
-    <R> void deleteSync(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody);
+    <T, R> void deleteSync(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, Class<T> clazz);
 
     <T> List<T> deleteListSync(String baseUrl, String uri, MultiValueMap<String, String> params, Class<T> clazz);
 

@@ -1,6 +1,7 @@
 package vn.com.loyalty.core.service.internal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -86,9 +87,9 @@ public class WebClientServiceImpl implements WebClientService {
     }
 
     @Override
-    public <R> void deleteSync(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody) {
+    public <T, R> void deleteSync(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, Class<T> clazz) {
         WebClient.RequestHeadersSpec<?> requestHeadersSpec = setUpUriAndBodyAndHeaders(baseUrl, uri, params, requestBody, HttpMethod.DELETE);
-        processMonoResponse(requestHeadersSpec, null);
+        processMonoResponse(requestHeadersSpec, clazz);
     }
 
     @Override
@@ -116,14 +117,6 @@ public class WebClientServiceImpl implements WebClientService {
     @SneakyThrows
     private  <R> WebClient.RequestHeadersSpec<?> setUpUriAndBodyAndHeaders(String baseUrl, String uri, MultiValueMap<String, String> params, R requestBody, HttpMethod method) {
 
-        log.info("""
-                 
-                ===================> Web Client Request:
-                URL: {}: {}{}
-                {}
-                """
-                , method, baseUrl, uri, requestBody != null ? objectMapper.writeValueAsString(requestBody) : "");
-
         webClient = webClient.mutate().baseUrl(baseUrl).build();
         WebClient.RequestBodyUriSpec requestBodyUriSpec = webClient.method(method);
         requestBodyUriSpec.uri(uriBuilder -> (Objects.nonNull(params) ? buildQueryParams(uriBuilder, uri, params) : uriBuilder.path(uri).build()))
@@ -133,10 +126,20 @@ public class WebClientServiceImpl implements WebClientService {
                     header.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
                     header.setAcceptCharset(List.of(StandardCharsets.UTF_8));
                 });
+
+        log.info("""
+                 
+                ===================> Web Client Request:
+                {}: {}{}
+                {}
+                """
+                , method, baseUrl, uri, requestBody != null ? objectMapper.writeValueAsString(requestBody) : "");
+
+
         return (Objects.nonNull(requestBody) ? requestBodyUriSpec.body(BodyInserters.fromValue(requestBody)) : requestBodyUriSpec);
     }
 
-    public <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, Class<T> clazz) {
+    public <T> T processMonoResponse(WebClient.RequestHeadersSpec<?> requestHeadersSpec, @Nullable Class<T> clazz) {
         return requestHeadersSpec.retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new BaseResponseException(ResponseStatusCode.INVALID_INPUT_DATA, null)))
                 .bodyToMono(clazz)
