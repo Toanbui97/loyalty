@@ -176,7 +176,24 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     }
 
     @Override
-    public TransactionResponse rollbackOrchestrationBuyVoucher(TransactionMessage req) {
-        return null;
+    @Transactional
+    public OrchestrationMessage rollbackOrchestrationBuyVoucher(VoucherOrchestrationMessage req) {
+        CustomerEntity customerEntity = customerRepository.findByCustomerCode(req.getCustomerCode())
+                .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, req.getCustomerCode()));
+
+        EpointSpendEntity epointSpendEntity = epointSpendRepository.findByTransactionId(req.getTransactionId())
+                .orElse(null);
+
+        if (epointSpendEntity != null) {
+            epointSpendEntity.setStatus(PointStatus.ROLLBACK);
+            customerEntity.setEpoint(customerEntity.getEpoint().add(epointSpendEntity.getEpoint()));
+            epointSpendRepository.save(epointSpendEntity);
+        }
+
+        customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() - req.getNumberVoucher());
+        redisOperation.setValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()), customerEntity.getEpoint());
+
+        customerRepository.save(customerEntity);
+        return req;
     }
 }

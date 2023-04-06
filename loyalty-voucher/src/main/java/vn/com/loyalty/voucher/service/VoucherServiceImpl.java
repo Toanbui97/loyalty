@@ -85,12 +85,18 @@ public class VoucherServiceImpl implements VoucherService {
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(message.getVoucherCode()).orElseThrow(
                 () -> new ResourceNotFoundException(VoucherEntity.class, message.getVoucherCode()));
-        voucherDetailService.generateVoucherDetail(voucherEntity, message.getCustomerCode(), BigDecimal.valueOf(message.getNumberVoucher()));
+        voucherDetailService.generateVoucherDetail(voucherEntity, message);
 
         return voucherMapper.entityToDTO(voucherEntity);
     }
 
-
+    @Override
+    @Transactional
+    public VoucherResponse rollbackOrchestrationBuyVoucher(VoucherOrchestrationMessage data) {
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByTransactionId(data.getTransactionId());
+        voucherDetailRepository.deleteAll(voucherDetailEntityList);
+        return VoucherResponse.builder().build();
+    }
 
 
 }

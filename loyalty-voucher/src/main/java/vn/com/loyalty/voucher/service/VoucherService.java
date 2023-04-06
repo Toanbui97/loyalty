@@ -14,4 +14,6 @@ public interface VoucherService {
     VoucherResponse createVoucher(VoucherRequest request);
     Page<VoucherResponse> getVoucherList(Pageable page);
     VoucherResponse processOrchestrationBuyVoucher(VoucherOrchestrationMessage message);
+
+    VoucherResponse rollbackOrchestrationBuyVoucher(VoucherOrchestrationMessage data);
 }

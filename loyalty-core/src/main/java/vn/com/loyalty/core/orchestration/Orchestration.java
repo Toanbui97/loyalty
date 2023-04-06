@@ -56,19 +56,12 @@ public class Orchestration {
                 .subscribeOn(Schedulers.parallel())
                 .log()
                 .map(OrchestrationStep::rollback)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(10))
-                        .filter(this::is5xxServerError))
                 .handle((response, synchronousSink) -> {
                     if (response.getStatus() != 0) {
                         // TODO save to db to manual process
                     }
                     synchronousSink.complete();
                 }).subscribe();
-    }
-
-    private boolean is5xxServerError(Throwable throwable) {
-        return throwable instanceof WebClientResponseException &&
-                ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
     }
 
     public static Orchestration ofSteps(OrchestrationStep... steps) {

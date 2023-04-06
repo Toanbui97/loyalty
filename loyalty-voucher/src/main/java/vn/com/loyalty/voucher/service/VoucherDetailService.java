@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,6 +13,6 @@ import java.util.List;
 public interface VoucherDetailService {
     Page<VoucherDetailResponse> getVoucherDetailList(String voucherCode, Pageable pageable);
     Page<VoucherDetailResponse> getVoucherDetailListOfCustomer(String customerCode, Pageable pageable);
-    List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, String customerCode, BigDecimal number);
+    List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, VoucherOrchestrationMessage message);
     List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode);
 }

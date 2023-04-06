@@ -42,6 +42,11 @@ public class OrchestrationController {
         return responseFactory.success(voucherService.processOrchestrationBuyVoucher(req.getData()));
     }
 
+    @PostMapping("/rollbackBuyVoucherOrchestration")
+    public ResponseEntity<BodyResponse<VoucherResponse>> rollbackBuyVoucherOrchestration(@RequestBody BodyRequest<VoucherOrchestrationMessage> req){
+        return responseFactory.success(voucherService.rollbackOrchestrationBuyVoucher(req.getData()));
+    }
+
     @PostMapping("/receiveVoucherList/{customerCode}")
     public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherOrchestrationMessage> request
             , @PathVariable String customerCode, @PageableDefault Pageable page) {

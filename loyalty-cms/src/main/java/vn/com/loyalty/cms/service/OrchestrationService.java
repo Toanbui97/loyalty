@@ -9,5 +9,5 @@ public interface OrchestrationService {
     OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationMessage req);
     OrchestrationMessage rollbackOrchestrationTransaction(TransactionOrchestrationMessage req);
     OrchestrationMessage processOrchestrationBuyVoucher(VoucherOrchestrationMessage req);
-    OrchestrationMessage rollbackOrchestrationBuyVoucher(TransactionMessage req);
+    OrchestrationMessage rollbackOrchestrationBuyVoucher(VoucherOrchestrationMessage req);
 }

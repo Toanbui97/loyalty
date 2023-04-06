@@ -10,6 +10,7 @@ import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,15 +38,16 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     }
 
     @Override
-    public List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, String customerCode, BigDecimal number) {
+    public List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, VoucherOrchestrationMessage message) {
 
         List<VoucherDetailEntity> voucherDetailEntityList = new ArrayList<>();
-        for (int i = 0; i < number.longValue(); i++) {
+        for (int i = 0; i < message.getNumberVoucher(); i++) {
             voucherDetailEntityList.add(VoucherDetailEntity.builder()
+                            .transactionId(message.getTransactionId())
                     .voucherCode(voucher.getVoucherCode())
                     .voucherDetailCode(this.generateVoucherDetailCode(voucher.getVoucherName()))
-                    .customerCode(customerCode)
-                    .status(VoucherStatusCode.READY_FOR_BUY)
+                    .customerCode(message.getCustomerCode())
+                    .status(VoucherStatusCode.READY_FOR_USE)
                     .build());
         }
 
