@@ -5,16 +5,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.retry.Retry;
 import vn.com.loyalty.core.constant.Constants;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 @Slf4j
 @Getter
@@ -47,16 +52,23 @@ public class Orchestration {
 
     private void rollbackOrchestration() {
         log.info("===================> Rollback Orchestration");
-        Flux.fromStream(this.orchestrationPool.stream())
+        Flux.fromStream(this.orchestrationPool.stream().filter(step -> Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus())))
                 .subscribeOn(Schedulers.parallel())
                 .log()
                 .map(OrchestrationStep::rollback)
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(10))
+                        .filter(this::is5xxServerError))
                 .handle((response, synchronousSink) -> {
                     if (response.getStatus() != 0) {
                         // TODO save to db to manual process
                     }
                     synchronousSink.complete();
                 }).subscribe();
+    }
+
+    private boolean is5xxServerError(Throwable throwable) {
+        return throwable instanceof WebClientResponseException &&
+                ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
     }
 
     public static Orchestration ofSteps(OrchestrationStep... steps) {

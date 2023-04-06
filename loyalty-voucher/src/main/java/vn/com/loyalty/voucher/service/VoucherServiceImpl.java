@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.service.internal.RedisOperation;
@@ -19,10 +19,12 @@ import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;
-import vn.com.loyalty.voucher.dto.VoucherMessage;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,14 +55,17 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page) {
         Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCode(customerCode, page);
-        return voucherDetailEntityPage.map(detail -> {
-            VoucherResponse response = voucherMapper.entityToDTO(voucherRepository.findByVoucherCode(detail.getCustomerCode())
-                    .orElseThrow(() -> new ResourceNotFoundException(VoucherEntity.class, detail.getVoucherCode())));
-
-            response.setDetailEntities(List.of(voucherDetailMapper.entityToDTO(detail)));
-
+        List<VoucherEntity> voucherEntities = voucherRepository.findByVoucherCodeIn(voucherDetailEntityPage.getContent().stream().map(VoucherDetailEntity::getVoucherCode).distinct().toList());
+        List<VoucherResponse> responseList = voucherEntities.stream().map(voucher -> {
+            VoucherResponse response = voucherMapper.entityToDTO(voucher);
+            response.setDetailEntities(voucherDetailEntityPage.getContent().stream()
+                    .filter(detail -> detail.getVoucherCode().equals(voucher.getVoucherCode()))
+                    .map(voucherDetailMapper::entityToDTO)
+                    .toList());
             return response;
-        });
+        }).toList();
+
+        return new PageImpl<>(responseList, voucherDetailEntityPage.getPageable(), voucherDetailEntityPage.getTotalElements());
     }
 
     @Override
@@ -76,11 +81,11 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public VoucherResponse processOrchestrationBuyVoucher(VoucherMessage message) {
+    public VoucherResponse processOrchestrationBuyVoucher(VoucherOrchestrationMessage message) {
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(message.getVoucherCode()).orElseThrow(
                 () -> new ResourceNotFoundException(VoucherEntity.class, message.getVoucherCode()));
-        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailService.generateVoucherDetail(voucherEntity, message.getCustomerCode(), message.getNumberVoucher());
+        voucherDetailService.generateVoucherDetail(voucherEntity, message.getCustomerCode(), BigDecimal.valueOf(message.getNumberVoucher()));
 
         return voucherMapper.entityToDTO(voucherEntity);
     }

@@ -1,7 +1,6 @@
 package vn.com.loyalty.voucher.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
-import vn.com.loyalty.voucher.dto.VoucherMessage;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.voucher.service.OrchestrationService;
 import vn.com.loyalty.voucher.service.VoucherDetailService;
 import vn.com.loyalty.voucher.service.VoucherService;
@@ -34,18 +33,17 @@ public class OrchestrationController {
     }
 
     @PostMapping("/rollbackOrchestrationTransaction")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<OrchestrationMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationMessage> req) {
         return responseFactory.success(orchestrationService.rollbackOrchestrationTransaction(req.getData()));
     }
 
     @PostMapping("/processBuyVoucherOrchestration")
-    public ResponseEntity<BodyResponse<VoucherResponse>> performBuyVoucher(@RequestBody BodyRequest<VoucherMessage> req,
-                                                                           @PathVariable String voucherCode) {
+    public ResponseEntity<BodyResponse<VoucherResponse>> processBuyVoucherOrchestration(@RequestBody BodyRequest<VoucherOrchestrationMessage> req) {
         return responseFactory.success(voucherService.processOrchestrationBuyVoucher(req.getData()));
     }
 
     @PostMapping("/receiveVoucherList/{customerCode}")
-    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherRequest> request
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherOrchestrationMessage> request
             , @PathVariable String customerCode, @PageableDefault Pageable page) {
         return responseFactory.success(voucherService.getVoucherListOfCustomer(customerCode, page));
     }

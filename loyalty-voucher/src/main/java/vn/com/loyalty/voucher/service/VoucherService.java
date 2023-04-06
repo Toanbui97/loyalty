@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
-import vn.com.loyalty.voucher.dto.VoucherMessage;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ public interface VoucherService {
     Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page);
     VoucherResponse createVoucher(VoucherRequest request);
     Page<VoucherResponse> getVoucherList(Pageable page);
-    VoucherResponse processOrchestrationBuyVoucher(VoucherMessage message);
+    VoucherResponse processOrchestrationBuyVoucher(VoucherOrchestrationMessage message);
 }

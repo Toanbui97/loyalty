@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import vn.com.loyalty.cms.dto.TransactionMessage;
 import vn.com.loyalty.cms.dto.TransactionResponse;
-import vn.com.loyalty.cms.dto.VoucherMessage;
+import vn.com.loyalty.cms.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
@@ -154,7 +154,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     @Transactional
-    public OrchestrationMessage processOrchestrationBuyVoucher(VoucherMessage req) {
+    public OrchestrationMessage processOrchestrationBuyVoucher(VoucherOrchestrationMessage req) {
 
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(req.getCustomerCode())
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, req.getCustomerCode()));
@@ -168,7 +168,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .build());
 
         customerEntity.setEpoint(customerEntity.getEpoint().subtract(req.getEpointSpend()));
-        customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() + req.getActiveVoucher());
+        customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() + req.getNumberVoucher());
 
         customerRepository.save(customerEntity);
 

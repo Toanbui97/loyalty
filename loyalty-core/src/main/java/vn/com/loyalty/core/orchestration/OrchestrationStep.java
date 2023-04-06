@@ -41,7 +41,6 @@ public abstract class OrchestrationStep {
             }
             return response;
         } catch (Exception e) {
-            log.error("Error: ",  e);
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
@@ -56,10 +55,8 @@ public abstract class OrchestrationStep {
             } else {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             }
-            log.info("Orchestration sendProcess: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("Error: ",  e);
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }

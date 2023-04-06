@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.com.loyalty.cms.dto.TransactionMessage;
-import vn.com.loyalty.cms.dto.VoucherMessage;
+import vn.com.loyalty.cms.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.cms.service.OrchestrationService;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
@@ -37,7 +36,7 @@ public class OrchestrationController {
     }
 
     @PostMapping("/processBuyVoucherOrchestration")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> processBuyVoucherOrchestration(@RequestBody BodyRequest<VoucherMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> processBuyVoucherOrchestration(@RequestBody BodyRequest<VoucherOrchestrationMessage> req) {
         return responseFactory.success(orchestrationService.processOrchestrationBuyVoucher(req.getData()));
     }
 }

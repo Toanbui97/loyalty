@@ -147,6 +147,7 @@ public class WebClientServiceImpl implements WebClientService {
                         .filter(this::is5xxServerError)
                         .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new BaseResponseException(ResponseStatusCode.MAX_RETRY_ATTEMPTS_REACHED, ""))
                 )
+                .share()
                 .block();
     }
 
@@ -162,6 +163,7 @@ public class WebClientServiceImpl implements WebClientService {
                         .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new BaseResponseException(ResponseStatusCode.MAX_RETRY_ATTEMPTS_REACHED, ""))
                 )
                 .collectList()
+                .share()
                 .block();
     }
 

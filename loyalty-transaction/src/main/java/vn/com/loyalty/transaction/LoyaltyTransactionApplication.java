@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableKafka
@@ -18,6 +19,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 @PropertySource("classpath:application.yaml")
 @EnableConfigurationProperties
 @EnableCaching
+@EnableAsync
 public class LoyaltyTransactionApplication {
 
     public static void main(String[] args) {

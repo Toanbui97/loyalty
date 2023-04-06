@@ -16,4 +16,5 @@ import java.util.List;
 public class VoucherMessage extends OrchestrationMessage {
     BigDecimal numberVoucher;
     String voucherCode;
+    BigDecimal epointSpend;
 }

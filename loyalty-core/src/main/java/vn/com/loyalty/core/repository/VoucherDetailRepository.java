@@ -17,4 +17,5 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetailEnti
     List<VoucherDetailEntity> findByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
     Page<VoucherDetailEntity> findByCustomerCode(String customerCode, Pageable pageable);
     List<VoucherDetailEntity> findByTransactionId(String transactionId);
+    List<VoucherDetailEntity> findByVoucherDetailCodeIn(List<String> voucherDetailCodeList);
 }

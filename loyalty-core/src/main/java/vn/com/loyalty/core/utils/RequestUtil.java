@@ -2,23 +2,25 @@ package vn.com.loyalty.core.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class RequestUtil {
-    private final HttpSession httpSession;
     private static final String REQUEST_ID = "requestId";
+    private final Map<String, String> attributes;
+
+    public RequestUtil() {
+        this.attributes = new ConcurrentHashMap<>();
+    }
 
     public String extractCustomerCodeFromToken(String token)  {
 
@@ -29,7 +31,7 @@ public class RequestUtil {
             JsonNode node = new ObjectMapper().readTree(payload);
             return node.path("customerCode").asText();
         } catch (Exception e) {
-            log.error("Error - e: {}", e);
+            log.error("Error: ", e);
             return null;
         }
     }
@@ -42,22 +44,16 @@ public class RequestUtil {
         return uriActual;
     }
 
-    @Async
     public String getRequestId() {
-        try {
-            return (String) httpSession.getAttribute("requestId");
-        } catch (Exception e) {
-            return UUID.randomUUID().toString();
-        }
+        if (StringUtils.hasText(this.attributes.get(REQUEST_ID))) return attributes.get(REQUEST_ID);
+        return UUID.randomUUID().toString();
     }
 
-    @Async
     public void setRequestId(String requestId) {
-        httpSession.setAttribute(REQUEST_ID, requestId);
+        this.attributes.put(REQUEST_ID, requestId);
     }
 
-    @Async
     public void removeRequestId() {
-        httpSession.removeAttribute(REQUEST_ID);
+        this.attributes.remove(REQUEST_ID);
     }
 }

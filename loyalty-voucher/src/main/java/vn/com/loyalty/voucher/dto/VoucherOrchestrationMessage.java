@@ -1,6 +1,9 @@
-package vn.com.loyalty.cms.dto;
+package vn.com.loyalty.voucher.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
@@ -11,11 +14,9 @@ import java.math.BigDecimal;
 @Setter
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor
 @AllArgsConstructor
-public class VoucherMessage extends OrchestrationMessage {
-    BigDecimal epointGain;
+public class VoucherOrchestrationMessage extends OrchestrationMessage {
+    Long numberVoucher;
+    String voucherCode;
     BigDecimal epointSpend;
-    BigDecimal rpointGain;
-    Long activeVoucher;
 }

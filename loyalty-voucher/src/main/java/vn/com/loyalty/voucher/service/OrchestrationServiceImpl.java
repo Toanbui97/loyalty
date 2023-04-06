@@ -26,9 +26,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     public OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationMessage req) {
         if (CollectionUtils.isEmpty(req.getVoucherDetailCodeList())) return req;
 
-        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findAll(VoucherDetailSpecs.useInTransaction(
-                req.getCustomerCode(), req.getVoucherDetailCodeList()
-        ));
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherDetailCodeIn(req.getVoucherDetailCodeList());
 
         if (voucherDetailEntityList.size() != req.getVoucherDetailCodeList().size()) {
             throw new RuntimeException();
@@ -53,7 +51,6 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             voucher.setStatus(VoucherStatusCode.READY_FOR_USE);
             return voucher;
         }).toList());
-
         return req;
     }
 }

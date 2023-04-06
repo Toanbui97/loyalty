@@ -98,7 +98,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         }
 
         redisOperation.setValue(redisOperation.genEpointKey(message.getCustomerCode()), customerEpoint.subtract(usePoint));
-
+        message.setEpointSpend(usePoint);
         this.buildVoucherOrchestration(message);
 
         return null;

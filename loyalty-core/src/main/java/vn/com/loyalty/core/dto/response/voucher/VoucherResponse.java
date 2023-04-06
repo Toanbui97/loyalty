@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -21,5 +23,8 @@ public class VoucherResponse {
     Long totalVoucher;
     Long active;
     Long inActive;
+    BigDecimal discountPercent;
+    LocalDate expireTime;
+    BigDecimal price;
     List<VoucherDetailResponse> detailEntities;
 }
