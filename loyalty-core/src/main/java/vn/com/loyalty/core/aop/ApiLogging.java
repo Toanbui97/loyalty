@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.ObjectUtil;
+import vn.com.loyalty.core.utils.RequestUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class ApiLogging {
 
     private final HttpSession httpSession;
     private final HttpServletRequest httpRequest;
-    private static final String REQUEST_ID = "requestId";
+    private final RequestUtil requestUtil;
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void restApiPointCut() {}
@@ -33,12 +34,10 @@ public class ApiLogging {
 
         if (joinPoint.getArgs()[0] instanceof BodyRequest<?> request) {
             if (!StringUtils.hasText(request.getRequestId())) {
-                String reqId =  UUID.randomUUID().toString();
-                httpSession.setAttribute(REQUEST_ID, reqId);
-                request.setRequestId(reqId);
-            } else {
-                httpSession.setAttribute(REQUEST_ID, request.getRequestId());
+                request.setRequestId(UUID.randomUUID().toString());
             }
+
+            requestUtil.setRequestId(request.getRequestId());
             log.info("""
                     
                     ===================> API Request: {}.{}
@@ -62,8 +61,8 @@ public class ApiLogging {
     @AfterReturning(value = "restApiPointCut()", returning = "response")
     public void afterReturnResponse(JoinPoint joinPoint, ResponseEntity<?> response) {
         if (response != null && response.getBody() instanceof BodyResponse<?> body) {
-            body.setRequestId((String) httpSession.getAttribute(REQUEST_ID));
-            httpSession.removeAttribute(REQUEST_ID);
+            body.setRequestId(requestUtil.getRequestId());
+            requestUtil.removeRequestId();
             log.info("""
                     
                     ===================> API Response: {}.{}

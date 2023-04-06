@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,6 +25,7 @@ import vn.com.loyalty.core.repository.TransactionMessageRepository;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.service.internal.TransactionService;
 import vn.com.loyalty.core.service.internal.WebClientService;
+import vn.com.loyalty.core.utils.RequestUtil;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.transaction.dto.VoucherMessage;
 import vn.com.loyalty.transaction.properties.EndpointProperties;
@@ -42,7 +44,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final ObjectMapper objectMapper;
     private final TransactionMessageRepository transactionMessageRepository;
     private final TransactionService transactionService;
-    private final HttpSession httpSession;
+    private final RequestUtil requestUtil;
 
     @Override
     @Transactional
@@ -144,7 +146,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        }).asyncProcessOrchestration(this.generateOrchestrationId());
+        }).asyncProcessOrchestration(requestUtil.getRequestId());
     }
 
     private void buildVoucherOrchestration(OrchestrationMessage voucherOrchestrationMessage) {
@@ -180,7 +182,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        }).asyncProcessOrchestration(this.generateOrchestrationId());
+        }).asyncProcessOrchestration(requestUtil.getRequestId());
     }
 
     private void savePointToRedis(TransactionEntity transaction) {
@@ -204,7 +206,5 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         }
     }
 
-    private String generateOrchestrationId() {
-        return UUID.randomUUID().toString();
-    }
+
 }
