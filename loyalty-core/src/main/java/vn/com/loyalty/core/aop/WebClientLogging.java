@@ -29,7 +29,7 @@ public class WebClientLogging {
     @SneakyThrows
     @AfterReturning(value = "webclientResponsePointCut()", returning = "response")
     public void webclientResponseLogging(JoinPoint joinPoint, Object response) {
-        String url = joinPoint.getArgs()[0]+"/"+joinPoint.getArgs()[1];
+        String url = (String) joinPoint.getArgs()[0] + joinPoint.getArgs()[1];
         log.info("""
                 
                 ===================> Web Client Response: 

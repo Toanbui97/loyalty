@@ -21,4 +21,5 @@ public class RankResponse implements Serializable {
     String rankCode;
     String rankName;
     BigDecimal requirePoint;
+    BigDecimal keepPoint;
 }

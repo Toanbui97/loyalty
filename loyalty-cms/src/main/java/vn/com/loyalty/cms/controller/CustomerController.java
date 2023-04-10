@@ -58,7 +58,6 @@ public class CustomerController {
     }
 
 
-
     @PostMapping(value = {"/executeCustomerEpointJob/{customerCode}", "/executeCustomerEpointJob"})
     public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
 

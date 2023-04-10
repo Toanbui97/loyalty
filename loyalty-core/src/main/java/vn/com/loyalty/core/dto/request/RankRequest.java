@@ -19,5 +19,6 @@ public class RankRequest implements Serializable {
     String rankCode;
     String rankName;
     BigDecimal requirePoint;
+    BigDecimal keepPoint;
 
 }

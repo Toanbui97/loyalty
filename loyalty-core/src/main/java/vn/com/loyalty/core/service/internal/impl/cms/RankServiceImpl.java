@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
@@ -82,6 +83,7 @@ public class RankServiceImpl implements RankService {
         List<RankEntity> rankEntityList = new ArrayList<>();
         try {
             rankEntityList = redisOperation.getValuesMatchPrefix(Constants.RedisConstants.RANK_DIR, RankEntity.class);
+            if (CollectionUtils.isEmpty(rankEntityList)) rankEntityList = rankRepository.findAll();
         } catch (Exception e) {
             rankEntityList = rankRepository.findAll();
         } finally {
@@ -100,5 +102,17 @@ public class RankServiceImpl implements RankService {
     @Override
     public RankEntity getRankByCode(String rankCode) {
         return rankRepository.findByRankCode(rankCode).orElseThrow(() -> new ResourceNotFoundException(RankEntity.class, rankCode));
+    }
+
+    @Override
+    public List<RankResponse> getListRank(RankRequest data) {
+        return this.getReversalSortedRankList().stream().map(rankMapper::entityToDTO).toList();
+    }
+
+    @Override
+    public RankResponse getRankInform(RankRequest data) {
+        return rankMapper.entityToDTO(rankRepository.findByRankCode(data.getRankCode()).orElseThrow(
+                () -> new ResourceNotFoundException(RankEntity.class, data.getRankCode())
+        ));
     }
 }

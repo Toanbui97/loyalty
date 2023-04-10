@@ -21,4 +21,8 @@ public interface RankService {
     RankEntity getInferiorityRank(RankEntity currentRank);
 
     RankEntity getRankByCode(String rankCode);
+
+    List<RankResponse> getListRank(RankRequest data);
+
+    RankResponse getRankInform(RankRequest data);
 }

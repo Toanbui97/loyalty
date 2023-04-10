@@ -1,8 +1,10 @@
 package vn.com.loyalty.cms.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +24,24 @@ public class RankController {
     private final RankService rankService;
     private final ResponseFactory responseFactory;
 
+    @PostMapping("/receiveRankList")
+    public ResponseEntity<BodyResponse<RankResponse>> receiveRankList(@Nullable @RequestBody BodyRequest<RankRequest> request, Pageable pageable) {
+        return responseFactory.success(rankService.getListRank(request.getData()));
+    }
+
     @PostMapping("/performCreateRank")
     public ResponseEntity<BodyResponse<RankResponse>> performCreateRank(@RequestBody BodyRequest<RankRequest> request) {
         return responseFactory.success(rankService.createRank(request.getData()));
     }
 
     @PostMapping("/performUpdateRank")
-    public ResponseEntity<BodyResponse<RankResponse>> performUpdateRank(@RequestBody BodyRequest<RankRequest> rankRequest) {
-        return responseFactory.success(rankService.updateRank(rankRequest.getData()));
+    public ResponseEntity<BodyResponse<RankResponse>> performUpdateRank(@RequestBody BodyRequest<RankRequest> request) {
+        return responseFactory.success(rankService.updateRank(request.getData()));
+    }
+
+    @PostMapping("/receiveRankInfo")
+    public ResponseEntity<BodyResponse<RankResponse>> receiveRankInfo(@RequestBody BodyRequest<RankRequest> request) {
+        return responseFactory.success(rankService.getRankInform(request.getData()));
     }
 
 }
