@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,4 +22,6 @@ public class CustomerRequest implements Serializable {
     Long activeVoucher;
     BigDecimal epoint;
     BigDecimal rpoint;
+    String rankCode;
+    LocalDate rankExpired;
 }
