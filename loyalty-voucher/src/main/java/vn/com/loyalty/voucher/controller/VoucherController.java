@@ -34,6 +34,16 @@ public class VoucherController {
         return responseFactory.success(voucherService.createVoucher(request.getData()));
     }
 
+    @PostMapping("/receiveVoucherInfo/{voucherCode}")
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherInfo(@RequestBody BodyRequest<?> req, @PathVariable String voucherCode) {
+        return responseFactory.success(voucherService.getVoucherInfo(voucherCode));
+    }
+
+    @PostMapping("/performUpdateVoucherInfo")
+    public ResponseEntity<BodyResponse<VoucherResponse>> performUpdateVoucherInfo(@RequestBody BodyRequest<VoucherRequest> req) {
+        return responseFactory.success(voucherService.updateVoucherInfo(req.getData()));
+    }
+
     @PostMapping("/receiveVoucherDetailList/{voucherCode}")
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailList(@RequestBody BodyRequest<?> request
             , @PathVariable String voucherCode, @PageableDefault Pageable pageable) {
@@ -44,5 +54,6 @@ public class VoucherController {
     public ResponseEntity<BodyResponse<VoucherDetailResponse>> receiveVoucherDetailInActiveList(@PathVariable String voucherCode) {
         return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
     }
+
 
 }

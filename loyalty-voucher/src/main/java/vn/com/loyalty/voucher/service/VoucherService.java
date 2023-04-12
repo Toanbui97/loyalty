@@ -16,4 +16,8 @@ public interface VoucherService {
     VoucherResponse processOrchestrationBuyVoucher(VoucherOrchestrationMessage message);
 
     VoucherResponse rollbackOrchestrationBuyVoucher(VoucherOrchestrationMessage data);
+
+    VoucherResponse getVoucherInfo(String voucherCode);
+
+    VoucherResponse updateVoucherInfo(VoucherRequest request);
 }

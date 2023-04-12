@@ -19,6 +19,7 @@ import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;
+import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
 import java.math.BigDecimal;
@@ -96,6 +97,22 @@ public class VoucherServiceImpl implements VoucherService {
         List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByTransactionId(data.getTransactionId());
         voucherDetailRepository.deleteAll(voucherDetailEntityList);
         return VoucherResponse.builder().build();
+    }
+
+    @Override
+    public VoucherResponse getVoucherInfo(String voucherCode) {
+        return voucherMapper.entityToDTO(voucherRepository.findByVoucherCode(voucherCode)
+                .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class, voucherCode)));
+    }
+
+    @Override
+    public VoucherResponse updateVoucherInfo(VoucherRequest request) {
+        VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(request.getVoucherCode())
+                .orElseThrow(() -> new ResourceNotFoundException(VoucherDetailEntity.class, request.getVoucherCode()));
+
+        voucherEntity = ObjectUtil.mergeObject(request, voucherEntity);
+        voucherRepository.save(voucherEntity);
+        return voucherMapper.entityToDTO(voucherEntity);
     }
 
 
