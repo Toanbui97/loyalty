@@ -22,4 +22,6 @@ public interface CustomerService {
     CustomerEntity calculateRank(CustomerEntity customerEntity);
 
     void saveHistoryRankUp(CustomerEntity customerEntity);
+
+    CustomerResponse deleteCustomer(String customerCode);
 }

@@ -18,7 +18,7 @@ public class RankHistoryServiceImpl implements RankHistoryService {
     @Override
     public RankHistoryEntity getLastUpdated(String customerCode) {
 
-        return rankHistoryRepository.findFirstBy(RankHistorySpecs.lastUpdated(customerCode), RankHistorySpecs.orderByUpdatedDESC())
+        return rankHistoryRepository.findFirstByCustomerCode(customerCode, RankHistorySpecs.orderByUpdatedDESC())
                 .orElse(rankHistoryRepository.save(
                         RankHistoryEntity.builder()
                                 .customerCode(customerCode)

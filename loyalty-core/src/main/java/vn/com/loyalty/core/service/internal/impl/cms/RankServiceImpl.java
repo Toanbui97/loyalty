@@ -69,6 +69,18 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
+    @Transactional
+    public RankResponse deleteRank(String rankCode) {
+
+        RankEntity rankEntity = rankRepository.findByRankCode(rankCode).orElseThrow(
+                () -> new ResourceNotFoundException(RankEntity.class, rankCode));
+        rankRepository.delete(rankEntity);
+        redisOperation.delete(Constants.RedisConstants.RANK_DIR + rankEntity.getRankCode());
+        return rankMapper.entityToDTO(rankEntity);
+    }
+
+
+    @Override
     public RankEntity getRankByPoint(BigDecimal pointNumber) {
 
         List<RankEntity> rankList = this.getReversalSortedRankList();

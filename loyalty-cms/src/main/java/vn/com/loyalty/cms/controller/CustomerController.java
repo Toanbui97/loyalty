@@ -55,6 +55,11 @@ public class CustomerController {
         return responseFactory.success(customerService.getListCustomer(pageable));
     }
 
+    @PostMapping("/performDeleteCustomer/{customerCode}")
+    public ResponseEntity<BodyResponse<CustomerResponse>> performDeleteCustomer(@RequestBody BodyRequest<?> req, @PathVariable String customerCode) {
+        return responseFactory.success(customerService.deleteCustomer(customerCode));
+    }
+
 
     @PostMapping(value = {"/executeCustomerEpointJob/{customerCode}", "/executeCustomerEpointJob"})
     public ResponseEntity<BodyResponse<CustomerResponse>> performCustomerEpointJob(@RequestBody BodyRequest<CustomerRequest> req, @PathVariable @Nullable String customerCode) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {

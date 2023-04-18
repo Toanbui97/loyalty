@@ -21,3 +21,12 @@ yum install -y httpd
 systemctl start httpd
 systemctl enable httpd
 echo "<h1>Hello world from ${hostname -f}</h1>" > /var/www/html/index.html
+
+docker run -d -i -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT='172.31.4.193:2181' \
+                                      -e KAFKA_ADVERTISED_LISTENERS='INSIDE://:29092,OUTSIDE://localhost:9092' \
+                                      -e KAFKA_LISTENERS='INSIDE://:29092,OUTSIDE://:9092' \
+                                      -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP='INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT' \
+                                      -e KAFKA_INTER_BROKER_LISTENER_NAME='INSIDE' \
+                                      -e KAFKA_HEAP_OPTS='-Xmx512M -Xms512M' \
+                                      --name kafka \
+                                      a692873757c0

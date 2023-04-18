@@ -115,5 +115,22 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherMapper.entityToDTO(voucherEntity);
     }
 
+    @Override
+    @Transactional
+    public VoucherResponse deleteVoucher(String voucherCode) {
+
+        VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(voucherCode).orElseThrow(() -> new ResourceNotFoundException(VoucherEntity.class, voucherCode));
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findByVoucherCode(voucherCode);
+
+        redisOperation.delete(Constants.RedisConstants.VOUCHER_DIR + voucherCode);
+        voucherRepository.delete(voucherEntity);
+        voucherDetailRepository.deleteAll(voucherDetailEntityList);
+
+        VoucherResponse voucherResponse = voucherMapper.entityToDTO(voucherEntity);
+        voucherResponse.setDetailEntities(voucherDetailEntityList.stream().map(voucherDetailMapper::entityToDTO).toList());
+
+        return voucherResponse;
+    }
+
 
 }

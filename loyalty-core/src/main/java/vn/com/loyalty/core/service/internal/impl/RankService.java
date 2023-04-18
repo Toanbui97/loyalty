@@ -14,6 +14,8 @@ public interface RankService {
 
     RankResponse deleteRank(RankRequest rankRequest);
 
+    RankResponse deleteRank(String rankCode);
+
     RankEntity getRankByPoint(BigDecimal pointNumber);
 
     List<RankEntity> getReversalSortedRankList();

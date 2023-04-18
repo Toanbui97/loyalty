@@ -27,8 +27,8 @@ public class TransactionListener {
     private final TransactionMessageService transactionMessageService;
     private final OrchestrationService orchestrationService;
 
-    @Transactional(rollbackFor = {Exception.class, TransactionException.class})
-    @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
+//    @Transactional(rollbackFor = {Exception.class, TransactionException.class})
+//    @KafkaListener(topics = Constants.KafkaConstants.TRANSACTION_TOPIC, groupId = Constants.KafkaConstants.TRANSACTION_GROUP)
     public void transactionListener(@Payload String payload, @Headers MessageHeaders headers) throws JsonProcessingException {
         transactionMessageService.saveMessage(TransactionMessageEntity.builder().messageReceived(payload).build());
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.cms.*;
@@ -71,6 +72,17 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerRequest.getCustomerCode()));
         customerEntity = ObjectUtil.mergeObject(customerRequest, customerEntity);
         customerRepository.save(customerEntity);
+        return customerMapper.entityToDTO(customerEntity);
+    }
+
+    @Override
+    @Transactional
+    public CustomerResponse deleteCustomer(String customerCode) {
+
+        CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode).orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
+        redisOperation.delete(redisOperation.genEpointKey(customerCode));
+        redisOperation.delete(redisOperation.genRpointKey(customerCode));
+        customerRepository.delete(customerEntity);
         return customerMapper.entityToDTO(customerEntity);
     }
 

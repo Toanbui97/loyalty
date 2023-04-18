@@ -31,18 +31,18 @@ spring:
       max-lifetime: 18000000
   profiles:
     active: ${ACTIVE_PROFILE:local}
-  kafka:
-    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
-    consumer:
-      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      max-poll-records: 500
-    producer:
-      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: vn.com.loyalty.core.configuration.kafka.CustomJsonSerializer
-      retries: 5
+#  kafka:
+#    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+#    consumer:
+#      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      max-poll-records: 500
+#    producer:
+#      bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: vn.com.loyalty.core.configuration.kafka.CustomJsonSerializer
+#      retries: 5
 
   data:
     redis:

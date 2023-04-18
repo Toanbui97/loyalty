@@ -55,5 +55,9 @@ public class VoucherController {
         return responseFactory.success(voucherDetailService.getVoucherDetailReadyForBuyList(voucherCode));
     }
 
+    @PostMapping("/performDeleteVoucher/{voucherCode}")
+    public ResponseEntity<BodyResponse<VoucherResponse>> performDeleteVoucher(@RequestBody BodyRequest<?> req, @PathVariable String voucherCode) {
+        return  responseFactory.success(voucherService.deleteVoucher(voucherCode));
+    }
 
 }

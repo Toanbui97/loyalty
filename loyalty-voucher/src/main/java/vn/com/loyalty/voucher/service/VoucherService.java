@@ -20,4 +20,6 @@ public interface VoucherService {
     VoucherResponse getVoucherInfo(String voucherCode);
 
     VoucherResponse updateVoucherInfo(VoucherRequest request);
+
+    VoucherResponse deleteVoucher(String voucherCode);
 }

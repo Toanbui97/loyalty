@@ -1,0 +1,34 @@
+version: '3.0'
+services:
+  loyalty-cms:
+    image: toanbv1997/loyalty-cms
+    container_name: loyalty-cms
+    ports:
+      - "8080:8080"
+  loyalty-voucher:
+    image: toanbv1997/loyalty-voucher
+    container_name: loyalty-voucher
+    ports:
+      - "8082:8082"
+  loyalty-transaction:
+    image: toanbv1997/loyalty-transaction
+    container_name: loyalty-transaction
+    ports:
+      - "8083:8083"
+    environment:
+      CMS_BASEURL : http://loyalty-cms:8080/cms/api/v1
+      VOUCHER_BASEURL : http://loyalty-voucher:8082/voucher/api/v1
+    depends_on:
+      - loyalty-voucher
+      - loyalty-cms
+  loyalty-client:
+    image: toanbv1997/loyalty-client
+    container_name: client
+    ports:
+      - "3000:3000"
+    environment:
+      CMS_BASEURL : http://loyalty-cms:8080
+      VOUCHER_BASEURL : http://loyalty-voucher:8082
+    depends_on:
+      - loyalty-voucher
+      - loyalty-cms

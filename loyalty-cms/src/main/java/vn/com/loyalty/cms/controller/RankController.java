@@ -5,10 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
@@ -42,6 +39,11 @@ public class RankController {
     @PostMapping("/receiveRankInfo")
     public ResponseEntity<BodyResponse<RankResponse>> receiveRankInfo(@RequestBody BodyRequest<RankRequest> request) {
         return responseFactory.success(rankService.getRankInform(request.getData()));
+    }
+
+    @PostMapping("/performDeleteRank/{rankCode}")
+    public ResponseEntity<BodyResponse<RankResponse>> performDeleteRank(@RequestBody BodyRequest<RankRequest> req, @PathVariable String rankCode) {
+        return responseFactory.success(rankService.deleteRank(rankCode));
     }
 
 }

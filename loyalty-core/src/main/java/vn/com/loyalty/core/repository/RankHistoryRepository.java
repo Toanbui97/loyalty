@@ -11,5 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface RankHistoryRepository extends JpaRepository<RankHistoryEntity, Long>, JpaSpecificationExecutor<RankHistoryEntity> {
-    Optional<RankHistoryEntity> findFirstBy(Specification<RankHistoryEntity> specs, Sort sort);
+    Optional<RankHistoryEntity> findFirstByCustomerCode(String customerCode, Sort sort);
 }
