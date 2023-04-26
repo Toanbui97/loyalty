@@ -9,6 +9,8 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Table(name = "customer", schema = "cms")
@@ -21,7 +23,8 @@ import java.util.stream.Stream;
 @Builder
 public class CustomerEntity extends BaseEntity {
 
-    String customerName;
+    @Builder.Default
+    String customerName = "Customer name " + UUID.randomUUID().toString();
     String customerCode;
     @Builder.Default
     Long activeVoucher = 0L;

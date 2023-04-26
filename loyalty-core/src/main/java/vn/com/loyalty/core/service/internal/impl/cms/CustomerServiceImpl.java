@@ -44,6 +44,12 @@ public class CustomerServiceImpl implements CustomerService {
     private final RankService rankService;
     private final MasterDataService masterDataService;
 
+
+    @Override
+    public CustomerResponse signIn(String customerName) {
+        return customerMapper.entityToDTO(customerRepository.findFirstByCustomerName(customerName)
+                .orElse(customerRepository.save(CustomerEntity.builder().build())));
+    }
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(pageable);

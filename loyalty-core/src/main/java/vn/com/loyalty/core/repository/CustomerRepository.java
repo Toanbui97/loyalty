@@ -13,4 +13,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
     Optional<CustomerEntity> findByCustomerCode(String customerCode);
     Boolean existsByCustomerCode(String customerCode);
     List<CustomerEntity> findByRankExpired(LocalDate expireDay);
+    Optional<CustomerEntity> findFirstByCustomerName(String customerName);
 }
