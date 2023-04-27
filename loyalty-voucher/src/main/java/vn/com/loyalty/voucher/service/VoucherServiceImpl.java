@@ -1,6 +1,13 @@
 package vn.com.loyalty.voucher.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -8,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.service.internal.RedisOperation;
@@ -40,6 +48,8 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherDetailRepository voucherDetailRepository;
     private final ObjectMapper mapper;
     private final RedisOperation redisOperation;
+    @PersistenceContext(type = PersistenceContextType.TRANSACTION)
+    private final EntityManager entityManager;
 
     @Override
     public List<VoucherResponse> getAllVoucher() {

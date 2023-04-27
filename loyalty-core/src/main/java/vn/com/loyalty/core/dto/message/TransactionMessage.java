@@ -34,8 +34,8 @@ public class TransactionMessage implements Serializable {
     @AllArgsConstructor
     public static class Data implements Serializable {
         BigDecimal transactionValue;
-        BigDecimal pointUsed;
-        transient List<String> voucherDetailCodeList;
+        BigDecimal pointUse;
+        transient List<String> voucherCodeList;
     }
 
 }

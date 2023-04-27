@@ -32,5 +32,5 @@ public class TransactionEntity extends BaseEntity {
     BigDecimal rpointGain;
     BigDecimal epointSpend;
     @Transient
-    transient List<String> voucherDetailCodeList;
+    transient List<String> voucherCodeList;
 }

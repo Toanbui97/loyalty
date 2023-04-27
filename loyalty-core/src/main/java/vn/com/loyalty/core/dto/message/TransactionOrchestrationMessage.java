@@ -19,6 +19,6 @@ public class TransactionOrchestrationMessage extends OrchestrationMessage {
     BigDecimal epointGain;
     BigDecimal epointSpend;
     BigDecimal rpointGain;
-    transient List<String> voucherDetailCodeList;
+    transient List<String> voucherCodeList;
 
 }

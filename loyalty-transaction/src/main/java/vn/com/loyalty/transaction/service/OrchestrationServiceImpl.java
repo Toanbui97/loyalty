@@ -1,13 +1,10 @@
 package vn.com.loyalty.transaction.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
@@ -52,7 +49,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
         BigDecimal epointGain = transactionService.calculateEpointGain(message);
         BigDecimal rpointGain = transactionService.calculateRpointGain(message);
-        BigDecimal epointSpend = message.getData().getPointUsed() != null ? message.getData().getPointUsed() : BigDecimal.ZERO;
+        BigDecimal epointSpend = message.getData().getPointUse() != null ? message.getData().getPointUse() : BigDecimal.ZERO;
 
         TransactionEntity transactionEntity = TransactionEntity.builder()
                 .customerCode(message.getCustomerCode())
@@ -63,7 +60,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .epointGain(epointGain)
                 .rpointGain(rpointGain)
                 .epointSpend(epointSpend)
-                .voucherDetailCodeList(message.getData().getVoucherDetailCodeList())
+                .voucherCodeList(message.getData().getVoucherCodeList())
                 .build();
 
          CompletableFuture.allOf(
@@ -111,7 +108,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .rpointGain(transaction.getRpointGain())
                 .epointGain(transaction.getEpointGain())
                 .epointSpend(transaction.getEpointSpend())
-                .voucherDetailCodeList(transaction.getVoucherDetailCodeList())
+                .voucherCodeList(transaction.getVoucherCodeList())
                 .build();
 
         Orchestration.ofSteps(new OrchestrationStep(transactionOrchestrationMessage) {

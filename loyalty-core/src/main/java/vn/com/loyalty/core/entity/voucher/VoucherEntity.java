@@ -8,7 +8,6 @@ import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Table(name = "voucher", schema = "voucher")
 @Entity
@@ -26,6 +25,6 @@ public class VoucherEntity extends BaseEntity {
     boolean inactive;
     Long totalVoucher;
     BigDecimal discountPercent;
-    LocalDate expireTime;
+    LocalDate expireDate;
     BigDecimal price;
 }

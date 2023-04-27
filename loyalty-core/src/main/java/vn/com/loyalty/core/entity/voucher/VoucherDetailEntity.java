@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.entity.BaseEntity;
 
+import java.time.LocalDate;
+
 @Table(name = "voucher_detail", schema = "voucher")
 @Entity
 @Getter
@@ -25,5 +27,6 @@ public class VoucherDetailEntity extends BaseEntity {
     String transactionId;
     @Enumerated(EnumType.STRING)
     VoucherStatusCode status;
+    LocalDate expireDate;
 
 }

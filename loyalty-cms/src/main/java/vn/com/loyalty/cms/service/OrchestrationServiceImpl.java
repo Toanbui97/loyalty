@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import vn.com.loyalty.cms.dto.TransactionMessage;
-import vn.com.loyalty.cms.dto.TransactionResponse;
 import vn.com.loyalty.cms.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
@@ -91,8 +89,8 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             customerService.saveHistoryRankUp(customerEntity);
         }
 
-        if (!CollectionUtils.isEmpty(req.getVoucherDetailCodeList())) {
-            customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() - req.getVoucherDetailCodeList().size());
+        if (!CollectionUtils.isEmpty(req.getVoucherCodeList())) {
+            customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() - req.getVoucherCodeList().size());
         }
 
         customerRepository.save(customerEntity);
@@ -134,7 +132,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
         customerEntity.setEpoint(customerEntity.getEpoint().add(epointGain.subtract(epointSpend)));
         customerEntity.setRpoint(customerEntity.getRpoint().subtract(rpointGain));
-        customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() + req.getVoucherDetailCodeList().size());
+        customerEntity.setActiveVoucher(customerEntity.getActiveVoucher() + req.getVoucherCodeList().size());
 
         RankEntity rankEntity = rankService.getRankByPoint(customerEntity.getRpoint());
         if (!rankEntity.getRankCode().equals(customerEntity.getRankCode())) {

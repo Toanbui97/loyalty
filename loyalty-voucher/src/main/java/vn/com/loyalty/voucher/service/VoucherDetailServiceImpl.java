@@ -1,5 +1,8 @@
 package vn.com.loyalty.voucher.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +25,11 @@ import java.util.UUID;
 public class VoucherDetailServiceImpl implements VoucherDetailService {
 
     private final VoucherDetailRepository voucherDetailRepository;
-
+    @PersistenceContext(type = PersistenceContextType.TRANSACTION)
+    private final EntityManager entityManager;
     private final VoucherDetailMapper voucherDetailMapper;
+
+
 
     @Override
     public Page<VoucherDetailResponse> getVoucherDetailList(String voucherCode, Pageable pageable) {
@@ -39,20 +45,36 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
 
     @Override
     public List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, VoucherOrchestrationMessage message) {
+        return this.generateVoucherDetail(voucher, message.getCustomerCode(), message.getNumberVoucher(), message.getTransactionId());
+    }
 
+    public List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, String customerCode, Long number, String transactionId ) {
         List<VoucherDetailEntity> voucherDetailEntityList = new ArrayList<>();
-        for (int i = 0; i < message.getNumberVoucher(); i++) {
+        for (int i = 0; i < number; i++) {
             voucherDetailEntityList.add(VoucherDetailEntity.builder()
-                            .transactionId(message.getTransactionId())
+                    .transactionId(transactionId)
                     .voucherCode(voucher.getVoucherCode())
                     .voucherDetailCode(this.generateVoucherDetailCode(voucher.getVoucherName()))
-                    .customerCode(message.getCustomerCode())
+                    .customerCode(customerCode)
                     .status(VoucherStatusCode.READY_FOR_USE)
                     .build());
         }
-
         return voucherDetailRepository.saveAll(voucherDetailEntityList);
     }
+
+    @Override
+    public List<VoucherDetailEntity> generateVoucherDetailFree(List<VoucherEntity> voucherFreeList,String customerCode, String transactionId) {
+        return voucherDetailRepository.saveAll(voucherFreeList.stream().map(v ->
+            VoucherDetailEntity.builder()
+                    .transactionId(transactionId)
+                    .voucherCode(v.getVoucherCode())
+                    .voucherDetailCode(this.generateVoucherDetailCode(v.getVoucherName()))
+                    .customerCode(customerCode)
+                    .status(VoucherStatusCode.READY_FOR_USE)
+                    .build()
+        ).toList());
+    }
+
 
     @Override
     public List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode) {
