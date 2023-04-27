@@ -48,12 +48,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse signIn(String customerName) {
         return customerMapper.entityToDTO(customerRepository.findFirstByCustomerName(customerName)
-                .orElse(customerRepository.save(CustomerEntity.builder().build())));
+                .orElseGet(() -> customerRepository.save(CustomerEntity.builder().customerName(customerName).build())));
     }
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(pageable);
-
         return customerEntityPage.map(customerMapper::entityToDTO);
     }
 
@@ -84,7 +83,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerResponse deleteCustomer(String customerCode) {
-
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(customerCode).orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, customerCode));
         redisOperation.delete(redisOperation.genEpointKey(customerCode));
         redisOperation.delete(redisOperation.genRpointKey(customerCode));

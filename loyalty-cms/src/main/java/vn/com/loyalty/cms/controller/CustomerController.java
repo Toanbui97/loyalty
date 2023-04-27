@@ -40,10 +40,9 @@ public class CustomerController {
         return responseFactory.success(customerService.getCustomer(customerCode));
     }
 
-    @PostMapping("/signIn/{customerName}")
-    public ResponseEntity<BodyResponse<CustomerResponse>> signIn(@RequestBody BodyRequest<CustomerRequest> req,
-                                                                 @PathVariable String customerName) {
-        return responseFactory.success(customerService.signIn(customerName));
+    @PostMapping("/signIn")
+    public ResponseEntity<BodyResponse<CustomerResponse>> signIn(@RequestBody BodyRequest<CustomerRequest> req) {
+        return responseFactory.success(customerService.signIn(req.getData().getCustomerName()));
     }
 
     @PostMapping("/performCreateCustomer")

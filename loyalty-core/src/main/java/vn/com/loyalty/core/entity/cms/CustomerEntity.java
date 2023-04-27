@@ -24,8 +24,9 @@ import java.util.stream.Stream;
 public class CustomerEntity extends BaseEntity {
 
     @Builder.Default
-    String customerName = "Customer name " + UUID.randomUUID().toString();
-    String customerCode;
+    String customerName = "Customer name " + UUID.randomUUID();
+    @Builder.Default
+    String customerCode = UUID.randomUUID().toString();
     @Builder.Default
     Long activeVoucher = 0L;
     @Builder.Default
