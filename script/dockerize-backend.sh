@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#build new jar file
+mvn clean install -U;
+
 # remove image
 docker image rm -f toanbv1997/loyalty-voucher toanbv1997/loyalty-cms toanbv1997/loyalty-transaction;
 

@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
@@ -65,8 +66,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page) {
-        Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCode(customerCode, page);
+        Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCodeAndStatus(customerCode, VoucherStatusCode.READY_FOR_USE, page);
         List<VoucherEntity> voucherEntities = voucherRepository.findByVoucherCodeIn(voucherDetailEntityPage.getContent().stream().map(VoucherDetailEntity::getVoucherCode).distinct().toList());
+        voucherEntities.addAll(voucherRepository.findByPrice(BigDecimal.ZERO));
         List<VoucherResponse> responseList = voucherEntities.stream().map(voucher -> {
             VoucherResponse response = voucherMapper.entityToDTO(voucher);
             response.setDetailEntities(voucherDetailEntityPage.getContent().stream()

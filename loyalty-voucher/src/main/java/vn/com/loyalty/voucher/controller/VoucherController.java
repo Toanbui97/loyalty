@@ -9,6 +9,7 @@ import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherDetailResponse;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
+import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.voucher.service.VoucherDetailService;
 import vn.com.loyalty.voucher.service.VoucherService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
@@ -27,6 +28,12 @@ public class VoucherController {
     public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest<?> request
             , @PageableDefault Pageable page) {
         return responseFactory.success(voucherService.getVoucherList(page));
+    }
+
+    @PostMapping("/receiveVoucherList/{customerCode}")
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherListOfCustomer(@RequestBody BodyRequest<VoucherOrchestrationMessage> request
+            , @PathVariable String customerCode, @PageableDefault Pageable page) {
+        return responseFactory.success(voucherService.getVoucherListOfCustomer(customerCode, page));
     }
 
     @PostMapping("/performCreateVoucher")

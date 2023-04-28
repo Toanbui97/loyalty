@@ -4,7 +4,7 @@
 cd /docker_compose/;
 
 #pull newest images
-docker-compose -f docker-compose-loyalty.yaml pull;
+  docker-compose -f docker-compose-loyalty.yaml pull;
 
 #re run compose with newest image
 docker-compose -f docker-compose-loyalty.yaml up;

@@ -9,12 +9,12 @@ import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface VoucherDetailRepository extends JpaRepository<VoucherDetailEntity, Long>, JpaSpecificationExecutor<VoucherDetailEntity> {
     Page<VoucherDetailEntity> findByVoucherCode(String voucherCode, Pageable pageable);
     List<VoucherDetailEntity> findByVoucherCodeAndStatus(String voucherCode, VoucherStatusCode status);
+    Page<VoucherDetailEntity> findByCustomerCodeAndStatus(String customerCode, VoucherStatusCode status, Pageable pageable);
     Page<VoucherDetailEntity> findByCustomerCode(String customerCode, Pageable pageable);
     List<VoucherDetailEntity> findByTransactionId(String transactionId);
     List<VoucherDetailEntity> findByVoucherDetailCodeIn(List<String> voucherDetailCodeList);

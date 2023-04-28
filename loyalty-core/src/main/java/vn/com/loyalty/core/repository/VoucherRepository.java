@@ -14,4 +14,5 @@ public interface VoucherRepository extends JpaRepository<VoucherEntity, Long> {
     Optional<VoucherEntity> findByVoucherCode(String voucherCode);
     List<VoucherEntity> findByVoucherCodeIn(List<String> voucherCode);
     List<VoucherEntity> findByVoucherCodeInAndPrice(List<String> voucherCode, BigDecimal price);
+    List<VoucherEntity> findByPrice(BigDecimal price);
 }
