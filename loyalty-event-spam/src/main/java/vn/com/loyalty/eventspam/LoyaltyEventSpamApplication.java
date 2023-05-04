@@ -81,7 +81,7 @@ public class LoyaltyEventSpamApplication {
                 .transactionType(TransactionType.STOCK_TYPE.getType())
                 .data(TransactionMessage.Data.builder()
                         .transactionValue(BigDecimal.valueOf(new Random().nextInt(100000)))
-                        .pointUsed(BigDecimal.ZERO)
+                        .pointUse(BigDecimal.ZERO)
                         .build())
                 .build();
     }

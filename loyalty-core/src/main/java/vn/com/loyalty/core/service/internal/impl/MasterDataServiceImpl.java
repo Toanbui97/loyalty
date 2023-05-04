@@ -14,6 +14,8 @@ import vn.com.loyalty.core.repository.MasterDataRepository;
 import vn.com.loyalty.core.service.internal.MasterDataService;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MasterDataServiceImpl implements MasterDataService {
@@ -44,7 +46,22 @@ public class MasterDataServiceImpl implements MasterDataService {
         masterData.setKey(request.getKey());
         masterData.setValue(request.getValue());
         masterData = masterDataRepository.save(masterData);
-        redisOperation.setValue(Constants.MasterDataKey.M_DATA_FOLDER+masterData.getKey(), masterData);
+        redisOperation.setValue(Constants.MasterDataKey.M_DATA_FOLDER + masterData.getKey(), masterData);
         return masterDataMapper.entityToDTO(masterData);
+    }
+
+    @Override
+    @Transactional
+    public List<MasterDataResponse> syncMDataWithRedis() {
+        List<MasterDataEntity> masterDataEntityList = masterDataRepository.findAll();
+        for (MasterDataEntity masterData : masterDataEntityList) {
+            redisOperation.setValue(Constants.MasterDataKey.M_DATA_FOLDER + masterData.getKey(), masterData);
+        }
+        return masterDataEntityList.stream().map(masterDataMapper::entityToDTO).toList();
+    }
+
+    @Override
+    public List<MasterDataResponse> getMasterDataList() {
+        return masterDataRepository.findAll().stream().map(masterDataMapper::entityToDTO).toList();
     }
 }

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 public class VoucherEntity extends BaseEntity {
 
     String voucherName;
+    String imageSource;
     String voucherCode;
     String description;
     boolean inactive;
@@ -27,4 +28,6 @@ public class VoucherEntity extends BaseEntity {
     BigDecimal discountPercent;
     LocalDate expireDate;
     BigDecimal price;
+    @Builder.Default
+    BigDecimal requireRPoint = BigDecimal.ZERO;
 }

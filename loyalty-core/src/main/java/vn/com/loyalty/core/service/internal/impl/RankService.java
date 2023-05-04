@@ -1,5 +1,6 @@
 package vn.com.loyalty.core.service.internal.impl;
 
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.dto.request.RankRequest;
 import vn.com.loyalty.core.dto.response.cms.RankResponse;
 import vn.com.loyalty.core.entity.cms.RankEntity;
@@ -9,6 +10,9 @@ import java.util.List;
 
 public interface RankService {
     RankResponse createRank(RankRequest rankRequest);
+
+    @Transactional
+    List<RankResponse> syncRankWithRedis();
 
     RankResponse updateRank(RankRequest rankRequest);
 

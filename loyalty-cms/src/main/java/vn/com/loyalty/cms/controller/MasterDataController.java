@@ -1,5 +1,6 @@
 package vn.com.loyalty.cms.controller;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,19 @@ public class MasterDataController {
     private final MasterDataService masterDataService;
     private final ResponseFactory responseFactory;
 
+    @PostMapping("/receiveMasterDataList")
+    public ResponseEntity<BodyResponse<MasterDataResponse>> receiveMasterDataList(@RequestBody @Nullable BodyRequest<?> req) {
+        return responseFactory.success(masterDataService.getMasterDataList());
+    }
+
     @PostMapping("/performCreateOrUpdateMasterData")
     public ResponseEntity<BodyResponse<MasterDataResponse>> performCreateOrUpdateMasterData(@RequestBody BodyRequest<MasterDataRequest> request) {
         return responseFactory.success(masterDataService.setValue(request.getData()));
+    }
+
+    @PostMapping("/syncMDataToRedis")
+    public ResponseEntity<BodyResponse<MasterDataResponse>> syncMDataToRedis(@RequestBody @Nullable BodyRequest<?> req) {
+        return responseFactory.success(masterDataService.syncMDataWithRedis());
     }
 
 

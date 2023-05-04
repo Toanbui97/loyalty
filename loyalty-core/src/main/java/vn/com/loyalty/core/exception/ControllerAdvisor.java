@@ -26,19 +26,19 @@ public class ControllerAdvisor {
     @ExceptionHandler(SecurityException.class)
     public final ResponseEntity<BodyResponse<Object>> handleSecurityException(SecurityException exception) {
         BodyResponse<Object> response = new BodyResponse<>(UNAUTHORIZED, null, Constants.RESPONSE_STATUS_FAIL, exception.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<BodyResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @ExceptionHandler(ResourceExistedException.class)
     public final ResponseEntity<BodyResponse<Object>> handleResourceExistedException(ResourceExistedException ex) {
         BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @ExceptionHandler(BaseResponseException.class)
@@ -53,14 +53,14 @@ public class ControllerAdvisor {
             details.add(String.format(Objects.requireNonNull(error.getDefaultMessage()), ((FieldError) error).getField()));
         }
         BodyResponse<Object> response = new BodyResponse<>(INVALID_INPUT_DATA, null, Constants.RESPONSE_STATUS_FAIL, details);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
         List<String> details = Collections.singletonList(ex.getLocalizedMessage());
         BodyResponse<Object> response = new BodyResponse<>(INTERNAL_SERVER_ERROR, null, Constants.RESPONSE_STATUS_FAIL, details);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

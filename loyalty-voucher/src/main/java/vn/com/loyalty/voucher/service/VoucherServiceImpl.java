@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.CriteriaUpdate;
-import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,9 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
-import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
+import vn.com.loyalty.core.repository.specification.VoucherSpecs;
 import vn.com.loyalty.core.service.internal.RedisOperation;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.dto.request.VoucherRequest;
@@ -34,7 +30,6 @@ import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +63,10 @@ public class VoucherServiceImpl implements VoucherService {
     public Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page) {
         Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCodeAndStatus(customerCode, VoucherStatusCode.READY_FOR_USE, page);
         List<VoucherEntity> voucherEntities = voucherRepository.findByVoucherCodeIn(voucherDetailEntityPage.getContent().stream().map(VoucherDetailEntity::getVoucherCode).distinct().toList());
-        voucherEntities.addAll(voucherRepository.findByPrice(BigDecimal.ZERO));
+        BigDecimal customerRPoint = redisOperation.getValue(redisOperation.genRpointKey(customerCode), BigDecimal.class);
+
+        voucherEntities.addAll(voucherRepository.findAll(VoucherSpecs.freeVoucher(customerRPoint)));
+
         List<VoucherResponse> responseList = voucherEntities.stream().map(voucher -> {
             VoucherResponse response = voucherMapper.entityToDTO(voucher);
             response.setDetailEntities(voucherDetailEntityPage.getContent().stream()
@@ -93,13 +91,24 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @Transactional
+    public List<VoucherResponse> syncDbWithRedis() {
+        List<VoucherEntity> voucherEntityList = voucherRepository.findAll();
+        for (VoucherEntity voucherEntity : voucherEntityList) {
+            redisOperation.setValue(Constants.RedisConstants.VOUCHER_DIR + voucherEntity.getVoucherCode(), voucherEntity);
+        }
+        return voucherEntityList.stream().map(voucherMapper::entityToDTO).toList();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public VoucherResponse processOrchestrationBuyVoucher(VoucherOrchestrationMessage message) {
 
         VoucherEntity voucherEntity = voucherRepository.findByVoucherCode(message.getVoucherCode()).orElseThrow(
                 () -> new ResourceNotFoundException(VoucherEntity.class, message.getVoucherCode()));
         voucherDetailService.generateVoucherDetail(voucherEntity, message);
-
+        voucherEntity.setTotalVoucher(voucherEntity.getTotalVoucher() - 1);
+        voucherRepository.save(voucherEntity);
         return voucherMapper.entityToDTO(voucherEntity);
     }
 

@@ -26,8 +26,13 @@ public class VoucherController {
 
     @PostMapping("/receiveVoucherList")
     public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest<?> request
-            , @PageableDefault Pageable page) {
+            , @PageableDefault(size = Integer.MAX_VALUE) Pageable page) {
         return responseFactory.success(voucherService.getVoucherList(page));
+    }
+
+    @PostMapping("/syncToRedis")
+    public ResponseEntity<BodyResponse<VoucherResponse>> receiveVoucherList(@RequestBody BodyRequest<?> request) {
+        return responseFactory.success(voucherService.syncDbWithRedis());
     }
 
     @PostMapping("/receiveVoucherList/{customerCode}")

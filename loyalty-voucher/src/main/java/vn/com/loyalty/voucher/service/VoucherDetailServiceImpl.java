@@ -63,7 +63,7 @@ public class VoucherDetailServiceImpl implements VoucherDetailService {
     }
 
     @Override
-    public List<VoucherDetailEntity> generateVoucherDetailFree(List<VoucherEntity> voucherFreeList,String customerCode, String transactionId) {
+    public List<VoucherDetailEntity> applyVoucherFree(List<VoucherEntity> voucherFreeList, String customerCode, String transactionId) {
         return voucherDetailRepository.saveAll(voucherFreeList.stream().map(v ->
             VoucherDetailEntity.builder()
                     .transactionId(transactionId)

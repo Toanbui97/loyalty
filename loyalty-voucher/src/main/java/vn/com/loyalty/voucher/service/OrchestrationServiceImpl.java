@@ -7,18 +7,15 @@ import org.springframework.util.CollectionUtils;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
-import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;
-import vn.com.loyalty.core.repository.specification.VoucherDetailSpecs;
+import vn.com.loyalty.core.repository.specification.VoucherSpecs;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,9 +34,9 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         if (CollectionUtils.isEmpty(req.getVoucherCodeList())) return req;
 
         List<VoucherEntity> voucherFreeList = voucherRepository.findByVoucherCodeInAndPrice(req.getVoucherCodeList(), BigDecimal.ZERO);
-        if (!CollectionUtils.isEmpty(voucherFreeList)) voucherDetailService.generateVoucherDetailFree(voucherFreeList, req.getCustomerCode(), req.getTransactionId());
+        if (!CollectionUtils.isEmpty(voucherFreeList)) voucherDetailService.applyVoucherFree(voucherFreeList, req.getCustomerCode(), req.getTransactionId());
 
-        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findAll(VoucherDetailSpecs.useInTransaction(req.getCustomerCode(), req.getVoucherCodeList()));
+        List<VoucherDetailEntity> voucherDetailEntityList = voucherDetailRepository.findAll(VoucherSpecs.useInTransaction(req.getCustomerCode(), req.getVoucherCodeList()));
         voucherDetailEntityList = voucherDetailEntityList.stream().filter(distinctByVoucherCode(VoucherDetailEntity::getVoucherCode))
                 .toList();
 
@@ -54,7 +51,10 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         }).toList();
 
         voucherDetailRepository.saveAll(voucherDetailEntityList);
-
+        voucherRepository.saveAll(voucherFreeList.stream().map( v -> {
+            v.setTotalVoucher(v.getTotalVoucher() - 1);
+            return v;
+        }).toList());
         return req;
     }
 

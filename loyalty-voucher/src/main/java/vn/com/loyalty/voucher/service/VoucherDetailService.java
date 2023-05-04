@@ -15,7 +15,7 @@ public interface VoucherDetailService {
     Page<VoucherDetailResponse> getVoucherDetailListOfCustomer(String customerCode, Pageable pageable);
     List<VoucherDetailEntity> generateVoucherDetail(VoucherEntity voucher, VoucherOrchestrationMessage message);
 
-    List<VoucherDetailEntity> generateVoucherDetailFree(List<VoucherEntity> voucherFreeList, String customerCode, String transactionId);
+    List<VoucherDetailEntity> applyVoucherFree(List<VoucherEntity> voucherFreeList, String customerCode, String transactionId);
 
     List<VoucherDetailResponse> getVoucherDetailReadyForBuyList(String voucherCode);
 }

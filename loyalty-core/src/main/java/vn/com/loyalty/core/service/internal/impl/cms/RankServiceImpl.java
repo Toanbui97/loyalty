@@ -43,6 +43,16 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
+    @Transactional
+    public List<RankResponse> syncRankWithRedis() {
+        List<RankEntity> rankEntityList = rankRepository.findAll();
+        for (RankEntity rankEntity : rankEntityList) {
+            redisOperation.setValue(Constants.RedisConstants.RANK_DIR + rankEntity.getRankCode(), rankEntity);
+        }
+        return rankEntityList.stream().map(rankMapper::entityToDTO).toList();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public RankResponse updateRank(RankRequest rankRequest) {
 
