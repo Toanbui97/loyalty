@@ -1,12 +1,12 @@
 package vn.com.loyalty.transaction.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessageReq;
+import vn.com.loyalty.core.dto.message.TransactionMessageRes;
 import vn.com.loyalty.transaction.dto.VoucherMessage;
 
 public interface OrchestrationService {
-    TransactionMessage processTransactionOrchestration(TransactionMessage message);
+    TransactionMessageRes processTransactionOrchestration(TransactionMessageReq message);
 
     OrchestrationMessage processVoucherOrchestration(VoucherMessage voucherMessage);
 }

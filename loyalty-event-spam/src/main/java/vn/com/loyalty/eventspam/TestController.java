@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
-import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessageReq;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.entity.cms.CustomerEntity;
 import vn.com.loyalty.core.repository.CustomerRepository;
@@ -43,7 +43,7 @@ public class TestController {
     }
 
     private void sendMessage() {
-        TransactionMessage message = this.buildTransactionStockMessage();
+        TransactionMessageReq message = this.buildTransactionStockMessage();
         kafkaOperation.send(Constants.KafkaConstants.TRANSACTION_TOPIC, message)
                 .whenComplete((result, throwable) -> {
                     try {
@@ -60,15 +60,15 @@ public class TestController {
                 });
     }
 
-    private TransactionMessage buildTransactionStockMessage() {
+    private TransactionMessageReq buildTransactionStockMessage() {
         List<CustomerEntity> customerCode = customerRepository.findAll();
 
-        return TransactionMessage.builder()
+        return TransactionMessageReq.builder()
                 .customerCode("83c881a7-1d38-40b7-b52d-8f4247f8acc6")
                 .transactionId(UUID.randomUUID().toString())
                 .transactionTime(LocalDateTime.now())
                 .transactionType(TransactionType.STOCK_TYPE.getType())
-                .data(TransactionMessage.Data.builder()
+                .data(TransactionMessageReq.Data.builder()
                         .transactionValue(BigDecimal.valueOf(new Random().nextInt(10000)))
 //                        .pointToDiscount(BigDecimal.valueOf(new Random().nextInt(5)))
                         .build())

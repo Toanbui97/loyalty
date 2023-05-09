@@ -3,7 +3,7 @@ package vn.com.loyalty.core.service.internal.impl.transaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessageReq;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
 import vn.com.loyalty.core.repository.*;
 import vn.com.loyalty.core.service.internal.TransactionService;
@@ -23,14 +23,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public BigDecimal calculateEpointGain(TransactionMessage transactionMessage) {
-        return transactionMessage.getData().getTransactionValue().divide(BigDecimal.valueOf(100));
+    public BigDecimal calculateEpointGain(TransactionMessageReq transactionMessageReq) {
+        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(100));
     }
 
 
     @Override
-    public BigDecimal calculateRpointGain(TransactionMessage transactionMessage) {
-        return transactionMessage.getData().getTransactionValue().divide(BigDecimal.valueOf(50));
+    public BigDecimal calculateRpointGain(TransactionMessageReq transactionMessageReq) {
+        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(50));
     }
 
 }

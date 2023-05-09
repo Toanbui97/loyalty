@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessageReq;
+import vn.com.loyalty.core.dto.message.TransactionMessageRes;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
@@ -20,7 +21,7 @@ public class OrchestrationController {
     private final OrchestrationService orchestrationService;
 
     @PostMapping("/orchestration/transaction")
-    public ResponseEntity<BodyResponse<TransactionMessage>> transactionOrchestration(@RequestBody BodyRequest<TransactionMessage> request) {
+    public ResponseEntity<BodyResponse<TransactionMessageRes>> transactionOrchestration(@RequestBody BodyRequest<TransactionMessageReq> request) {
         return responseFactory.success(orchestrationService.processTransactionOrchestration(request.getData()));
     }
 

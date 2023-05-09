@@ -44,7 +44,6 @@ public abstract class OrchestrationStep {
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
             return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
-
     }
 
     BodyResponse<OrchestrationMessage> rollback() {

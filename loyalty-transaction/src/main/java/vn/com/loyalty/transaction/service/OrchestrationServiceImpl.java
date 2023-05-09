@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionMessage;
+import vn.com.loyalty.core.dto.message.TransactionMessageReq;
+import vn.com.loyalty.core.dto.message.TransactionMessageRes;
 import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
@@ -16,7 +17,8 @@ import vn.com.loyalty.core.entity.transaction.TransactionMessageEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.exception.PointException;
 import vn.com.loyalty.core.exception.TransactionException;
-import vn.com.loyalty.core.orchestration.Orchestration;
+import vn.com.loyalty.core.mapper.TransactionMapper;
+import vn.com.loyalty.core.orchestration.Orchestrator;
 import vn.com.loyalty.core.orchestration.OrchestrationStep;
 import vn.com.loyalty.core.repository.TransactionMessageRepository;
 import vn.com.loyalty.core.service.internal.RedisOperation;
@@ -42,10 +44,11 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final TransactionMessageRepository transactionMessageRepository;
     private final TransactionService transactionService;
     private final RequestUtil requestUtil;
+    private final TransactionMapper transactionMapper;
 
     @Override
     @Transactional
-    public TransactionMessage processTransactionOrchestration(TransactionMessage message) {
+    public TransactionMessageRes processTransactionOrchestration(TransactionMessageReq message) {
 
         BigDecimal epointGain = transactionService.calculateEpointGain(message);
         BigDecimal rpointGain = transactionService.calculateRpointGain(message);
@@ -71,7 +74,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             throwable.printStackTrace();
             throw new TransactionException(throwable.getMessage());
         }).join();
-         return message;
+         return transactionMapper.entityToDTO(transactionEntity);
     }
 
 
@@ -111,7 +114,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .voucherCodeList(transaction.getVoucherCodeList())
                 .build();
 
-        Orchestration.ofSteps(new OrchestrationStep(transactionOrchestrationMessage) {
+        Orchestrator.steps(new OrchestrationStep(transactionOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess (BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getCmsEndpoint().getBaseUrl(),
@@ -127,7 +130,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                         request,
                         BodyResponse.class);
             }
-        },new OrchestrationStep(transactionOrchestrationMessage) {
+        }, new OrchestrationStep(transactionOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
@@ -147,7 +150,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     }
 
     private void buildVoucherOrchestration(OrchestrationMessage voucherOrchestrationMessage) {
-        Orchestration.ofSteps(new OrchestrationStep(voucherOrchestrationMessage) {
+        Orchestrator.steps(new OrchestrationStep(voucherOrchestrationMessage) {
             @Override
             public BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request) {
                 return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
