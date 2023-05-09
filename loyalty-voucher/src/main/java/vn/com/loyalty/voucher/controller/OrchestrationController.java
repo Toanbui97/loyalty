@@ -1,14 +1,11 @@
 package vn.com.loyalty.voucher.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
+import vn.com.loyalty.core.dto.message.TransactionOrchestrationReq;
 import vn.com.loyalty.core.dto.request.BodyRequest;
-import vn.com.loyalty.core.dto.request.VoucherRequest;
 import vn.com.loyalty.core.dto.response.voucher.VoucherResponse;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
@@ -28,12 +25,12 @@ public class OrchestrationController {
     private final OrchestrationService orchestrationService;
 
     @PostMapping("/processOrchestrationTransaction")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> processOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> processOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationReq> req) {
         return responseFactory.success(orchestrationService.processOrchestrationTransaction(req.getData()));
     }
 
     @PostMapping("/rollbackOrchestrationTransaction")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationReq> req) {
         return responseFactory.success(orchestrationService.rollbackOrchestrationTransaction(req.getData()));
     }
 

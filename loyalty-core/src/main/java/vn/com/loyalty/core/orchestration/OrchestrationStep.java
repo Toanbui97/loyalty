@@ -11,29 +11,26 @@ import vn.com.loyalty.core.dto.message.OrchestrationMessage;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 
+import java.io.Serializable;
+
 @Slf4j
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class OrchestrationStep {
 
     private String stepStatus = Constants.OrchestrationStepStatus.STATUS_PENDING;
     private String orchestrationId;
-    private OrchestrationMessage message;
-
-    protected OrchestrationStep(OrchestrationMessage message) {
+    protected OrchestrationStep() {
         this.setStepStatus(Constants.OrchestrationStepStatus.STATUS_PENDING);
-        this.message = message;
     }
 
     String getStepStatus() {
         return this.stepStatus;
     }
 
-    BodyResponse<OrchestrationMessage> process() {
-
+    protected BodyResponse<?> process() {
         try {
-            BodyResponse<OrchestrationMessage> response = this.sendProcess(BodyRequest.of(this.orchestrationId, message));
+            BodyResponse<?> response = this.sendProcess();
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_COMPLETED;
             } else {
@@ -42,13 +39,13 @@ public abstract class OrchestrationStep {
             return response;
         } catch (Exception e) {
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
-            return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
+            return BodyResponse.builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
     }
 
-    BodyResponse<OrchestrationMessage> rollback() {
+    BodyResponse<?> rollback() {
         try {
-            BodyResponse<OrchestrationMessage> response = this.sendRollback(BodyRequest.of(this.orchestrationId,message));
+            BodyResponse<?> response = this.sendRollback();
             if (ResponseStatusCode.SUCCESS.getCode().equals(response.getCode())) {
                 this.stepStatus = Constants.OrchestrationStepStatus.STATUS_ROLLBACK;
             } else {
@@ -57,11 +54,11 @@ public abstract class OrchestrationStep {
             return response;
         } catch (Exception e) {
             this.stepStatus = Constants.OrchestrationStepStatus.STATUS_FAILED;
-            return BodyResponse.<OrchestrationMessage>builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
+            return BodyResponse.builder().code(ResponseStatusCode.INTERNAL_SERVER_ERROR.getCode()).build();
         }
     }
 
-    public abstract BodyResponse<OrchestrationMessage> sendProcess(BodyRequest<OrchestrationMessage> request);
+    public abstract BodyResponse<?> sendProcess();
 
-    public abstract BodyResponse<OrchestrationMessage> sendRollback(BodyRequest<OrchestrationMessage> request);
+    public abstract BodyResponse<?> sendRollback();
 }

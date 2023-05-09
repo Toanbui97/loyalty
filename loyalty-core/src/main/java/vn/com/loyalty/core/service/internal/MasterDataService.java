@@ -7,7 +7,6 @@ import vn.com.loyalty.core.dto.response.cms.MasterDataResponse;
 import java.util.List;
 
 public interface MasterDataService {
-    @SneakyThrows
     <T> T getValue(String key, Class<T> clazz);
 
     MasterDataResponse setValue(MasterDataRequest request);

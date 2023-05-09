@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.com.loyalty.cms.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.cms.service.OrchestrationService;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
+import vn.com.loyalty.core.dto.message.TransactionOrchestrationReq;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.service.internal.CustomerService;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
@@ -26,12 +26,12 @@ public class OrchestrationController {
     private final OrchestrationService orchestrationService;
 
     @PostMapping("/processOrchestrationTransaction")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> processOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> processOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationReq> req) {
         return responseFactory.success(orchestrationService.processOrchestrationTransaction(req.getData()));
     }
 
     @PostMapping("/rollbackOrchestrationTransaction")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> rollbackOrchestrationTransaction(@RequestBody BodyRequest<TransactionOrchestrationReq> req) {
         return responseFactory.success(orchestrationService.rollbackOrchestrationTransaction(req.getData()));
     }
 

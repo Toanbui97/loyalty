@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
+import vn.com.loyalty.core.dto.message.TransactionOrchestrationReq;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
@@ -30,7 +30,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     @Transactional
-    public OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationMessage req) {
+    public OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationReq req) {
         if (CollectionUtils.isEmpty(req.getVoucherCodeList())) return req;
 
         List<VoucherEntity> voucherFreeList = voucherRepository.findByVoucherCodeInAndPrice(req.getVoucherCodeList(), BigDecimal.ZERO);
