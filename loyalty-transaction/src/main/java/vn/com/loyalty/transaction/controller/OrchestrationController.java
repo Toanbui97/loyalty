@@ -9,7 +9,7 @@ import vn.com.loyalty.core.dto.message.TransactionMessageRes;
 import vn.com.loyalty.core.dto.request.BodyRequest;
 import vn.com.loyalty.core.utils.factory.response.BodyResponse;
 import vn.com.loyalty.core.utils.factory.response.ResponseFactory;
-import vn.com.loyalty.transaction.dto.VoucherMessage;
+import vn.com.loyalty.core.dto.request.VoucherMessageReq;
 import vn.com.loyalty.transaction.service.OrchestrationService;
 
 @RestController
@@ -26,7 +26,7 @@ public class OrchestrationController {
     }
 
     @PostMapping("/orchestration/voucher")
-    public ResponseEntity<BodyResponse<OrchestrationMessage>> voucherOrchestration(@RequestBody BodyRequest<VoucherMessage> req) {
+    public ResponseEntity<BodyResponse<OrchestrationMessage>> voucherOrchestration(@RequestBody BodyRequest<VoucherMessageReq> req) {
 
         return responseFactory.success(orchestrationService.processVoucherOrchestration(req.getData()));
     }

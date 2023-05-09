@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import vn.com.loyalty.core.dto.message.TransactionMessageRes;
 import vn.com.loyalty.core.dto.message.TransactionOrchestrationReq;
 import vn.com.loyalty.core.entity.transaction.TransactionEntity;
 
@@ -14,8 +13,8 @@ import vn.com.loyalty.core.entity.transaction.TransactionEntity;
         , nullValueMapMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
         , nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
         , nullValueIterableMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-public interface TransactionMapper {
+public interface TransactionOrchestrationMapper {
 
-    TransactionMessageRes entityToDTO(TransactionEntity entity);
-    TransactionOrchestrationReq entityToOrchestrationReq(TransactionEntity entity);
+    TransactionOrchestrationReq entityToDTO(TransactionEntity transaction);
+
 }

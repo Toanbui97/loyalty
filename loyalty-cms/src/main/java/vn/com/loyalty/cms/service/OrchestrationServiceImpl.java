@@ -9,7 +9,7 @@ import vn.com.loyalty.cms.dto.VoucherOrchestrationMessage;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.dto.message.OrchestrationMessage;
-import vn.com.loyalty.core.dto.message.TransactionOrchestrationMessage;
+import vn.com.loyalty.core.dto.message.TransactionOrchestrationReq;
 import vn.com.loyalty.core.entity.cms.*;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.repository.CustomerRepository;
@@ -41,7 +41,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final RedisOperation redisOperation;
 
     @Override
-    public OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationMessage req) {
+    public OrchestrationMessage processOrchestrationTransaction(TransactionOrchestrationReq req) {
         LocalDate today = LocalDate.now();
 
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(req.getCustomerCode())
@@ -100,7 +100,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     @Transactional
-    public OrchestrationMessage rollbackOrchestrationTransaction(TransactionOrchestrationMessage req) {
+    public OrchestrationMessage rollbackOrchestrationTransaction(TransactionOrchestrationReq req) {
 
         CustomerEntity customerEntity = customerRepository.findByCustomerCode(req.getCustomerCode())
                 .orElseThrow(() -> new ResourceNotFoundException(CustomerEntity.class, req.getCustomerCode()));
