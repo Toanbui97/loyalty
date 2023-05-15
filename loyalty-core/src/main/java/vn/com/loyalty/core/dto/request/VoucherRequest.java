@@ -1,6 +1,8 @@
 package vn.com.loyalty.core.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VoucherRequest implements Serializable {
     String customerCode;
     String voucherName;
@@ -26,4 +29,5 @@ public class VoucherRequest implements Serializable {
     @JsonFormat(pattern = DateTimeUtils.FORMAT_DD_MM_YYYY)
     LocalDate expireTime;
     BigDecimal price;
+    String rankRequire;
 }

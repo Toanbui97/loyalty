@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.entity.BaseEntity;
 
 import java.math.BigDecimal;
@@ -29,5 +30,5 @@ public class VoucherEntity extends BaseEntity {
     LocalDate expireDate;
     BigDecimal price;
     @Builder.Default
-    BigDecimal requireRPoint = BigDecimal.ZERO;
+    String rankRequire = Constants.MasterDataKey.RANK_DEFAULT;
 }

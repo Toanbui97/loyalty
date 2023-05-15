@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
+import vn.com.loyalty.core.entity.cms.RankEntity;
 import vn.com.loyalty.core.exception.ResourceNotFoundException;
 import vn.com.loyalty.core.mapper.VoucherDetailMapper;
 import vn.com.loyalty.core.repository.specification.VoucherSpecs;
@@ -24,6 +25,7 @@ import vn.com.loyalty.core.entity.voucher.VoucherEntity;
 import vn.com.loyalty.core.mapper.VoucherMapper;
 import vn.com.loyalty.core.repository.VoucherDetailRepository;
 import vn.com.loyalty.core.repository.VoucherRepository;
+import vn.com.loyalty.core.service.internal.impl.RankService;
 import vn.com.loyalty.core.utils.ObjectUtil;
 import vn.com.loyalty.voucher.dto.VoucherOrchestrationMessage;
 
@@ -44,6 +46,7 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherDetailRepository voucherDetailRepository;
     private final ObjectMapper mapper;
     private final RedisOperation redisOperation;
+    private final RankService rankService;
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
 
@@ -63,9 +66,13 @@ public class VoucherServiceImpl implements VoucherService {
     public Page<VoucherResponse> getVoucherListOfCustomer(String customerCode, Pageable page) {
         Page<VoucherDetailEntity> voucherDetailEntityPage = voucherDetailRepository.findByCustomerCodeAndStatus(customerCode, VoucherStatusCode.READY_FOR_USE, page);
         List<VoucherEntity> voucherEntities = voucherRepository.findByVoucherCodeIn(voucherDetailEntityPage.getContent().stream().map(VoucherDetailEntity::getVoucherCode).distinct().toList());
-        BigDecimal customerRPoint = redisOperation.getValue(redisOperation.genRpointKey(customerCode), BigDecimal.class);
 
-        voucherEntities.addAll(voucherRepository.findAll(VoucherSpecs.freeVoucher(customerRPoint)));
+        BigDecimal customerRPoint = redisOperation.getValue(redisOperation.genRpointKey(customerCode), BigDecimal.class);
+        RankEntity rankEntity = rankService.getRankByPoint(customerRPoint);
+        List<RankEntity> inferiorityRankList = rankService.getInferiorityRankList(rankEntity);
+
+        voucherEntities.addAll(voucherRepository.findAll(VoucherSpecs.freeVoucher(inferiorityRankList)));
+
 
         List<VoucherResponse> responseList = voucherEntities.stream().map(voucher -> {
             VoucherResponse response = voucherMapper.entityToDTO(voucher);

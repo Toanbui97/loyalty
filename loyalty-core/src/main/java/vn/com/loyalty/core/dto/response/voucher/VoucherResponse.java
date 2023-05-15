@@ -26,5 +26,6 @@ public class VoucherResponse {
     BigDecimal discountPercent;
     LocalDate expireTime;
     BigDecimal price;
+    String rankRequire;
     List<VoucherDetailResponse> detailEntities;
 }

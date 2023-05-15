@@ -28,7 +28,7 @@ public class RankController {
 
     @PostMapping("/receiveRankList")
     public ResponseEntity<BodyResponse<RankResponse>> receiveRankList(@Nullable @RequestBody BodyRequest<RankRequest> request, Pageable pageable) {
-        return responseFactory.success(rankService.getListRank(request.getData()));
+        return responseFactory.success(rankService.getRankList(request.getData()));
     }
 
     @PostMapping("/performCreateRank")

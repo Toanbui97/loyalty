@@ -1,9 +1,11 @@
 package vn.com.loyalty.transaction.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.TransactionType;
@@ -144,7 +146,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             }
 
             @Override
-            public BodyResponse<OrchestrationMessage> sendRollback() {
+            public BodyResponse sendRollback() {
                 return webClientService.postSync(endPointProperties.getVoucherEndpoint().getBaseUrl(),
                         endPointProperties.getVoucherEndpoint().getRollbackOrchestrationTransaction(),
                         BodyRequest.of(data),

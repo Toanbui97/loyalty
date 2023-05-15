@@ -48,7 +48,9 @@ public class Orchestrator {
 
     private void rollbackOrchestration() {
         log.info("===================> Rollback Orchestration");
-        Flux.fromStream(this.orchestrationPool.stream().filter(step -> Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus())))
+        Flux.fromStream(
+                    this.orchestrationPool.stream()
+                        .filter(step -> Constants.OrchestrationStepStatus.STATUS_COMPLETED.equals(step.getStepStatus())))
                 .subscribeOn(Schedulers.parallel())
                 .log()
                 .map(OrchestrationStep::rollback)

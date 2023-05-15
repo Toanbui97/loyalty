@@ -24,11 +24,13 @@ public interface RankService {
 
     List<RankEntity> getReversalSortedRankList();
 
+    List<RankEntity> getInferiorityRankList(RankEntity currentRank);
+
     RankEntity getInferiorityRank(RankEntity currentRank);
 
     RankEntity getRankByCode(String rankCode);
 
-    List<RankResponse> getListRank(RankRequest data);
+    List<RankResponse> getRankList(RankRequest data);
 
     RankResponse getRankInform(RankRequest data);
 }

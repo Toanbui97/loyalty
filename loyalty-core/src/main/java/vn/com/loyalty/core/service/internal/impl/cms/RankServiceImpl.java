@@ -115,6 +115,13 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
+    public List<RankEntity> getInferiorityRankList(RankEntity currentRank) {
+        List<RankEntity> reversalList =  this.getReversalSortedRankList();
+        int currentIndex = reversalList.indexOf(currentRank);
+        return reversalList.subList(currentIndex, reversalList.size());
+    }
+
+    @Override
     public RankEntity getInferiorityRank(RankEntity currentRank) {
         List<RankEntity> reversalList =  this.getReversalSortedRankList();
         int currentIndex = reversalList.indexOf(currentRank);
@@ -127,7 +134,7 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public List<RankResponse> getListRank(RankRequest data) {
+    public List<RankResponse> getRankList(RankRequest data) {
         return this.getReversalSortedRankList().stream().map(rankMapper::entityToDTO).toList();
     }
 

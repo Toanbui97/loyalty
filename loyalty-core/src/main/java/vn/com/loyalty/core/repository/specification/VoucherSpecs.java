@@ -4,7 +4,9 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.VoucherStatusCode;
+import vn.com.loyalty.core.entity.cms.RankEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity;
 import vn.com.loyalty.core.entity.voucher.VoucherDetailEntity_;
 import vn.com.loyalty.core.entity.voucher.VoucherEntity;
@@ -15,6 +17,7 @@ import java.awt.datatransfer.StringSelection;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VoucherSpecs {
@@ -44,13 +47,15 @@ public class VoucherSpecs {
     }
 
 
-    public static Specification<VoucherEntity> freeVoucher(BigDecimal customerRPoint) {
+    public static Specification<VoucherEntity> freeVoucher(List<RankEntity> inferiorityRankList) {
+        List<String> inferiorityRankCodeList = inferiorityRankList.stream().map(RankEntity::getRankCode).collect(Collectors.toList());
+        inferiorityRankCodeList.add(Constants.MasterDataKey.RANK_DEFAULT);
         return (root, query, criteriaBuilder) -> {
 
             List<Predicate> predicateList = new ArrayList<>();
 
             predicateList.add(criteriaBuilder.equal(root.get(VoucherEntity_.PRICE), BigDecimal.ZERO));
-            predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get(VoucherEntity_.REQUIRE_RPOINT), customerRPoint));
+            predicateList.add(criteriaBuilder.and(root.get(VoucherEntity_.RANK_REQUIRE).in(inferiorityRankCodeList)));
 
             return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
         };
