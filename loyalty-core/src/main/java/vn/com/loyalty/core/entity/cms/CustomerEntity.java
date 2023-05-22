@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Cascade;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.entity.BaseEntity;
 
