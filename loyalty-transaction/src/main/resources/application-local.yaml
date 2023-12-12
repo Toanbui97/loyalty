@@ -2,7 +2,7 @@ KAFKA_SERVERS: localhost:9092
 SERVER_PORT: 8083
 CMS_SERVICE_BASE_URL: http://localhost:8080/cms
 DB_HOST: ${HOST:localhost}
-DB_PORT: 5433
+DB_PORT: 5432
 DB_NAME: loyalty
 DB_SCHEMA: cms
 DB_USER: postgres

@@ -1,0 +1,73 @@
+version: '3.0'
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-loyalty
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: loyalty
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    network_mode: host
+  redis:
+    image: redis
+    container_name: redis-loyalty
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis/data
+    network_mode: host
+  loyalty-cms:
+    image: toanbv1997/loyalty-cms
+    container_name: loyalty-cms
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    network_mode: host
+  loyalty-voucher:
+    image: toanbv1997/loyalty-voucher
+    container_name: loyalty-voucher
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - redis
+    network_mode: host
+  loyalty-transaction:
+    image: toanbv1997/loyalty-transaction
+    container_name: loyalty-transaction
+    ports:
+      - "8083:8083"
+    environment:
+      CMS_BASEURL: http://loyalty-cms:8080/cms/api/v1
+      VOUCHER_BASEURL: http://loyalty-voucher:8082/voucher/api/v1
+    depends_on:
+      - loyalty-voucher
+      - loyalty-cms
+      - postgres
+      - redis
+    network_mode: host
+  loyalty-client:
+    image: toanbv1997/loyalty-client
+    container_name: client
+    ports:
+      - "3000:3000"
+    environment:
+      CMS_BASEURL: http://loyalty-cms:8080
+      VOUCHER_BASEURL: http://loyalty-voucher:8082
+      TRANSACTION_BASEURL: http://loyalty-transaction:8083
+    depends_on:
+      - loyalty-voucher
+      - loyalty-cms
+      - loyalty-transaction
+    network_mode: host
+volumes:
+  postgres-data:
+  redis-data:
+networks:
+  loyalty:
+    driver: host

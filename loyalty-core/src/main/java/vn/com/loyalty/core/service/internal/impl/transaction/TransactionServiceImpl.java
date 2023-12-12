@@ -9,6 +9,7 @@ import vn.com.loyalty.core.repository.*;
 import vn.com.loyalty.core.service.internal.TransactionService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @Slf4j
@@ -24,13 +25,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public BigDecimal calculateEpointGain(TransactionMessageReq transactionMessageReq) {
-        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(100));
+        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP);
     }
 
 
     @Override
     public BigDecimal calculateRpointGain(TransactionMessageReq transactionMessageReq) {
-        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(50));
+        return transactionMessageReq.getData().getTransactionValue().divide(BigDecimal.valueOf(50), 0, RoundingMode.HALF_UP);
     }
 
 }

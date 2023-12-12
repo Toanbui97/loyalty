@@ -46,9 +46,16 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
+    @Transactional
     public CustomerResponse signIn(String customerName) {
-        return customerMapper.entityToDTO(customerRepository.findFirstByCustomerName(customerName)
-                .orElseGet(() -> customerRepository.save(CustomerEntity.builder().customerName(customerName).build())));
+
+        CustomerEntity customerEntity = customerRepository.findFirstByCustomerName(customerName)
+                .orElseGet(() -> customerRepository.save(CustomerEntity.builder().customerName(customerName).build()));
+
+        redisOperation.setValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()), customerEntity.getEpoint());
+        redisOperation.setValue(redisOperation.genRpointKey(customerEntity.getCustomerCode()), customerEntity.getRpoint());
+
+        return customerMapper.entityToDTO(customerEntity);
     }
     @Override
     public Page<CustomerResponse> getListCustomer(Pageable pageable) {
@@ -57,10 +64,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerResponse createCustomer(CustomerRequest customerRequest) {
         CustomerEntity customerEntity = customerMapper.DTOToEntity(customerRequest);
         customerEntity.setCustomerCode(this.generateCustomerCode());
         customerEntity = customerRepository.save(customerEntity);
+        redisOperation.setValue(redisOperation.genEpointKey(customerEntity.getCustomerCode()), customerEntity.getEpoint());
+        redisOperation.setValue(redisOperation.genRpointKey(customerEntity.getCustomerCode()), customerEntity.getRpoint());
         return customerMapper.entityToDTO(customerEntity);
     }
 

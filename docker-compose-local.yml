@@ -4,7 +4,7 @@ services:
     image: postgres
     container_name: postgres-loyalty
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: loyalty
@@ -19,7 +19,6 @@ services:
     volumes:
       - redis-data:/var/lib/redis/data
 #    command: redis-server --appendonly yes --replica-read-only no
-=\
 #  zookeeper:
 #    container_name: zookeeper-inventory
 #    image: wurstmeister/zookeeper

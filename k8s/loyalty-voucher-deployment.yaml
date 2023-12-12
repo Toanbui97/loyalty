@@ -14,7 +14,7 @@ kind: ConfigMap
 metadata:
   name: loyalty-voucher-configmap
 data:
-  ACTIVE_PROFILE: dev
+  ACTIVE_PROFILE: "dev"
   KAFKA_SERVERS: "52.196.64.186"
   REDIS_HOST: "52.196.64.186"
   REDIS_PORT: "6379"
@@ -22,8 +22,8 @@ data:
   SERVER_PORT: "8082"
   DB_HOST: "52.196.64.186"
   DB_PORT: "5433"
-  DB_NAME: loyalty
-  DB_SCHEMA: voucher
+  DB_NAME: "loyalty"
+  DB_SCHEMA: "voucher"
   DB_USER: postgres
   CMS_SERVICE_BASE_URL: http://loyalty-cms.default.svc.cluster.local:8080/cms
 ---

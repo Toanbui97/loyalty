@@ -29,6 +29,8 @@ services:
     environment:
       CMS_BASEURL : http://loyalty-cms:8080
       VOUCHER_BASEURL : http://loyalty-voucher:8082
+      TRANSACTION_BASEURL: http://loyalty-transaction:8083
     depends_on:
       - loyalty-voucher
       - loyalty-cms
+      - loyalty-transaction
