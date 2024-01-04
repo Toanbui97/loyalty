@@ -88,16 +88,9 @@ services:
     ports:
       - "80:80"
     environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: loyalty
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      CMS_BASEURL: http://loyalty-cms:8080/cms/api/v1
-      VOUCHER_BASEURL: http://loyalty-voucher:8082/voucher/api/v1
-      TRANSACTION_BASE_URL: http://loyalty-transaction:8083/transaction/api/v1
+      CMS_BASEURL: http://172.31.30.46:8080/cms/api/v1
+      VOUCHER_BASEURL: http://172.31.30.46:8082/voucher/api/v1
+      TRANSACTION_BASE_URL: http://172.31.30.46:8083/transaction/api/v1
     depends_on:
       - loyalty-voucher
       - loyalty-cms
