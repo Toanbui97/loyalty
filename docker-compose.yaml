@@ -63,7 +63,7 @@ services:
     image: toanbv1997/loyalty-transaction
     container_name: loyalty-transaction
     ports:
-      - "8083:8083"
+      - "8084:8083"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -90,7 +90,7 @@ services:
     environment:
       CMS_BASEURL: http://35.77.121.52:8080
       VOUCHER_BASEURL: http://35.77.121.52:8082
-      TRANSACTION_BASE_URL: http://35.77.121.52:8083
+      TRANSACTION_BASE_URL: http://35.77.121.52:8084
 volumes:
   postgres-data:
   redis-data:
