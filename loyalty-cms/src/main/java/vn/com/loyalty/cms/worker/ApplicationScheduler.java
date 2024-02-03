@@ -20,13 +20,20 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.*;
 import vn.com.loyalty.core.constant.Constants;
 import vn.com.loyalty.core.constant.enums.PointStatus;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity;
 import vn.com.loyalty.core.entity.cms.EpointGainEntity_;
+import vn.com.loyalty.core.repository.*;
+import vn.com.loyalty.core.service.internal.*;
+import vn.com.loyalty.core.service.internal.impl.cms.*;
 
+import java.math.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.*;
 
 @Component
 @RequiredArgsConstructor
@@ -43,6 +50,10 @@ public class ApplicationScheduler {
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
 
+    private final EpointGainRepository epointGainRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
+
     // at 0:00 AM
 //    @Scheduled(cron = "0/30 * * * * *")
 //    @SchedulerLock(name = Constants.SchedulerTaskName.DEACTIVATE_EPOINT, lockAtLeastForString = "PT5M", lockAtMostForString = "PT14M")
@@ -55,8 +66,21 @@ public class ApplicationScheduler {
 
         update.where(criteriaBuilder.equal(root.get(EpointGainEntity_.EXPIRE_DAY), LocalDate.now().minusDays(1)))
                 .set(root.get(EpointGainEntity_.STATUS), PointStatus.DEACTIVATE);
-
         entityManager.createQuery(update).executeUpdate();
+
+        var pointExpiredList = epointGainRepository.findByStatus(PointStatus.DEACTIVATE);
+        if (!CollectionUtils.isEmpty(pointExpiredList)) {
+//            var map = new HashMap<>();
+//            pointExpiredList.stream().collect(Collectors.groupingBy(EpointGainEntity::getCustomerCode))
+//                    .forEach((s, epointGainEntities) -> map.put(s, epointGainEntities.stream().map(EpointGainEntity::getEpoint)
+//                            .reduce(BigDecimal.ZERO, BigDecimal::add)));
+
+            customerRepository.findByCustomerCodeIn(pointExpiredList.stream().map(EpointGainEntity::getCustomerCode)
+                    .toList()).forEach(customerService::calculateRank);
+
+
+        }
+
     }
 
 //    @Scheduled(cron = "0/15 * * * * *")
