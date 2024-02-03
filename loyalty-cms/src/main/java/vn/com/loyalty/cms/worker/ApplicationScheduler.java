@@ -63,7 +63,7 @@ public class ApplicationScheduler {
         CriteriaUpdate<EpointGainEntity> update = criteriaBuilder.createCriteriaUpdate(EpointGainEntity.class);
         Root<EpointGainEntity> root = update.from(EpointGainEntity.class);
 
-        update.where(criteriaBuilder.equal(root.get(EpointGainEntity_.EXPIRE_DAY), LocalDate.now().minusDays(1)))
+        update.where(criteriaBuilder.lessThan(root.get(EpointGainEntity_.EXPIRE_DAY), LocalDate.now()))
                 .set(root.get(EpointGainEntity_.STATUS), PointStatus.DEACTIVATE);
 
         entityManager.createQuery(update).executeUpdate();
